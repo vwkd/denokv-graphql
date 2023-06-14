@@ -1,0 +1,58 @@
+{
+  "version": "2",
+  "remote": {},
+  "npm": {
+    "specifiers": {
+      "@graphql-tools/schema@10.0.0": "@graphql-tools/schema@10.0.0_graphql@16.6.0",
+      "@graphql-tools/utils@10.0.1": "@graphql-tools/utils@10.0.1_graphql@16.6.0",
+      "graphql": "graphql@16.6.0",
+      "graphql@16.6.0": "graphql@16.6.0"
+    },
+    "packages": {
+      "@graphql-tools/merge@9.0.0_graphql@16.6.0": {
+        "integrity": "sha512-J7/xqjkGTTwOJmaJQJ2C+VDBDOWJL3lKrHJN4yMaRLAJH3PosB7GiPRaSDZdErs0+F77sH2MKs2haMMkywzx7Q==",
+        "dependencies": {
+          "@graphql-tools/utils": "@graphql-tools/utils@10.0.1_graphql@16.6.0",
+          "graphql": "graphql@16.6.0",
+          "tslib": "tslib@2.5.3"
+        }
+      },
+      "@graphql-tools/schema@10.0.0_graphql@16.6.0": {
+        "integrity": "sha512-kf3qOXMFcMs2f/S8Y3A8fm/2w+GaHAkfr3Gnhh2LOug/JgpY/ywgFVxO3jOeSpSEdoYcDKLcXVjMigNbY4AdQg==",
+        "dependencies": {
+          "@graphql-tools/merge": "@graphql-tools/merge@9.0.0_graphql@16.6.0",
+          "@graphql-tools/utils": "@graphql-tools/utils@10.0.1_graphql@16.6.0",
+          "graphql": "graphql@16.6.0",
+          "tslib": "tslib@2.5.3",
+          "value-or-promise": "value-or-promise@1.0.12"
+        }
+      },
+      "@graphql-tools/utils@10.0.1_graphql@16.6.0": {
+        "integrity": "sha512-i1FozbDGHgdsFA47V/JvQZ0FE8NAy0Eiz7HGCJO2MkNdZAKNnwei66gOq0JWYVFztwpwbVQ09GkKhq7Kjcq5Cw==",
+        "dependencies": {
+          "@graphql-typed-document-node/core": "@graphql-typed-document-node/core@3.2.0_graphql@16.6.0",
+          "graphql": "graphql@16.6.0",
+          "tslib": "tslib@2.5.3"
+        }
+      },
+      "@graphql-typed-document-node/core@3.2.0_graphql@16.6.0": {
+        "integrity": "sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==",
+        "dependencies": {
+          "graphql": "graphql@16.6.0"
+        }
+      },
+      "graphql@16.6.0": {
+        "integrity": "sha512-KPIBPDlW7NxrbT/eh4qPXz5FiFdL5UbaA0XUNz2Rp3Z3hqBSkbj0GVjwFDztsWVauZUWsbKHgMg++sk8UX0bkw==",
+        "dependencies": {}
+      },
+      "tslib@2.5.3": {
+        "integrity": "sha512-mSxlJJwl3BMEQCUNnxXBU9jP4JBktcEGhURcPR6VQVlnP0FdDEsIaz0C35dXNGLyRfrATNofF0F5p2KPxQgB+w==",
+        "dependencies": {}
+      },
+      "value-or-promise@1.0.12": {
+        "integrity": "sha512-Z6Uz+TYwEqE7ZN50gwn+1LCVo9ZVrpxRPOhOLnncYkY1ZzOYtrX8Fwf/rFktZ8R5mJms6EZf5TqNOMeZmnPq9Q==",
+        "dependencies": {}
+      }
+    }
+  }
+}
