@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "test": "deno run --unstable --allow-read tests/main.ts"
+    "test": "deno test --unstable --allow-read --no-check tests"
   },
   "fmt": {
     "exclude": ["**/*.md"]
