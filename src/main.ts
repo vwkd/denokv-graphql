@@ -90,8 +90,12 @@ function generateResolvers(
       args,
     ): Promise<IFieldResolver<any, any>> => {
       const id = args.id;
-      const res = await db.get([tableName, id]);
-      return res.value;
+
+      const key = [tableName, id];
+
+      const entry = await db.get(key);
+
+      return entry.value;
     };
 
     createResolver(db, type, resolvers);
@@ -130,7 +134,7 @@ function createResolver(
   const columns = Object.values(table.getFields());
 
   if (!(columns && columns.length > 1)) {
-    throw new Error(`Table '${tableName}' must have at least two columns.`);
+    throw new Error(`Table '${tableName}' must have at least two columns`);
   }
 
   if (!columns.some(isIdField)) {
@@ -147,7 +151,7 @@ function createResolver(
       // simple column
       // noop, use default resolver
     } else if (isObjectType(type)) {
-      // reference column
+      // reference column, single
       // todo: handle non-null type
 
       const referencedTableName = type.name;
@@ -159,21 +163,31 @@ function createResolver(
       ): Promise<IFieldResolver<any, any>> => {
         const id = root[columnName];
 
-        const res = await db.get([referencedTableName, id]);
-
-        if (res.value === null) {
+        if (id === undefined) {
           throw new Error(
-            `Referenced table '${referencedTableName}' has no row with id '${id}'.`,
+            `Database corruption. Expected column '${columnName}' to contain id but found '${
+              JSON.stringify(id)
+            }'`,
           );
         }
 
-        return res.value;
+        const key = [referencedTableName, id];
+
+        const entry = await db.get(key);
+
+        if (entry.value === null) {
+          throw new Error(
+            `Database corruption. Referenced table '${referencedTableName}' has no row with id '${id}'`,
+          );
+        }
+
+        return entry.value;
       };
 
       // recursively walk tree to create resolvers
       createResolver(db, type, resolvers);
     } else if (isListType(type)) {
-      // must contains object type, not leaf type
+      // reference column, multiple
       // todo: handle non-null type
       throw new Error(`todo: not implemented`);
     } else if (isNonNullType(type)) {

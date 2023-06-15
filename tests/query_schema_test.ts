@@ -59,7 +59,7 @@ Deno.test("missing second column", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     Error,
-    "Table 'Book' must have at least two columns.",
+    "Table 'Book' must have at least two columns",
   );
 
   db.close();

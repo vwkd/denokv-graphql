@@ -124,7 +124,8 @@ Deno.test("corrupted id", async () => {
       },
     },
     errors: [{
-      message: "Referenced table 'Author' has no row with id '999'.",
+      message:
+        "Database corruption. Referenced table 'Author' has no row with id '999'",
       locations: [{ line: 6, column: 9 }],
       path: ["bookById", "author"],
     }],
@@ -279,7 +280,8 @@ Deno.test("corrupted id in cyclical reference", async () => {
       },
     },
     errors: [{
-      message: "Referenced table 'Book' has no row with id '999'.",
+      message:
+        "Database corruption. Referenced table 'Book' has no row with id '999'",
       locations: [{ line: 9, column: 11 }],
       path: ["bookById", "author"],
     }],
