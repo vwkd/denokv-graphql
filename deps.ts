@@ -20,3 +20,8 @@ export type {
   IFieldResolver,
   IResolvers,
 } from "npm:@graphql-tools/utils@10.0.1";
+export {
+  assertEquals,
+  assertObjectMatch,
+  assertThrows,
+} from "https://deno.land/std@0.191.0/testing/asserts.ts";
