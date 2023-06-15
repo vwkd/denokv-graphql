@@ -1,6 +1,18 @@
-export { graphql, GraphQLSchema, Kind, parse, buildASTSchema } from "npm:graphql@16.6.0";
+export {
+  buildASTSchema,
+  graphql,
+  GraphQLSchema,
+  isLeafType,
+  isListType,
+  isNonNullType,
+  isObjectType,
+  isScalarType,
+  parse,
+} from "npm:graphql@16.6.0";
 export type {
-  DocumentNode,
+  GraphQLArgument,
+  GraphQLField,
+  GraphQLObjectType,
   Source,
 } from "npm:graphql@16.6.0";
 export { addResolversToSchema } from "npm:@graphql-tools/schema@10.0.0";

@@ -1,6 +1,17 @@
-import { addResolversToSchema, buildASTSchema, Kind, parse } from "../deps.ts";
+import {
+  addResolversToSchema,
+  buildASTSchema,
+  isLeafType,
+  isListType,
+  isNonNullType,
+  isObjectType,
+  isScalarType,
+  parse,
+} from "../deps.ts";
 import type {
-  DocumentNode,
+  GraphQLArgument,
+  GraphQLField,
+  GraphQLObjectType,
   GraphQLSchema,
   IResolvers,
   Source,
@@ -16,13 +27,12 @@ export function buildSchema(
   db: Deno.Kv,
   source: string | Source,
 ): GraphQLSchema {
-  // todo: maybe expose options?
   const schemaAst = parse(source);
 
-  // note: call before `generateResolvers(schemaAst)` because it validates schema
+  // note: validates schema
   const schema = buildASTSchema(schemaAst);
 
-  const resolvers = generateResolvers(db, schemaAst);
+  const resolvers = generateResolvers(db, schema);
 
   const schemaNew = addResolversToSchema({ schema, resolvers });
 
@@ -32,90 +42,154 @@ export function buildSchema(
 /**
  * Generate the resolvers for Deno KV
  * @param db Deno KV database
- * @param schemaAst parsed schema document
+ * @param schema schema object
  * @returns resolvers for Deno KV
  */
-// todo: handle invalid schema
-// todo: replace placeholder
-function generateResolvers<TContext = any>(
+function generateResolvers(
   db: Deno.Kv,
-  schemaAst: DocumentNode,
+  schema: GraphQLSchema,
 ): IResolvers {
-  const resolvers = {};
+  const resolvers: IResolvers = {};
 
-  // for table
-  for (const definition of schemaAst.definitions) {
-    if (definition.kind !== Kind.OBJECT_TYPE_DEFINITION) {
-      throw new Error(`Unrecognized definition kind '${definition.kind}'`);
+  // todo: handle other root types
+  const queryObject = schema.getQueryType();
+
+  if (!queryObject) {
+    throw new Error(`Couldn't find query type in schema`);
+  }
+
+  const queryName = queryObject.name;
+
+  resolvers[queryName] = {};
+
+  // an object type is a table, validate below
+  const tables = queryObject.getFields();
+
+  for (const table of Object.values(tables)) {
+    const fieldName = table.name;
+    const type = table.type;
+
+    if (!isObjectType(type)) {
+      throw new Error(
+        `Query field '${fieldName}' has unexpected type '${type}'`,
+      );
     }
 
-    const tableName = definition.name.value;
+    const tableName = type.name;
 
-    // todo: validate `id: ID!` field and at least one custom column
-    if (!definition.fields) {
-      throw new Error(`Table '${tableName}' must have at least one column.`);
+    if (!isIdArguments(table.args)) {
+      throw new Error(
+        `Query field '${fieldName}' must have single 'id: ID' argument`,
+      );
     }
 
-    // todo: handle id column, e.g. `if (columnName == "id" && type.name.value == "ID")`
+    // todo: how to use `id` argument?
+    resolvers[queryName][fieldName] = async (root, args) => {
+      const id = args.id;
+      const res = await db.get([tableName, id]);
+      return res.value;
+    };
 
-    resolvers[tableName] = {};
-
-    // for column
-    for (const field of definition.fields) {
-      const columnName = field.name.value;
-
-      switch (field.type.kind) {
-        case Kind.NAMED_TYPE: {
-          // todo: handle either primitive type or object type
-          // todo: handle non-null type
-
-          // primitive type, simple column
-          if (
-            field.type.name.value == "String" | field.type.name.value == "ID"
-          ) {
-            // noop, use default resolver
-
-            // object type, reference column
-          } else {
-            const referencedTableName = field.type.name.value;
-
-            // todo: handle missing `id` argument and other argument
-            // todo: handle other args than `id`, what if isn't named `id`?
-            if (field.arguments?.length) {
-              resolvers[tableName][columnName] = async (root, args) => {
-                const id = args.id;
-                const res = await db.get([referencedTableName, id]);
-                return res.value;
-              };
-            } else {
-              // overwrites value in field from id to object
-              resolvers[tableName][columnName] = async (root, args) => {
-                const id = root[columnName];
-                const res = await db.get([referencedTableName, id]);
-                return res.value;
-              };
-            }
-          }
-          break;
-        }
-        // todo: handle list type
-        case Kind.LIST_TYPE: {
-          // must be object type, must not be primitive type
-          // todo: handle non-null type
-          throw new Error("not implemented");
-          break;
-        }
-        // todo: handle non-null type
-        case Kind.NON_NULL_TYPE: {
-          throw new Error("not implemented");
-          break;
-        }
-      }
-
-      // todo: get from above
-      const key = [tableName, columnName];
-    }
+    createResolver(db, type, resolvers);
   }
 
   return resolvers;
+}
+
+/**
+ * Create resolvers for a table and walk recursively to next
+ *
+ * note: recursive, mutates resolvers object
+ * @param db Deno KV database
+ * @param table table object
+ * @param resolvers resolvers object
+ */
+// todo: make tail call recursive instead of mutating outer state
+function createResolver(
+  db: Deno.Kv,
+  table: GraphQLObjectType,
+  resolvers: IResolvers,
+): void {
+  const tableName = table.name;
+
+  if (resolvers[tableName]) {
+    console.debug(
+      `Skipping resolvers for table '${tableName}' because already exist`,
+    );
+    return;
+  } else {
+    console.debug(`Creating resolvers for table '${tableName}'`);
+  }
+
+  resolvers[tableName] = {};
+
+  // a field is a column
+  // simple if scalar type or table reference if another object type
+  const columns = Object.values(table.getFields());
+
+  if (!(columns && columns.length > 1)) {
+    throw new Error(`Table '${tableName}' must have at least two columns.`);
+  }
+
+  if (!columns.some(isIdField)) {
+    throw new Error(
+      `Table '${tableName}' must have an 'id' column with type 'ID'`,
+    );
+  }
+
+  for (const column of columns) {
+    const columnName = column.name;
+    const type = column.type;
+
+    if (isLeafType(type)) {
+      // simple column
+      // noop, use default resolver
+    } else if (isObjectType(type)) {
+      // reference column
+      // todo: handle non-null type
+
+      const referencedTableName = type.name;
+
+      // overwrites id in field value to object
+      resolvers[tableName][columnName] = async (root, args) => {
+        const id = root[columnName];
+
+        const res = await db.get([referencedTableName, id]);
+        return res.value;
+      };
+
+      // recursively walk tree to create resolvers
+      createResolver(db, type, resolvers);
+    } else if (isListType(type)) {
+      // must contains object type, not leaf type
+      // todo: handle non-null type
+      throw new Error(`todo: not implemented`);
+    } else if (isNonNullType(type)) {
+      throw new Error(`todo: not implemented`);
+    } else {
+      throw new Error(`Column '${columnName}' has unexpected type '${type}'`);
+    }
+  }
+}
+
+/**
+ * Test if field is a `id: ID` field
+ * @param field field
+ * @returns boolean
+ */
+// todo: change to `ID!`, also above where called in error message
+function isIdField(field: GraphQLField<any, any>): boolean {
+  return field.name == "id" && isScalarType(field.type) &&
+    field.type.name == "ID";
+}
+
+/**
+ * Test if arguments contain single `id: ID` argument
+ * @param args arguments
+ * @returns boolean
+ */
+// todo: change to `ID!`, also above where called in error message
+function isIdArguments(args: readonly GraphQLArgument[]): boolean {
+  return args.length == 1 && args[0].name == "id" &&
+    isScalarType(args[0].type) && args[0].type.name == "ID";
 }
