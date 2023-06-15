@@ -135,6 +135,52 @@ Deno.test("extra argument", async () => {
   db.close();
 });
 
+Deno.test("non-null type", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Query field 'bookById' has unexpected type 'Book!'",
+  );
+
+  db.close();
+});
+
+Deno.test("list type", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): [Book]
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Query field 'bookById' has unexpected type '[Book]'",
+  );
+
+  db.close();
+});
+
 Deno.test("no object type", async () => {
   const schemaSource = `
     type Query {
