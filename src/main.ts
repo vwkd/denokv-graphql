@@ -13,6 +13,7 @@ import type {
   GraphQLField,
   GraphQLObjectType,
   GraphQLSchema,
+  IFieldResolver,
   IResolvers,
   Source,
 } from "../deps.ts";
@@ -55,7 +56,7 @@ function generateResolvers(
   const queryObject = schema.getQueryType();
 
   if (!queryObject) {
-    throw new Error(`Couldn't find query type in schema`);
+    throw new Error(`Schema must have a root query type`);
   }
 
   const queryName = queryObject.name;
@@ -69,6 +70,7 @@ function generateResolvers(
     const fieldName = table.name;
     const type = table.type;
 
+    // todo: better error messages, e.g. non-null `bookById: Book!` is error because database might return null, etc.
     if (!isObjectType(type)) {
       throw new Error(
         `Query field '${fieldName}' has unexpected type '${type}'`,
@@ -83,7 +85,10 @@ function generateResolvers(
       );
     }
 
-    resolvers[queryName][fieldName] = async (root, args) => {
+    resolvers[queryName][fieldName] = async (
+      root,
+      args,
+    ): Promise<IFieldResolver<any, any>> => {
       const id = args.id;
       const res = await db.get([tableName, id]);
       return res.value;
@@ -112,12 +117,10 @@ function createResolver(
   const tableName = table.name;
 
   if (resolvers[tableName]) {
-    console.debug(
-      `Skipping resolvers for table '${tableName}' because already exist`,
-    );
+    // console.debug(`Skipping resolvers for table '${tableName}' because already exist`);
     return;
   } else {
-    console.debug(`Creating resolvers for table '${tableName}'`);
+    // console.debug(`Creating resolvers for table '${tableName}'`);
   }
 
   resolvers[tableName] = {};
@@ -150,10 +153,20 @@ function createResolver(
       const referencedTableName = type.name;
 
       // overwrites id in field value to object
-      resolvers[tableName][columnName] = async (root, args) => {
+      resolvers[tableName][columnName] = async (
+        root,
+        args,
+      ): Promise<IFieldResolver<any, any>> => {
         const id = root[columnName];
 
         const res = await db.get([referencedTableName, id]);
+
+        if (res.value === null) {
+          throw new Error(
+            `Referenced table '${referencedTableName}' has no row with id '${id}'.`,
+          );
+        }
+
         return res.value;
       };
 
