@@ -1,8 +1,14 @@
 type Query {
-  bookById(id: ID!): Book!
+  bookById(id: ID): Book
 }
 
 type Book {
-  id: ID!,
+  id: ID,
+  title: String,
+  author: Author,
+}
+
+type Author {
+  id: ID,
   name: String,
 }

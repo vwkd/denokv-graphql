@@ -1,6 +1,10 @@
 query {
   bookById(id: 1) {
     id,
-    name,
+    title,
+    author {
+      id,
+      name,
+    }
   }
 }
