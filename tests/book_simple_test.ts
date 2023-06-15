@@ -2,6 +2,41 @@ import { assertEquals, graphql } from "../deps.ts";
 import { buildSchema } from "../src/main.ts";
 
 Deno.test({ permissions: { read: true } }, async function book_simple() {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID): Book
+    }
+
+    type Book {
+      id: ID,
+      title: String,
+      author: Author,
+    }
+
+    type Author {
+      id: ID,
+      name: String,
+      book: Book,
+    }
+  `;
+
+  const source = `
+    query {
+      bookById(id: 1) {
+        id,
+        title,
+        author {
+          id,
+          name,
+          book {
+            id,
+            title,
+          }
+        }
+      }
+    }
+  `;
+
   const db = await Deno.openKv(":memory:");
   await db.atomic()
     .set(["Book", "1"], {
@@ -16,13 +51,7 @@ Deno.test({ permissions: { read: true } }, async function book_simple() {
     })
     .commit();
 
-  const schemaSource = await Deno.readTextFile(
-    "tests/book_simple_schema.graphql",
-  );
-
   const schema = buildSchema(db, schemaSource);
-
-  const source = await Deno.readTextFile("tests/book_simple_query.graphql");
 
   const res = await graphql({ schema, source });
 
