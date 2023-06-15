@@ -82,7 +82,7 @@ function generateResolvers(
 
     if (!isIdArguments(table.args)) {
       throw new InvalidSchema(
-        `Query field '${fieldName}' must have single 'id: ID' argument`,
+        `Query field '${fieldName}' must have single 'id: ID!' argument`,
       );
     }
 
@@ -142,7 +142,7 @@ function createResolver(
 
   if (!columns.some(isIdField)) {
     throw new InvalidSchema(
-      `Table '${tableName}' must have an 'id' column with type 'ID'`,
+      `Table '${tableName}' must have an 'id: ID!' column`,
     );
   }
 
@@ -247,7 +247,17 @@ function createResolver(
         );
       }
     } else if (isNonNullType(type)) {
-      throw new InvalidSchema(`todo: not implemented`);
+      const innerType = type.ofType;
+      if (isLeafType(innerType)) {
+        // simple column
+        // noop, use default resolver
+      } else if (isObjectType(innerType)) {
+        throw new InvalidSchema(`todo: not implemented`);
+      } else {
+        throw new InvalidSchema(
+          `Column '${columnName}' has unexpected type '${type}!'`,
+        );
+      }
     } else {
       throw new InvalidSchema(
         `Column '${columnName}' has unexpected type '${type}'`,
@@ -257,23 +267,22 @@ function createResolver(
 }
 
 /**
- * Test if field is a `id: ID` field
+ * Test if field is a `id: ID!` field
  * @param field field
  * @returns boolean
  */
-// todo: change to `ID!`, also above where called in error message
 function isIdField(field: GraphQLField<any, any>): boolean {
-  return field.name == "id" && isScalarType(field.type) &&
-    field.type.name == "ID";
+  return field.name == "id" && isNonNullType(field.type) &&
+    isScalarType(field.type.ofType) && field.type.ofType.name == "ID";
 }
 
 /**
- * Test if arguments contain single `id: ID` argument
+ * Test if arguments contain single `id: ID!` argument
  * @param args arguments
  * @returns boolean
  */
-// todo: change to `ID!`, also above where called in error message
 function isIdArguments(args: readonly GraphQLArgument[]): boolean {
   return args.length == 1 && args[0].name == "id" &&
-    isScalarType(args[0].type) && args[0].type.name == "ID";
+    isNonNullType(args[0].type) && isScalarType(args[0].type.ofType) &&
+    args[0].type.ofType.name == "ID";
 }

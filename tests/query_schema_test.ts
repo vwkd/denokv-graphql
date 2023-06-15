@@ -5,7 +5,7 @@ import { InvalidSchema } from "../src/utils.ts";
 Deno.test("missing query root type", async () => {
   const schemaSource = `
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
     }
   `;
@@ -24,11 +24,11 @@ Deno.test("missing query root type", async () => {
 Deno.test("missing id column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID): Book
+      bookById(id: ID!): Book
     }
 
     type Book {
-      XXX: ID,
+      XXX: ID!,
       title: String,
     }
   `;
@@ -38,7 +38,7 @@ Deno.test("missing id column", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Table 'Book' must have an 'id' column with type 'ID'",
+    "Table 'Book' must have an 'id: ID!' column",
   );
 
   db.close();
@@ -47,11 +47,11 @@ Deno.test("missing id column", async () => {
 Deno.test("missing second column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID): Book
+      bookById(id: ID!): Book
     }
 
     type Book {
-      id: ID,
+      id: ID!,
     }
   `;
 
@@ -73,7 +73,7 @@ Deno.test("no argument", async () => {
     }
 
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
     }
   `;
@@ -83,7 +83,7 @@ Deno.test("no argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query field 'bookById' must have single 'id: ID' argument",
+    "Query field 'bookById' must have single 'id: ID!' argument",
   );
 
   db.close();
@@ -92,11 +92,11 @@ Deno.test("no argument", async () => {
 Deno.test("other argument", async () => {
   const schemaSource = `
     type Query {
-      bookById(XXX: ID): Book
+      bookById(XXX: ID!): Book
     }
 
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
     }
   `;
@@ -106,7 +106,7 @@ Deno.test("other argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query field 'bookById' must have single 'id: ID' argument",
+    "Query field 'bookById' must have single 'id: ID!' argument",
   );
 
   db.close();
@@ -115,11 +115,11 @@ Deno.test("other argument", async () => {
 Deno.test("extra argument", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID, XXX: String): Book
+      bookById(id: ID!, XXX: String): Book
     }
 
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
     }
   `;
@@ -129,7 +129,7 @@ Deno.test("extra argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query field 'bookById' must have single 'id: ID' argument",
+    "Query field 'bookById' must have single 'id: ID!' argument",
   );
 
   db.close();
@@ -138,7 +138,7 @@ Deno.test("extra argument", async () => {
 Deno.test("no object type", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID): String
+      bookById(id: ID!): String
     }
   `;
 

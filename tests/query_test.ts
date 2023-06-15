@@ -4,11 +4,11 @@ import { buildSchema } from "../src/main.ts";
 Deno.test("minimal working example", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID): Book
+      bookById(id: ID!): Book
     }
 
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
     }
   `;
@@ -51,11 +51,11 @@ Deno.test("minimal working example", async () => {
 Deno.test("null row", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID): Book
+      bookById(id: ID!): Book
     }
 
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
     }
   `;
@@ -95,11 +95,11 @@ Deno.test("null row", async () => {
 Deno.test("null column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID): Book
+      bookById(id: ID!): Book
     }
 
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
     }
   `;
@@ -142,11 +142,11 @@ Deno.test("null column", async () => {
 Deno.test("corrupted id", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID): Book
+      bookById(id: ID!): Book
     }
 
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
     }
   `;

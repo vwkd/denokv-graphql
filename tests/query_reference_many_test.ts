@@ -4,17 +4,17 @@ import { buildSchema } from "../src/main.ts";
 Deno.test("minimal working example", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID): Book
+      bookById(id: ID!): Book
     }
 
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
       authors: [Author],
     }
 
     type Author {
-      id: ID,
+      id: ID!,
       name: String,
     }
   `;
@@ -80,17 +80,17 @@ Deno.test("minimal working example", async () => {
 Deno.test("corrupted id", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID): Book
+      bookById(id: ID!): Book
     }
 
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
       authors: [Author],
     }
 
     type Author {
-      id: ID,
+      id: ID!,
       name: String,
     }
   `;
@@ -153,17 +153,17 @@ Deno.test("corrupted id", async () => {
 Deno.test("corrupted ids", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID): Book
+      bookById(id: ID!): Book
     }
 
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
       authors: [Author],
     }
 
     type Author {
-      id: ID,
+      id: ID!,
       name: String,
     }
   `;
@@ -226,17 +226,17 @@ Deno.test("corrupted ids", async () => {
 Deno.test("minimal cyclical reference", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID): Book
+      bookById(id: ID!): Book
     }
 
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
       authors: [Author],
     }
 
     type Author {
-      id: ID,
+      id: ID!,
       name: String,
       books: [Book],
     }
@@ -334,17 +334,17 @@ Deno.test("minimal cyclical reference", async () => {
 Deno.test("corrupted id in cyclical reference", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID): Book
+      bookById(id: ID!): Book
     }
 
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
       authors: [Author],
     }
 
     type Author {
-      id: ID,
+      id: ID!,
       name: String,
       books: [Book],
     }
@@ -439,17 +439,17 @@ Deno.test("corrupted id in cyclical reference", async () => {
 Deno.test("corrupted ids in cyclical reference", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID): Book
+      bookById(id: ID!): Book
     }
 
     type Book {
-      id: ID,
+      id: ID!,
       title: String,
       authors: [Author],
     }
 
     type Author {
-      id: ID,
+      id: ID!,
       name: String,
       books: [Book],
     }
