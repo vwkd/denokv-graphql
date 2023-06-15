@@ -17,6 +17,7 @@ import type {
   IResolvers,
   Source,
 } from "../deps.ts";
+import { DatabaseCorruption, InvalidSchema } from "./utils.ts";
 
 /**
  * Build a GraphQLSchema for Deno KV
@@ -56,7 +57,7 @@ function generateResolvers(
   const queryObject = schema.getQueryType();
 
   if (!queryObject) {
-    throw new Error(`Schema must have a root query type`);
+    throw new InvalidSchema(`Schema must have a root query type`);
   }
 
   const queryName = queryObject.name;
@@ -72,7 +73,7 @@ function generateResolvers(
 
     // todo: better error messages, e.g. non-null `bookById: Book!` is error because database might return null, etc.
     if (!isObjectType(type)) {
-      throw new Error(
+      throw new InvalidSchema(
         `Query field '${fieldName}' has unexpected type '${type}'`,
       );
     }
@@ -80,7 +81,7 @@ function generateResolvers(
     const tableName = type.name;
 
     if (!isIdArguments(table.args)) {
-      throw new Error(
+      throw new InvalidSchema(
         `Query field '${fieldName}' must have single 'id: ID' argument`,
       );
     }
@@ -134,11 +135,13 @@ function createResolver(
   const columns = Object.values(table.getFields());
 
   if (!(columns && columns.length > 1)) {
-    throw new Error(`Table '${tableName}' must have at least two columns`);
+    throw new InvalidSchema(
+      `Table '${tableName}' must have at least two columns`,
+    );
   }
 
   if (!columns.some(isIdField)) {
-    throw new Error(
+    throw new InvalidSchema(
       `Table '${tableName}' must have an 'id' column with type 'ID'`,
     );
   }
@@ -164,8 +167,8 @@ function createResolver(
         const id = root[columnName];
 
         if (id === undefined) {
-          throw new Error(
-            `Database corruption. Expected column '${columnName}' to contain id but found '${
+          throw new DatabaseCorruption(
+            `Expected column '${columnName}' to contain id but found '${
               JSON.stringify(id)
             }'`,
           );
@@ -176,8 +179,8 @@ function createResolver(
         const entry = await db.get(key);
 
         if (entry.value === null) {
-          throw new Error(
-            `Database corruption. Referenced table '${referencedTableName}' has no row with id '${id}'`,
+          throw new DatabaseCorruption(
+            `Referenced table '${referencedTableName}' has no row with id '${id}'`,
           );
         }
 
@@ -203,8 +206,8 @@ function createResolver(
           const ids = root[columnName];
 
           if (!Array.isArray(ids)) {
-            throw new Error(
-              `Database corruption. Expected column '${columnName}' to contain array of ids but found '${
+            throw new DatabaseCorruption(
+              `Expected column '${columnName}' to contain array of ids but found '${
                 JSON.stringify(ids)
               }'`,
             );
@@ -224,8 +227,8 @@ function createResolver(
           });
 
           if (missing_ids.length) {
-            throw new Error(
-              `Database corruption. Referenced table '${referencedTableName}' has no row${
+            throw new DatabaseCorruption(
+              `Referenced table '${referencedTableName}' has no row${
                 missing_ids.length > 1 ? "s" : ""
               } with id${missing_ids.length > 1 ? "s" : ""} '${
                 missing_ids.join("', '")
@@ -239,12 +242,16 @@ function createResolver(
         // recursively walk tree to create resolvers
         createResolver(db, innerType, resolvers);
       } else {
-        throw new Error(`Column '${columnName}' has unexpected type '${type}'`);
+        throw new InvalidSchema(
+          `Column '${columnName}' has unexpected type '${type}'`,
+        );
       }
     } else if (isNonNullType(type)) {
-      throw new Error(`todo: not implemented`);
+      throw new InvalidSchema(`todo: not implemented`);
     } else {
-      throw new Error(`Column '${columnName}' has unexpected type '${type}'`);
+      throw new InvalidSchema(
+        `Column '${columnName}' has unexpected type '${type}'`,
+      );
     }
   }
 }

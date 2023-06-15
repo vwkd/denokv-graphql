@@ -138,8 +138,7 @@ Deno.test("corrupted id", async () => {
       },
     },
     errors: [{
-      message:
-        "Database corruption. Referenced table 'Author' has no row with id '998'",
+      message: "Referenced table 'Author' has no row with id '998'",
       locations: [{ line: 6, column: 9 }],
       path: ["bookById", "authors"],
     }],
@@ -212,8 +211,7 @@ Deno.test("corrupted ids", async () => {
       },
     },
     errors: [{
-      message:
-        "Database corruption. Referenced table 'Author' has no rows with ids '998', '999'",
+      message: "Referenced table 'Author' has no rows with ids '998', '999'",
       locations: [{ line: 6, column: 9 }],
       path: ["bookById", "authors"],
     }],
@@ -426,8 +424,7 @@ Deno.test("corrupted id in cyclical reference", async () => {
       },
     },
     errors: [{
-      message:
-        "Database corruption. Referenced table 'Book' has no row with id '998'",
+      message: "Referenced table 'Book' has no row with id '998'",
       locations: [{ line: 9, column: 11 }],
       path: ["bookById", "authors", 0, "books"],
     }],
@@ -532,8 +529,7 @@ Deno.test("corrupted ids in cyclical reference", async () => {
       },
     },
     errors: [{
-      message:
-        "Database corruption. Referenced table 'Book' has no rows with ids '998', '999'",
+      message: "Referenced table 'Book' has no rows with ids '998', '999'",
       locations: [{ line: 9, column: 11 }],
       path: ["bookById", "authors", 0, "books"],
     }],

@@ -1,5 +1,6 @@
 import { assertThrows } from "../deps.ts";
 import { buildSchema } from "../src/main.ts";
+import { InvalidSchema } from "../src/utils.ts";
 
 Deno.test("missing query root type", async () => {
   const schemaSource = `
@@ -36,7 +37,7 @@ Deno.test("missing id column", async () => {
 
   assertThrows(
     () => buildSchema(db, schemaSource),
-    Error,
+    InvalidSchema,
     "Table 'Book' must have an 'id' column with type 'ID'",
   );
 
@@ -58,7 +59,7 @@ Deno.test("missing second column", async () => {
 
   assertThrows(
     () => buildSchema(db, schemaSource),
-    Error,
+    InvalidSchema,
     "Table 'Book' must have at least two columns",
   );
 
@@ -81,7 +82,7 @@ Deno.test("no argument", async () => {
 
   assertThrows(
     () => buildSchema(db, schemaSource),
-    Error,
+    InvalidSchema,
     "Query field 'bookById' must have single 'id: ID' argument",
   );
 
@@ -104,7 +105,7 @@ Deno.test("other argument", async () => {
 
   assertThrows(
     () => buildSchema(db, schemaSource),
-    Error,
+    InvalidSchema,
     "Query field 'bookById' must have single 'id: ID' argument",
   );
 
@@ -127,7 +128,7 @@ Deno.test("extra argument", async () => {
 
   assertThrows(
     () => buildSchema(db, schemaSource),
-    Error,
+    InvalidSchema,
     "Query field 'bookById' must have single 'id: ID' argument",
   );
 
@@ -145,7 +146,7 @@ Deno.test("no object type", async () => {
 
   assertThrows(
     () => buildSchema(db, schemaSource),
-    Error,
+    InvalidSchema,
     "Query field 'bookById' has unexpected type 'String'",
   );
 
