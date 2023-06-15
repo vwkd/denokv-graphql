@@ -189,7 +189,58 @@ function createResolver(
     } else if (isListType(type)) {
       // reference column, multiple
       // todo: handle non-null type
-      throw new Error(`todo: not implemented`);
+
+      const innerType = type.ofType;
+
+      if (isObjectType(innerType)) {
+        const referencedTableName = innerType.name;
+
+        // overwrites array of ids in field value to array of objects
+        resolvers[tableName][columnName] = async (
+          root,
+          args,
+        ): Promise<IFieldResolver<any, any>> => {
+          const ids = root[columnName];
+
+          if (!Array.isArray(ids)) {
+            throw new Error(
+              `Database corruption. Expected column '${columnName}' to contain array of ids but found '${
+                JSON.stringify(ids)
+              }'`,
+            );
+          }
+
+          const keys = ids.map((id) => [referencedTableName, id]);
+
+          const entries = await db.getMany(keys);
+
+          const missing_ids: string[] = [];
+
+          const values = entries.map(({ key, value }) => {
+            if (value === null) {
+              missing_ids.push(key.at(-1)!);
+            }
+            return value;
+          });
+
+          if (missing_ids.length) {
+            throw new Error(
+              `Database corruption. Referenced table '${referencedTableName}' has no row${
+                missing_ids.length > 1 ? "s" : ""
+              } with id${missing_ids.length > 1 ? "s" : ""} '${
+                missing_ids.join("', '")
+              }'`,
+            );
+          }
+
+          return values;
+        };
+
+        // recursively walk tree to create resolvers
+        createResolver(db, innerType, resolvers);
+      } else {
+        throw new Error(`Column '${columnName}' has unexpected type '${type}'`);
+      }
     } else if (isNonNullType(type)) {
       throw new Error(`todo: not implemented`);
     } else {
