@@ -11,8 +11,15 @@ export {
 } from "npm:graphql@16.6.0";
 export type {
   GraphQLArgument,
+  GraphQLEnumType,
   GraphQLField,
+  GraphQLInterfaceType,
+  GraphQLLeafType,
+  GraphQLList,
   GraphQLObjectType,
+  GraphQLOutputType,
+  GraphQLScalarType,
+  GraphQLUnionType,
   Source,
 } from "npm:graphql@16.6.0";
 export { addResolversToSchema } from "npm:@graphql-tools/schema@10.0.0";
