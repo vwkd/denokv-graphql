@@ -12,6 +12,7 @@ Deno.test({ permissions: { read: true } }, async function book_simple() {
     .set(["Author", "9"], {
       id: "9",
       name: "bar",
+      book: "1",
     })
     .commit();
 
@@ -33,6 +34,10 @@ Deno.test({ permissions: { read: true } }, async function book_simple() {
         author: {
           id: "9",
           name: "bar",
+          book: {
+            id: "1",
+            title: "foo",
+          },
         },
       },
     },

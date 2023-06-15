@@ -5,6 +5,10 @@ query {
     author {
       id,
       name,
+      book {
+        id,
+        title,
+      }
     }
   }
 }

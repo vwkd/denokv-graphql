@@ -83,7 +83,6 @@ function generateResolvers(
       );
     }
 
-    // todo: how to use `id` argument?
     resolvers[queryName][fieldName] = async (root, args) => {
       const id = args.id;
       const res = await db.get([tableName, id]);
