@@ -137,11 +137,20 @@ function createResolver(
     const columnName = column.name;
     const type = column.type;
 
+    // console.debug(`Creating resolvers for column '${columnName}'`);
+
     if (isNonNullType(type)) {
       const innerType = type.ofType;
-      createResolverOptional(db, innerType, tableName, columnName, resolvers);
+      createResolverOptional(
+        db,
+        innerType,
+        tableName,
+        columnName,
+        resolvers,
+        false,
+      );
     } else {
-      createResolverOptional(db, type, tableName, columnName, resolvers);
+      createResolverOptional(db, type, tableName, columnName, resolvers, true);
     }
   }
 }
@@ -155,6 +164,7 @@ function createResolver(
  * @param tableName table name
  * @param columnName column name
  * @param resolvers resolvers
+ * @param optional if result can be null
  */
 function createResolverOptional(
   db: Deno.Kv,
@@ -162,9 +172,10 @@ function createResolverOptional(
   tableName: string,
   columnName: string,
   resolvers: IResolvers,
+  optional: boolean,
 ): void {
   if (isLeafType(type)) {
-    createResolverSimpleOptional(db, type, tableName, resolvers);
+    createResolverSimpleOptional(db, type, tableName, resolvers, optional);
   } else if (isObjectType(type)) {
     createResolverReferenceSingleOptional(
       db,
@@ -172,6 +183,7 @@ function createResolverOptional(
       tableName,
       columnName,
       resolvers,
+      optional,
     );
   } else if (isListType(type)) {
     const innerType = type.ofType;
@@ -181,6 +193,7 @@ function createResolverOptional(
       tableName,
       columnName,
       resolvers,
+      optional,
     );
   } else {
     throw new InvalidSchema(
@@ -198,6 +211,7 @@ function createResolverOptional(
  * @param tableName table name
  * @param columnName column name
  * @param resolvers resolvers
+ * @param optional if result can be null
  */
 function createResolverReferenceMultiple(
   db: Deno.Kv,
@@ -205,6 +219,7 @@ function createResolverReferenceMultiple(
   tableName: string,
   columnName: string,
   resolvers: IResolvers,
+  optional: boolean,
 ): void {
   if (isObjectType(type)) {
     createResolverReferenceMultipleOptional(
@@ -213,6 +228,8 @@ function createResolverReferenceMultiple(
       tableName,
       columnName,
       resolvers,
+      optional,
+      true,
     );
   } else if (isNonNullType(type)) {
     const innerType = type.ofType;
@@ -224,6 +241,8 @@ function createResolverReferenceMultiple(
         tableName,
         columnName,
         resolvers,
+        optional,
+        false,
       );
     } else {
       throw new InvalidSchema(
@@ -245,12 +264,14 @@ function createResolverReferenceMultiple(
  * @param type leaf type
  * @param tableName table name
  * @param resolvers resolvers
+ * @param optional if result can be null
  */
 function createResolverSimpleOptional(
   _db: Deno.Kv,
   _type: GraphQLLeafType,
   _tableName: string,
   _resolvers: IResolvers,
+  _optional: boolean,
 ): void {
   // noop, use default resolver
 }
@@ -264,6 +285,7 @@ function createResolverSimpleOptional(
  * @param tableName table name
  * @param columnName column name
  * @param resolvers resolvers
+ * @param optional if result can be null
  */
 function createResolverReferenceSingleOptional(
   db: Deno.Kv,
@@ -271,6 +293,7 @@ function createResolverReferenceSingleOptional(
   tableName: string,
   columnName: string,
   resolvers: IResolvers,
+  optional: boolean,
 ): void {
   // todo: handle non-null type
   const referencedTableName = type.name;
@@ -280,6 +303,10 @@ function createResolverReferenceSingleOptional(
     root,
   ): Promise<IFieldResolver<any, any>> => {
     const id = root[columnName];
+
+    if (optional && id === undefined) {
+      return null;
+    }
 
     if (id === undefined) {
       throw new DatabaseCorruption(
@@ -315,6 +342,8 @@ function createResolverReferenceSingleOptional(
  * @param tableName table name
  * @param columnName column name
  * @param resolvers resolvers
+ * @param optionalList if result list can be null
+ * @param optional if result can be null
  */
 function createResolverReferenceMultipleOptional(
   db: Deno.Kv,
@@ -322,6 +351,8 @@ function createResolverReferenceMultipleOptional(
   tableName: string,
   columnName: string,
   resolvers: IResolvers,
+  optionalList: boolean,
+  optional: boolean,
 ): void {
   const referencedTableName = type.name;
 
@@ -331,11 +362,25 @@ function createResolverReferenceMultipleOptional(
   ): Promise<IFieldResolver<any, any>> => {
     const ids = root[columnName];
 
+    if (optionalList && ids === undefined) {
+      return null;
+    }
+
     if (!Array.isArray(ids)) {
       throw new DatabaseCorruption(
         `Expected column '${columnName}' to contain array of ids but found '${
           JSON.stringify(ids)
         }'`,
+      );
+    }
+
+    if (optional && ids.length == 0) {
+      return [];
+    }
+
+    if (ids.length == 0) {
+      throw new DatabaseCorruption(
+        `Expected column '${columnName}' to contain at least one reference but found zero`,
       );
     }
 
