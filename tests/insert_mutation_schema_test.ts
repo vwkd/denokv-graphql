@@ -5,17 +5,12 @@ import { InvalidSchema } from "../src/utils.ts";
 Deno.test("id argument", async () => {
   const schemaSource = `
     type Mutation {
-      createBook(id: ID!, title: String): Result!
+      createBook(id: ID!): Book!
     }
 
     type Book {
       id: ID!,
       title: String,
-    }
-
-    type Result {
-      ok: Boolean!,
-      versionstamp: String!,
     }
   `;
 
@@ -30,21 +25,38 @@ Deno.test("id argument", async () => {
   db.close();
 });
 
-// todo: finish
+Deno.test("extra id argument", async () => {
+  const schemaSource = `
+    type Mutation {
+      createBook(id: ID!, title: String): Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'createBook' must have one argument for each column of table 'Book' except the 'id: ID!' column",
+  );
+
+  db.close();
+});
+
 Deno.test("no argument", async () => {
   const schemaSource = `
     type Mutation {
-      createBook: Result!
+      createBook: Book!
     }
 
     type Book {
       id: ID!,
       title: String,
-    }
-
-    type Result {
-      ok: Boolean!,
-      versionstamp: String!,
     }
   `;
 
@@ -53,27 +65,21 @@ Deno.test("no argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' must have ??? argument",
+    "Mutation 'createBook' must have one argument for each column of table 'Book' except the 'id: ID!' column",
   );
 
   db.close();
 });
 
-// todo: finish
 Deno.test("other argument", async () => {
   const schemaSource = `
     type Mutation {
-      createBook(XXX: String): Result!
+      createBook(XXX: String): Book!
     }
 
     type Book {
       id: ID!,
       title: String,
-    }
-
-    type Result {
-      ok: Boolean!,
-      versionstamp: String!,
     }
   `;
 
@@ -82,27 +88,21 @@ Deno.test("other argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' must have ??? argument",
+    "Mutation 'createBook' must have a matching argument for each column of table 'Book' except the 'id: ID!' column",
   );
 
   db.close();
 });
 
-// todo: finish
 Deno.test("extra argument", async () => {
   const schemaSource = `
     type Mutation {
-      createBook(title: String, XXX: String): Result!
+      createBook(title: String, XXX: String): Book!
     }
 
     type Book {
       id: ID!,
       title: String,
-    }
-
-    type Result {
-      ok: Boolean!,
-      versionstamp: String!,
     }
   `;
 
@@ -111,7 +111,7 @@ Deno.test("extra argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' must have ??? argument",
+    "Mutation 'createBook' must have one argument for each column of table 'Book' except the 'id: ID!' column",
   );
 
   db.close();
@@ -120,17 +120,12 @@ Deno.test("extra argument", async () => {
 Deno.test("null type", async () => {
   const schemaSource = `
     type Mutation {
-      createBook(title: String, XXX: String): Result
+      createBook(title: String, XXX: String): Book
     }
 
     type Book {
       id: ID!,
       title: String,
-    }
-
-    type Result {
-      ok: Boolean!,
-      versionstamp: String!,
     }
   `;
 
@@ -139,7 +134,7 @@ Deno.test("null type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' must return non-null object type with fields 'ok: Boolean!' and 'versionstamp: String!'",
+    "Mutation 'createBook' must have non-null object type",
   );
 
   db.close();
@@ -193,7 +188,7 @@ Deno.test("other type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' must return non-null object type with fields 'ok: Boolean!' and 'versionstamp: String!'",
+    "Mutation 'createBook' must have non-null object type",
   );
 
   db.close();

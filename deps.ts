@@ -13,6 +13,7 @@ export type {
   GraphQLArgument,
   GraphQLEnumType,
   GraphQLField,
+  GraphQLFieldMap,
   GraphQLInterfaceType,
   GraphQLLeafType,
   GraphQLList,

@@ -133,7 +133,7 @@ Deno.test("non-null type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query 'bookById' has unexpected type 'Book!'",
+    "Query 'bookById' must have optional object type",
   );
 
   db.close();
@@ -156,7 +156,7 @@ Deno.test("list type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query 'bookById' has unexpected type '[Book]'",
+    "Query 'bookById' must have optional object type",
   );
 
   db.close();
@@ -174,7 +174,7 @@ Deno.test("no object type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query 'bookById' has unexpected type 'String'",
+    "Query 'bookById' must have optional object type",
   );
 
   db.close();

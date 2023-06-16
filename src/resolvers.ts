@@ -17,7 +17,13 @@ import type {
   IFieldResolver,
   IResolvers,
 } from "../deps.ts";
-import { isIdArguments, isIdField, isResultReturnValue } from "./checks.ts";
+import {
+  validateMutationArguments,
+  validateMutationReturn,
+  validateQueryArguments,
+  validateQueryReturn,
+  validateTable,
+} from "./checks.ts";
 import { DatabaseCorruption, InvalidSchema } from "./utils.ts";
 
 type NullableTypes =
@@ -80,20 +86,11 @@ function createRootQueryResolver(
     const queryName = query.name;
     const type = query.type;
 
-    // todo: better error messages, e.g. non-null `bookById: Book!` is error because database might return null, etc.
-    if (!isObjectType(type)) {
-      throw new InvalidSchema(
-        `Query '${queryName}' has unexpected type '${type}'`,
-      );
-    }
+    validateQueryReturn(type, queryName);
 
     const tableName = type.name;
 
-    if (!isIdArguments(query.args)) {
-      throw new InvalidSchema(
-        `Query '${queryName}' must have single 'id: ID!' argument`,
-      );
-    }
+    validateQueryArguments(query.args, queryName);
 
     resolvers[rootQueryName][queryName] = async (
       _root,
@@ -145,31 +142,32 @@ function createRootMutationResolver(
     const mutationName = mutation.name;
     const type = mutation.type;
 
-    if (!isResultReturnValue(type)) {
-      throw new InvalidSchema(
-        `Mutation '${mutationName}' must return non-null object type with fields 'ok: Boolean!' and 'versionstamp: String!'`,
-      );
-    }
+    validateMutationReturn(type, mutationName);
 
-    const tableName = type.ofType.name;
+    const table = type.ofType;
+    const tableName = table.name;
 
-    // todo: instead check that arguments are exactly all fields, except `id`, and reference fields must be of type ID or [ID], also non null exactly like fields
-    if (isIdArguments(mutation.args)) {
-      throw new InvalidSchema(
-        `Mutation '${mutationName}' must have arguments for all fields except 'id: ID!'`,
-      );
-    }
+    // note: validate since doesn't necessarily have corresponding query, can be unqueriable
+    const columnsMap = table.getFields();
+    const columns = Object.values(columnsMap);
+    validateTable(columns, tableName);
+
+    validateMutationArguments(
+      mutation.args,
+      columnsMap,
+      mutationName,
+      tableName,
+    );
 
     resolvers[rootMutationName][mutationName] = async (
       _root,
       args,
     ): Promise<IFieldResolver<any, any>> => {
-      const key = [tableName];
-
+      let newId = 1;
       let res: Deno.KvCommitResult | Deno.KvCommitError = { ok: false };
 
       while (!res.ok) {
-        const entries = db.list({ prefix: key }, {
+        const entries = db.list({ prefix: [tableName] }, {
           limit: 1,
           reverse: true,
         });
@@ -178,25 +176,37 @@ function createRootMutationResolver(
         const value = entry.value;
 
         if (!value) {
-          // todo: use positive bigint, also elsewhere?
-          const newId = 1;
+          const key = [tableName, newId];
+          const value = { id: newId, ...args };
 
-          res = await db.set(key, args);
+          res = await db.set(key, value);
         } else {
-          const lastId = value.key.at(-1)! as string;
-          // todo: use positive bigint, also elsewhere?
-          const newId = Number(lastId) + 1;
+          const lastId = value.key.at(-1)!;
+          newId = Number(lastId) + 1;
+
+          const key = [tableName, newId];
+          const val = { id: newId, ...args };
 
           res = await db
             .atomic()
             .check(value)
-            .set(key, args)
+            .set(key, val)
             .commit();
         }
       }
 
-      return res;
+      const key = [tableName, newId];
+      const r = await db.get(key);
+
+      if (r.versionstamp === null) {
+        throw new Error(`unexpected non-existent key, just set it above...`);
+      } else {
+        return r.value;
+      }
     };
+
+    // note: add query resolvers here too since doesn't necessarily have corresponding query, queries only through mutation
+    createQueryResolver(db, table, resolvers);
   }
 }
 
@@ -229,17 +239,7 @@ function createQueryResolver(
 
   const columns = Object.values(table.getFields());
 
-  if (!(columns && columns.length > 1)) {
-    throw new InvalidSchema(
-      `Table '${tableName}' must have at least two columns`,
-    );
-  }
-
-  if (!columns.some(isIdField)) {
-    throw new InvalidSchema(
-      `Table '${tableName}' must have an 'id: ID!' column`,
-    );
-  }
+  validateTable(columns, tableName);
 
   for (const column of columns) {
     const columnName = column.name;
