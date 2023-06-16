@@ -31,6 +31,7 @@ export type {
   IResolvers,
 } from "npm:@graphql-tools/utils@10.0.1";
 export {
+  assert,
   assertEquals,
   assertObjectMatch,
   assertThrows,

@@ -1,5 +1,7 @@
 import {
   assertEquals,
+  isLeafType,
+  isListType,
   isNonNullType,
   isObjectType,
   isScalarType,
@@ -88,6 +90,52 @@ export function validateTable(
 }
 
 /**
+ * Validate type of column
+ *
+ * - scalar type
+ * - list type
+ * - non-null
+ * @param type column type
+ * @param tableName table name
+ * @param columnName column name
+ */
+export function validateColumn(
+  type: GraphQLOutputType,
+  tableName: string,
+  columnName: string,
+): void {
+  let innerType = type;
+
+  if (isNonNullType(type)) {
+    innerType = type.ofType;
+  }
+
+  if (isLeafType(innerType)) {
+    // ok
+  } else if (isObjectType(innerType)) {
+    // ok
+  } else if (isListType(innerType)) {
+    innerType = innerType.ofType;
+
+    if (isNonNullType(innerType)) {
+      innerType = innerType.ofType;
+    }
+
+    if (isObjectType(innerType)) {
+      // ok
+    } else {
+      throw new InvalidSchema(
+        `Column '${columnName}' of table '${tableName}' has unexpected type '${type}'`,
+      );
+    }
+  } else {
+    throw new InvalidSchema(
+      `Column '${columnName}' of table '${tableName}' has unexpected type '${type}'`,
+    );
+  }
+}
+
+/**
  * Validate mutation return value
  *
  * - non null object type
@@ -141,6 +189,7 @@ export function validateMutationArguments(
   }
 
   // todo: maybe use string comparison instead?
+  // todo: validate is either scalar type, list type or input object type?? or non null
   for (const arg of args) {
     const column = columnsMap[arg.name];
 

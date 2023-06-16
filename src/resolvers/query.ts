@@ -1,6 +1,6 @@
 import { isNonNullType } from "../../deps.ts";
 import type { GraphQLObjectType, IResolvers } from "../../deps.ts";
-import { validateTable } from "./utils.ts";
+import { validateColumn, validateTable } from "./utils.ts";
 import { createResolverListObjectScalar } from "./query_list_object_scalar.ts";
 
 /**
@@ -37,6 +37,8 @@ export function createQueryResolver(
     const type = column.type;
 
     // console.debug(`Creating resolvers for column '${columnName}'`);
+
+    validateColumn(type, tableName, columnName);
 
     if (isNonNullType(type)) {
       const innerType = type.ofType;

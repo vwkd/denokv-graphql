@@ -9,7 +9,6 @@ import type {
   GraphQLUnionType,
   IResolvers,
 } from "../../deps.ts";
-import { InvalidSchema } from "../utils.ts";
 import { createResolverList } from "./query_list.ts";
 import { createResolverObjectOne } from "./query_object_one.ts";
 import { createResolverScalar } from "./query_scalar.ts";
@@ -62,10 +61,6 @@ export function createResolverListObjectScalar(
       columnName,
       resolvers,
       optional,
-    );
-  } else {
-    throw new InvalidSchema(
-      `Column '${columnName}' has unexpected type '${type}'`,
     );
   }
 }

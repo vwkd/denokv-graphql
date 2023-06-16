@@ -1,6 +1,5 @@
 import { isNonNullType, isObjectType } from "../../deps.ts";
 import type { GraphQLOutputType, IResolvers } from "../../deps.ts";
-import { InvalidSchema } from "../utils.ts";
 import { createResolverObjectMany } from "./query_object_many.ts";
 
 /**
@@ -46,14 +45,6 @@ export function createResolverList(
         optional,
         false,
       );
-    } else {
-      throw new InvalidSchema(
-        `Column '${columnName}' has unexpected type '${type}'`,
-      );
     }
-  } else {
-    throw new InvalidSchema(
-      `Column '${columnName}' has unexpected type '${type}'`,
-    );
   }
 }
