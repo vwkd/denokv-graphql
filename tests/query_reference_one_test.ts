@@ -185,7 +185,7 @@ Deno.test("non null", async () => {
       bookById: null,
     },
     errors: [{
-      message: "Expected column 'author' to contain id but found 'undefined'",
+      message: "Expected column 'author' to contain id",
       locations: [{ line: 6, column: 9 }],
       path: ["bookById", "author"],
     }],
@@ -412,7 +412,7 @@ Deno.test("non null in cyclical reference", async () => {
       },
     },
     errors: [{
-      message: "Expected column 'book' to contain id but found 'undefined'",
+      message: "Expected column 'book' to contain id",
       locations: [{ line: 9, column: 11 }],
       path: ["bookById", "author"],
     }],

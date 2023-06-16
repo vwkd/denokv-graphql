@@ -40,9 +40,7 @@ export function createResolverObjectOne(
 
     if (id === undefined) {
       throw new DatabaseCorruption(
-        `Expected column '${columnName}' to contain id but found '${
-          JSON.stringify(id)
-        }'`,
+        `Expected column '${columnName}' to contain id`,
       );
     }
 
