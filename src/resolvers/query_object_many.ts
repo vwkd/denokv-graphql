@@ -7,9 +7,10 @@ import { DatabaseCorruption } from "../utils.ts";
 import { createQueryResolver } from "./query.ts";
 
 /**
- * Create resolver for optional multi-reference column
+ * Create resolver for object column
  *
- * note: mutates resolvers object
+ * - many values, multiple references
+ * - note: mutates resolvers object
  * @param db Deno KV database
  * @param type object type
  * @param tableName table name
@@ -18,7 +19,7 @@ import { createQueryResolver } from "./query.ts";
  * @param optionalList if result list can be null
  * @param optional if result can be null
  */
-export function createResolverReferenceMultipleOptional(
+export function createResolverObjectMany(
   db: Deno.Kv,
   type: GraphQLObjectType,
   tableName: string,

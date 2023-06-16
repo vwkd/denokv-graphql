@@ -7,9 +7,10 @@ import { DatabaseCorruption } from "../utils.ts";
 import { createQueryResolver } from "./query.ts";
 
 /**
- * Create resolver for optional single-reference column
+ * Create resolver for object column
  *
- * note: mutates resolvers object
+ * - one value, single reference
+ * - note: mutates resolvers object
  * @param db Deno KV database
  * @param type object type
  * @param tableName table name
@@ -17,7 +18,7 @@ import { createQueryResolver } from "./query.ts";
  * @param resolvers resolvers
  * @param optional if result can be null
  */
-export function createResolverReferenceSingleOptional(
+export function createResolverObjectOne(
   db: Deno.Kv,
   type: GraphQLObjectType,
   tableName: string,

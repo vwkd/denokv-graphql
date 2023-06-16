@@ -6,14 +6,12 @@ import { createQueryResolver } from "./query.ts";
 /**
  * Create resolvers for queries
  *
- * Walk recursively to next queriable tables
- *
- * note: mutates resolvers object
+ * - walk recursively to next queriable tables
+ * - note: mutates resolvers object
  * @param db Deno KV database
  * @param schema schema object
  * @param resolvers resolvers object
  */
-// todo: make tail call recursive instead of mutating outer state
 export function createRootQueryResolver(
   db: Deno.Kv,
   schema: GraphQLSchema,

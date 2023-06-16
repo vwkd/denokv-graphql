@@ -10,14 +10,14 @@ import { createQueryResolver } from "./query.ts";
 /**
  * Create resolvers for mutations
  *
- * Walk recursively to next queriable table
- *
- * note: recursive, mutates resolvers object
+ * - walk recursively to next queriable table since not necessarily
+ * included in query root type
+ * - validate table since not necessarily included in query tree
+ * - note: mutates resolvers object
  * @param db Deno KV database
  * @param schema schema object
  * @param resolvers resolvers object
  */
-// todo: make tail call recursive instead of mutating outer state
 export function createRootMutationResolver(
   db: Deno.Kv,
   schema: GraphQLSchema,
@@ -45,7 +45,6 @@ export function createRootMutationResolver(
     const table = type.ofType;
     const tableName = table.name;
 
-    // note: validate since doesn't necessarily have corresponding query, can be unqueriable
     const columnsMap = table.getFields();
     const columns = Object.values(columnsMap);
     validateTable(columns, tableName);
@@ -103,7 +102,6 @@ export function createRootMutationResolver(
       }
     };
 
-    // note: add query resolvers here too since doesn't necessarily have corresponding query, queries only through mutation
     createQueryResolver(db, table, resolvers);
   }
 }

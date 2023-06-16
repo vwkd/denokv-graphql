@@ -1,19 +1,17 @@
 import { isNonNullType } from "../../deps.ts";
 import type { GraphQLObjectType, IResolvers } from "../../deps.ts";
 import { validateTable } from "./utils.ts";
-import { createResolverOptional } from "./query_list_object_scalar.ts";
+import { createResolverListObjectScalar } from "./query_list_object_scalar.ts";
 
 /**
  * Create resolvers for a table
  *
- * Walk recursively to next queriable table
- *
- * note: recursive, mutates resolvers object
+ * - walk recursively to next queriable table
+ * - note: mutates resolvers object
  * @param db Deno KV database
  * @param table table object
  * @param resolvers resolvers object
  */
-// todo: make tail call recursive instead of mutating outer state
 export function createQueryResolver(
   db: Deno.Kv,
   table: GraphQLObjectType,
@@ -42,7 +40,7 @@ export function createQueryResolver(
 
     if (isNonNullType(type)) {
       const innerType = type.ofType;
-      createResolverOptional(
+      createResolverListObjectScalar(
         db,
         innerType,
         tableName,
@@ -51,7 +49,14 @@ export function createQueryResolver(
         false,
       );
     } else {
-      createResolverOptional(db, type, tableName, columnName, resolvers, true);
+      createResolverListObjectScalar(
+        db,
+        type,
+        tableName,
+        columnName,
+        resolvers,
+        true,
+      );
     }
   }
 }

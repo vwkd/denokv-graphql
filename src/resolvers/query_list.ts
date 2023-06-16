@@ -1,12 +1,13 @@
 import { isNonNullType, isObjectType } from "../../deps.ts";
 import type { GraphQLOutputType, IResolvers } from "../../deps.ts";
 import { InvalidSchema } from "../utils.ts";
-import { createResolverReferenceMultipleOptional } from "./query_object_many.ts";
+import { createResolverObjectMany } from "./query_object_many.ts";
 
 /**
- * Create resolver for multi-reference column
+ * Create resolver for list column
  *
- * note: mutates resolvers object
+ * - many values, multiple references
+ * - note: mutates resolvers object
  * @param db Deno KV database
  * @param type list type
  * @param tableName table name
@@ -14,7 +15,7 @@ import { createResolverReferenceMultipleOptional } from "./query_object_many.ts"
  * @param resolvers resolvers
  * @param optional if result can be null
  */
-export function createResolverReferenceMultiple(
+export function createResolverList(
   db: Deno.Kv,
   type: GraphQLOutputType,
   tableName: string,
@@ -23,7 +24,7 @@ export function createResolverReferenceMultiple(
   optional: boolean,
 ): void {
   if (isObjectType(type)) {
-    createResolverReferenceMultipleOptional(
+    createResolverObjectMany(
       db,
       type,
       tableName,
@@ -36,7 +37,7 @@ export function createResolverReferenceMultiple(
     const innerType = type.ofType;
 
     if (isObjectType(innerType)) {
-      createResolverReferenceMultipleOptional(
+      createResolverObjectMany(
         db,
         innerType,
         tableName,

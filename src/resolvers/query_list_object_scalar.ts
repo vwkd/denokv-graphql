@@ -10,9 +10,9 @@ import type {
   IResolvers,
 } from "../../deps.ts";
 import { InvalidSchema } from "../utils.ts";
-import { createResolverReferenceMultiple } from "./query_list.ts";
-import { createResolverReferenceSingleOptional } from "./query_object_one.ts";
-import { createResolverSimpleOptional } from "./query_scalar.ts";
+import { createResolverList } from "./query_list.ts";
+import { createResolverObjectOne } from "./query_object_one.ts";
+import { createResolverScalar } from "./query_scalar.ts";
 
 type NullableTypes =
   | GraphQLScalarType
@@ -23,9 +23,10 @@ type NullableTypes =
   | GraphQLList<GraphQLOutputType>;
 
 /**
- * Create resolver for optional column
+ * Create resolver for a list, object or scalar column
  *
- * note: mutates resolvers object
+ * - one or many values, no or single or multiple references
+ * - note: mutates resolvers object
  * @param db Deno KV database
  * @param type nullable type
  * @param tableName table name
@@ -33,7 +34,7 @@ type NullableTypes =
  * @param resolvers resolvers
  * @param optional if result can be null
  */
-export function createResolverOptional(
+export function createResolverListObjectScalar(
   db: Deno.Kv,
   type: NullableTypes,
   tableName: string,
@@ -42,9 +43,9 @@ export function createResolverOptional(
   optional: boolean,
 ): void {
   if (isLeafType(type)) {
-    createResolverSimpleOptional(db, type, tableName, resolvers, optional);
+    createResolverScalar(db, type, tableName, resolvers, optional);
   } else if (isObjectType(type)) {
-    createResolverReferenceSingleOptional(
+    createResolverObjectOne(
       db,
       type,
       tableName,
@@ -54,7 +55,7 @@ export function createResolverOptional(
     );
   } else if (isListType(type)) {
     const innerType = type.ofType;
-    createResolverReferenceMultiple(
+    createResolverList(
       db,
       innerType,
       tableName,
