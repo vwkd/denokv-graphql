@@ -64,7 +64,8 @@ function createRootQueryResolver(
   const queryObject = schema.getQueryType();
 
   if (!queryObject) {
-    throw new InvalidSchema(`Schema must have a root query type`);
+    // console.debug(`Schema doesn't have a root query type`);
+    return;
   }
 
   const rootQueryName = queryObject.name;
@@ -126,7 +127,8 @@ function createRootMutationResolver(
   const mutationObject = schema.getMutationType();
 
   if (!mutationObject) {
-    throw new InvalidSchema(`Schema must have a root mutation type`);
+    // console.debug(`Schema doesn't have a root mutation type`);
+    return;
   }
 
   const rootMutationName = mutationObject.name;

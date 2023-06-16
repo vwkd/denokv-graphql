@@ -2,25 +2,6 @@ import { assertThrows } from "../deps.ts";
 import { buildSchema } from "../src/main.ts";
 import { InvalidSchema } from "../src/utils.ts";
 
-Deno.test("missing query root type", async () => {
-  const schemaSource = `
-    type Book {
-      id: ID!,
-      title: String,
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    Error,
-    "Schema must have a root query type",
-  );
-
-  db.close();
-});
-
 Deno.test("missing id column", async () => {
   const schemaSource = `
     type Query {
