@@ -1,6 +1,6 @@
 import { addResolversToSchema, buildASTSchema, parse } from "../deps.ts";
 import type { GraphQLSchema, Source } from "../deps.ts";
-import { generateResolvers } from "./resolvers.ts";
+import { generateResolvers } from "./resolvers/main.ts";
 
 /**
  * Build a GraphQLSchema for Deno KV

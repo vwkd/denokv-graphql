@@ -3,7 +3,7 @@ import {
   isNonNullType,
   isObjectType,
   isScalarType,
-} from "../deps.ts";
+} from "../../deps.ts";
 import type {
   GraphQLArgument,
   GraphQLField,
@@ -11,8 +11,8 @@ import type {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLOutputType,
-} from "../deps.ts";
-import { InvalidSchema } from "./utils.ts";
+} from "../../deps.ts";
+import { InvalidSchema } from "../utils.ts";
 
 /**
  * Test if field is a `id: ID!` field
