@@ -1,6 +1,8 @@
 import { assertEquals, assertObjectMatch, graphql } from "../deps.ts";
 import { buildSchema } from "../src/main.ts";
 
+// note: needs to assert subset because error has additional properties like stacktrace
+
 Deno.test("minimal working example", async () => {
   const schemaSource = `
     type Query {
@@ -132,7 +134,6 @@ Deno.test("bad id", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });
 
@@ -192,7 +193,6 @@ Deno.test("non null", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });
 
@@ -347,7 +347,6 @@ Deno.test("bad id in cyclical reference", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });
 
@@ -421,6 +420,5 @@ Deno.test("non null in cyclical reference", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });

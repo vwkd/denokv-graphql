@@ -1,6 +1,8 @@
 import { assertEquals, assertObjectMatch, graphql } from "../deps.ts";
 import { buildSchema } from "../src/main.ts";
 
+// note: needs to assert subset because error has additional properties like stacktrace
+
 Deno.test("minimal working example", async () => {
   const schemaSource = `
     type Query {
@@ -146,7 +148,6 @@ Deno.test("bad id", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });
 
@@ -219,7 +220,6 @@ Deno.test("bad ids", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });
 
@@ -280,7 +280,6 @@ Deno.test("non null list", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });
 
@@ -346,7 +345,6 @@ Deno.test("non null item", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });
 
@@ -408,7 +406,6 @@ Deno.test("non null list and item", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });
 
@@ -621,7 +618,6 @@ Deno.test("bad id in cyclical reference", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });
 
@@ -726,7 +722,6 @@ Deno.test("bad ids in cyclical reference", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });
 
@@ -827,7 +822,6 @@ Deno.test("non null list in cyclical reference", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });
 
@@ -933,7 +927,6 @@ Deno.test("non null item in cyclical reference", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });
 
@@ -1035,6 +1028,5 @@ Deno.test("non null list and item in cyclical reference", async () => {
 
   db.close();
 
-  // note: needs to assert subset because error has additional properties like stacktrace
   assertObjectMatch(res, exp);
 });

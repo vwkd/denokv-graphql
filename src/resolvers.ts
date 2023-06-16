@@ -48,9 +48,11 @@ export function generateResolvers(
 }
 
 /**
- * Create resolvers for a table and walk recursively to next
+ * Create resolvers for queries
  *
- * note: recursive, mutates resolvers object
+ * Walk recursively to next queriable tables
+ *
+ * note: mutates resolvers object
  * @param db Deno KV database
  * @param schema schema object
  * @param resolvers resolvers object
@@ -111,7 +113,9 @@ function createRootQueryResolver(
 }
 
 /**
- * Create resolvers for a table and walk recursively to next
+ * Create resolvers for mutations
+ *
+ * Walk recursively to next queriable table
  *
  * note: recursive, mutates resolvers object
  * @param db Deno KV database
@@ -197,7 +201,9 @@ function createRootMutationResolver(
 }
 
 /**
- * Create resolvers for a table and walk recursively to next
+ * Create resolvers for a table
+ *
+ * Walk recursively to next queriable table
  *
  * note: recursive, mutates resolvers object
  * @param db Deno KV database
@@ -221,8 +227,6 @@ function createQueryResolver(
 
   resolvers[tableName] = {};
 
-  // a field is a column
-  // simple if scalar type or table reference if another object type
   const columns = Object.values(table.getFields());
 
   if (!(columns && columns.length > 1)) {
@@ -399,7 +403,6 @@ function createResolverReferenceSingleOptional(
   resolvers: IResolvers,
   optional: boolean,
 ): void {
-  // todo: handle non-null type
   const referencedTableName = type.name;
 
   // overwrites id in field value to object
@@ -433,7 +436,6 @@ function createResolverReferenceSingleOptional(
     return entry.value;
   };
 
-  // recursively walk tree to create resolvers
   createQueryResolver(db, type, resolvers);
 }
 
@@ -514,6 +516,5 @@ function createResolverReferenceMultipleOptional(
     return values;
   };
 
-  // recursively walk tree to create resolvers
   createQueryResolver(db, type, resolvers);
 }
