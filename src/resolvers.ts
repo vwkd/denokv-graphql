@@ -47,33 +47,33 @@ export function generateResolvers(
     throw new InvalidSchema(`Schema must have a root query type`);
   }
 
-  const queryName = queryObject.name;
+  const rootQueryName = queryObject.name;
 
-  resolvers[queryName] = {};
+  resolvers[rootQueryName] = {};
 
   // an object type is a table, validate below
-  const tables = queryObject.getFields();
+  const queries = queryObject.getFields();
 
-  for (const table of Object.values(tables)) {
-    const fieldName = table.name;
-    const type = table.type;
+  for (const query of Object.values(queries)) {
+    const queryName = query.name;
+    const type = query.type;
 
     // todo: better error messages, e.g. non-null `bookById: Book!` is error because database might return null, etc.
     if (!isObjectType(type)) {
       throw new InvalidSchema(
-        `Query field '${fieldName}' has unexpected type '${type}'`,
+        `Query '${queryName}' has unexpected type '${type}'`,
       );
     }
 
     const tableName = type.name;
 
-    if (!isIdArguments(table.args)) {
+    if (!isIdArguments(query.args)) {
       throw new InvalidSchema(
-        `Query field '${fieldName}' must have single 'id: ID!' argument`,
+        `Query '${queryName}' must have single 'id: ID!' argument`,
       );
     }
 
-    resolvers[queryName][fieldName] = async (
+    resolvers[rootQueryName][queryName] = async (
       _root,
       args,
     ): Promise<IFieldResolver<any, any>> => {
@@ -86,7 +86,8 @@ export function generateResolvers(
       return entry.value;
     };
 
-    createResolver(db, type, resolvers);
+    createQueryResolver(db, type, resolvers);
+  }
   }
 
   return resolvers;
@@ -101,7 +102,7 @@ export function generateResolvers(
  * @param resolvers resolvers object
  */
 // todo: make tail call recursive instead of mutating outer state
-function createResolver(
+function createQueryResolver(
   db: Deno.Kv,
   table: GraphQLObjectType,
   resolvers: IResolvers,
@@ -330,7 +331,7 @@ function createResolverReferenceSingleOptional(
   };
 
   // recursively walk tree to create resolvers
-  createResolver(db, type, resolvers);
+  createQueryResolver(db, type, resolvers);
 }
 
 /**
@@ -411,5 +412,5 @@ function createResolverReferenceMultipleOptional(
   };
 
   // recursively walk tree to create resolvers
-  createResolver(db, type, resolvers);
+  createQueryResolver(db, type, resolvers);
 }

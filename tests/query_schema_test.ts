@@ -83,7 +83,7 @@ Deno.test("no argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query field 'bookById' must have single 'id: ID!' argument",
+    "Query 'bookById' must have single 'id: ID!' argument",
   );
 
   db.close();
@@ -106,7 +106,7 @@ Deno.test("other argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query field 'bookById' must have single 'id: ID!' argument",
+    "Query 'bookById' must have single 'id: ID!' argument",
   );
 
   db.close();
@@ -129,7 +129,7 @@ Deno.test("extra argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query field 'bookById' must have single 'id: ID!' argument",
+    "Query 'bookById' must have single 'id: ID!' argument",
   );
 
   db.close();
@@ -152,7 +152,7 @@ Deno.test("non-null type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query field 'bookById' has unexpected type 'Book!'",
+    "Query 'bookById' has unexpected type 'Book!'",
   );
 
   db.close();
@@ -175,7 +175,7 @@ Deno.test("list type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query field 'bookById' has unexpected type '[Book]'",
+    "Query 'bookById' has unexpected type '[Book]'",
   );
 
   db.close();
@@ -193,7 +193,7 @@ Deno.test("no object type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query field 'bookById' has unexpected type 'String'",
+    "Query 'bookById' has unexpected type 'String'",
   );
 
   db.close();
