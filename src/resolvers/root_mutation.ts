@@ -23,18 +23,17 @@ export function createRootMutationResolver(
   schema: GraphQLSchema,
   resolvers: IResolvers,
 ): void {
-  const mutationObject = schema.getMutationType();
+  const mutationType = schema.getMutationType();
 
-  if (!mutationObject) {
-    // console.debug(`Schema doesn't have a root mutation type`);
+  if (!mutationType) {
     return;
   }
 
-  const rootMutationName = mutationObject.name;
+  const rootMutationName = mutationType.name;
 
   resolvers[rootMutationName] = {};
 
-  const mutations = mutationObject.getFields();
+  const mutations = mutationType.getFields();
 
   for (const mutation of Object.values(mutations)) {
     const mutationName = mutation.name;

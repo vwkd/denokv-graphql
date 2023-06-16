@@ -1,4 +1,5 @@
 export {
+  assertValidSchema,
   buildASTSchema,
   graphql,
   GraphQLSchema,

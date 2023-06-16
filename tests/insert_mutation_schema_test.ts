@@ -4,6 +4,10 @@ import { InvalidSchema } from "../src/utils.ts";
 
 Deno.test("id argument", async () => {
   const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
     type Mutation {
       createBook(id: ID!): Book!
     }
@@ -27,6 +31,10 @@ Deno.test("id argument", async () => {
 
 Deno.test("extra id argument", async () => {
   const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
     type Mutation {
       createBook(id: ID!, title: String): Book!
     }
@@ -50,6 +58,10 @@ Deno.test("extra id argument", async () => {
 
 Deno.test("no argument", async () => {
   const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
     type Mutation {
       createBook: Book!
     }
@@ -73,6 +85,10 @@ Deno.test("no argument", async () => {
 
 Deno.test("other argument", async () => {
   const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
     type Mutation {
       createBook(XXX: String): Book!
     }
@@ -96,6 +112,10 @@ Deno.test("other argument", async () => {
 
 Deno.test("extra argument", async () => {
   const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
     type Mutation {
       createBook(title: String, XXX: String): Book!
     }
@@ -119,6 +139,10 @@ Deno.test("extra argument", async () => {
 
 Deno.test("null type", async () => {
   const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
     type Mutation {
       createBook(title: String, XXX: String): Book
     }
@@ -173,6 +197,10 @@ Deno.test("list type", async () => {
 
 Deno.test("other type", async () => {
   const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
     type Mutation {
       createBook(title: String, XXX: String): String
     }

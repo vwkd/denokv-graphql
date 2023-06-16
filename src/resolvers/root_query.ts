@@ -1,5 +1,9 @@
 import { GraphQLSchema } from "../../deps.ts";
-import type { IFieldResolver, IResolvers } from "../../deps.ts";
+import type {
+  GraphQLObjectType,
+  IFieldResolver,
+  IResolvers,
+} from "../../deps.ts";
 import { validateQueryArguments, validateQueryReturn } from "./utils.ts";
 import { createQueryResolver } from "./query.ts";
 
@@ -17,18 +21,14 @@ export function createRootQueryResolver(
   schema: GraphQLSchema,
   resolvers: IResolvers,
 ): void {
-  const queryObject = schema.getQueryType();
+  // note: non-empty because asserted schema is valid
+  const queryType = schema.getQueryType() as GraphQLObjectType<any, any>;
 
-  if (!queryObject) {
-    // console.debug(`Schema doesn't have a root query type`);
-    return;
-  }
-
-  const rootQueryName = queryObject.name;
+  const rootQueryName = queryType.name;
 
   resolvers[rootQueryName] = {};
 
-  const queries = queryObject.getFields();
+  const queries = queryType.getFields();
 
   for (const query of Object.values(queries)) {
     const queryName = query.name;

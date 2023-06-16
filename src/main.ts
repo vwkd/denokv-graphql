@@ -1,4 +1,9 @@
-import { addResolversToSchema, buildASTSchema, parse } from "../deps.ts";
+import {
+  addResolversToSchema,
+  assertValidSchema,
+  buildASTSchema,
+  parse,
+} from "../deps.ts";
 import type { GraphQLSchema, Source } from "../deps.ts";
 import { generateResolvers } from "./resolvers/main.ts";
 
@@ -14,8 +19,9 @@ export function buildSchema(
 ): GraphQLSchema {
   const schemaAst = parse(source);
 
-  // note: validates schema
   const schema = buildASTSchema(schemaAst);
+
+  assertValidSchema(schema);
 
   const resolvers = generateResolvers(db, schema);
 
