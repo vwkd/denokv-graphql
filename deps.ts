@@ -16,6 +16,7 @@ export type {
   GraphQLInterfaceType,
   GraphQLLeafType,
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLOutputType,
   GraphQLScalarType,

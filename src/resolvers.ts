@@ -17,7 +17,7 @@ import type {
   IFieldResolver,
   IResolvers,
 } from "../deps.ts";
-import { isIdArguments, isIdField } from "./checks.ts";
+import { isIdArguments, isIdField, isResultReturnValue } from "./checks.ts";
 import { DatabaseCorruption, InvalidSchema } from "./utils.ts";
 
 type NullableTypes =
@@ -40,7 +40,27 @@ export function generateResolvers(
 ): IResolvers {
   const resolvers: IResolvers = {};
 
-  // todo: handle other root types
+  createRootQueryResolver(db, schema, resolvers);
+
+  createRootMutationResolver(db, schema, resolvers);
+
+  return resolvers;
+}
+
+/**
+ * Create resolvers for a table and walk recursively to next
+ *
+ * note: recursive, mutates resolvers object
+ * @param db Deno KV database
+ * @param schema schema object
+ * @param resolvers resolvers object
+ */
+// todo: make tail call recursive instead of mutating outer state
+function createRootQueryResolver(
+  db: Deno.Kv,
+  schema: GraphQLSchema,
+  resolvers: IResolvers,
+): void {
   const queryObject = schema.getQueryType();
 
   if (!queryObject) {
@@ -51,7 +71,6 @@ export function generateResolvers(
 
   resolvers[rootQueryName] = {};
 
-  // an object type is a table, validate below
   const queries = queryObject.getFields();
 
   for (const query of Object.values(queries)) {
@@ -88,9 +107,91 @@ export function generateResolvers(
 
     createQueryResolver(db, type, resolvers);
   }
+}
+
+/**
+ * Create resolvers for a table and walk recursively to next
+ *
+ * note: recursive, mutates resolvers object
+ * @param db Deno KV database
+ * @param schema schema object
+ * @param resolvers resolvers object
+ */
+// todo: make tail call recursive instead of mutating outer state
+function createRootMutationResolver(
+  db: Deno.Kv,
+  schema: GraphQLSchema,
+  resolvers: IResolvers,
+): void {
+  const mutationObject = schema.getMutationType();
+
+  if (!mutationObject) {
+    throw new InvalidSchema(`Schema must have a root mutation type`);
   }
 
-  return resolvers;
+  const rootMutationName = mutationObject.name;
+
+  resolvers[rootMutationName] = {};
+
+  const mutations = mutationObject.getFields();
+
+  for (const mutation of Object.values(mutations)) {
+    const mutationName = mutation.name;
+    const type = mutation.type;
+
+    if (!isResultReturnValue(type)) {
+      throw new InvalidSchema(
+        `Mutation '${mutationName}' must return non-null object type with fields 'ok: Boolean!' and 'versionstamp: String!'`,
+      );
+    }
+
+    const tableName = type.ofType.name;
+
+    // todo: instead check that arguments are exactly all fields, except `id`, and reference fields must be of type ID or [ID], also non null exactly like fields
+    if (isIdArguments(mutation.args)) {
+      throw new InvalidSchema(
+        `Mutation '${mutationName}' must have arguments for all fields except 'id: ID!'`,
+      );
+    }
+
+    resolvers[rootMutationName][mutationName] = async (
+      _root,
+      args,
+    ): Promise<IFieldResolver<any, any>> => {
+      const key = [tableName];
+
+      let res: Deno.KvCommitResult | Deno.KvCommitError = { ok: false };
+
+      while (!res.ok) {
+        const entries = db.list({ prefix: key }, {
+          limit: 1,
+          reverse: true,
+        });
+        const entry = await entries.next();
+
+        const value = entry.value;
+
+        if (!value) {
+          // todo: use positive bigint, also elsewhere?
+          const newId = 1;
+
+          res = await db.set(key, args);
+        } else {
+          const lastId = value.key.at(-1)! as string;
+          // todo: use positive bigint, also elsewhere?
+          const newId = Number(lastId) + 1;
+
+          res = await db
+            .atomic()
+            .check(value)
+            .set(key, args)
+            .commit();
+        }
+      }
+
+      return res;
+    };
+  }
 }
 
 /**
