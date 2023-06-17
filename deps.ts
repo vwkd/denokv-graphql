@@ -3,6 +3,7 @@ export {
   buildASTSchema,
   graphql,
   GraphQLSchema,
+  isInputObjectType,
   isLeafType,
   isListType,
   isNonNullType,
@@ -11,6 +12,7 @@ export {
   parse,
 } from "npm:graphql@16.6.0";
 export type {
+  FieldDefinitionNode,
   GraphQLArgument,
   GraphQLEnumType,
   GraphQLField,
@@ -18,12 +20,15 @@ export type {
   GraphQLInterfaceType,
   GraphQLLeafType,
   GraphQLList,
+  GraphQLNamedType,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLOutputType,
   GraphQLScalarType,
+  GraphQLType,
   GraphQLUnionType,
   Source,
+  StringValueNode,
 } from "npm:graphql@16.6.0";
 export { addResolversToSchema } from "npm:@graphql-tools/schema@10.0.0";
 export type {

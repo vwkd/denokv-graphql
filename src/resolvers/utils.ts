@@ -1,5 +1,5 @@
 import {
-  assertEquals,
+  isInputObjectType,
   isLeafType,
   isListType,
   isNonNullType,
@@ -7,12 +7,15 @@ import {
   isScalarType,
 } from "../../deps.ts";
 import type {
+  FieldDefinitionNode,
   GraphQLArgument,
   GraphQLField,
   GraphQLFieldMap,
+  GraphQLNamedType,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLOutputType,
+  GraphQLScalarType,
   GraphQLType,
 } from "../../deps.ts";
 import { InvalidSchema } from "../utils.ts";
@@ -28,9 +31,9 @@ function isSameWrapping(type1: GraphQLType, type2: GraphQLType): boolean {
   let innerType1 = type1;
   let innerType2 = type2;
 
-  if (isNonNullType(type1) && isNonNullType(type2)) {
-    innerType1 = type1.ofType;
-    innerType2 = type2.ofType;
+  if (isNonNullType(innerType1) && isNonNullType(innerType2)) {
+    innerType1 = innerType1.ofType;
+    innerType2 = innerType2.ofType;
   }
 
   if (isListType(innerType1) && isListType(innerType2)) {
@@ -44,8 +47,9 @@ function isSameWrapping(type1: GraphQLType, type2: GraphQLType): boolean {
   }
 
   if (
-    isNonNullType(type1) || isListType(type1) || isNonNullType(type2) ||
-    isListType(type2)
+    isNonNullType(innerType1) || isListType(innerType1) ||
+    isNonNullType(innerType2) ||
+    isListType(innerType2)
   ) {
     return false;
   }
@@ -191,6 +195,7 @@ export function validateColumn(
 /**
  * Validate mutation return value
  *
+ * - name is 'Result'
  * - non null object type
  * @param type return value
  * @param mutationName mutation name
@@ -199,9 +204,64 @@ export function validateMutationReturn(
   returnValue: GraphQLOutputType,
   mutationName: string,
 ): asserts returnValue is GraphQLNonNull<GraphQLObjectType> {
-  if (!(isNonNullType(returnValue) && isObjectType(returnValue.ofType))) {
+  if (
+    !(isNonNullType(returnValue) && isObjectType(returnValue.ofType) &&
+      returnValue.ofType.name == "Result")
+  ) {
     throw new InvalidSchema(
-      `Mutation '${mutationName}' must have non-null object type`,
+      `Mutation '${mutationName}' must have non-null 'Result' type`,
+    );
+  }
+}
+
+/**
+ * Validate existence of directives on mutation field
+ *
+ * note: assumes parsed IDL to access through `astNode`, currently graphql-js doesn't offer other way since doesn't allow defining directives programmatically
+ * see [#1343](https://github.com/graphql/graphql-js/issues/1343)
+ *
+ * @param mutationName mutation name
+ */
+
+export function validateMutationDirectiveInsert(
+  astNode: FieldDefinitionNode,
+  mutationName: string,
+) {
+  const directives = astNode.directives;
+
+  if (!directives) {
+    throw new InvalidSchema(`Mutation '${mutationName}' must have a directive`);
+  }
+
+  const directive = directives.find(({ name }) => name.value == "insert");
+
+  if (!directive) {
+    throw new InvalidSchema(
+      `Mutation '${mutationName}' must have a 'insert' directive`,
+    );
+  }
+}
+
+/**
+ * Validate mutation table
+ * @param table table
+ * @param tableName table name
+ * @param mutationName mutation name
+ */
+export function validateMutationTable(
+  table: GraphQLNamedType | undefined,
+  tableName: string,
+  mutationName: string,
+): asserts table is GraphQLObjectType {
+  if (!table) {
+    throw new InvalidSchema(
+      `Table '${tableName}' in mutation '${mutationName}' doesn't exist`,
+    );
+  }
+
+  if (!isObjectType(table)) {
+    throw new InvalidSchema(
+      `Table '${tableName}' in mutation '${mutationName}' must be an object type`,
     );
   }
 }
@@ -209,10 +269,12 @@ export function validateMutationReturn(
 /**
  * Validate mutation arguments
  *
- * - contain all fields except `id: ID!` argument
- * - all fields are of same type except reference fields are of (wrapped) type `ID`
+ * - single "data" argument with non-null input object type
+ * - input object contains all fields, except `id: ID!` argument
+ * - input object reference field is of `ID` type, wrapped in list or non-null depending on table field
+ * - remaining input object fields are of same name and type as table fields
  * @param args arguments
- * @param columnsMap columns map
+ * @param columnsMap columns map of table
  * @param mutationName mutation name
  * @param tableName table name
  */
@@ -222,36 +284,67 @@ export function validateMutationArguments(
   mutationName: string,
   tableName: string,
 ): void {
-  const columns = Object.values(columnsMap);
-
-  if (!(columns.length - 1 == args.length)) {
-    throw new InvalidSchema(
-      `Mutation '${mutationName}' must have one argument for each column of table '${tableName}' except the 'id: ID!' column`,
-    );
-  }
+  const data = args.find((arg) => arg.name == "data");
 
   if (
-    args.some((arg) =>
-      arg.name == "id" && isNonNullType(arg.type) &&
-      isScalarType(arg.type.ofType) && arg.type.ofType.name == "ID"
-    )
+    !(data && args.length == 1 && isNonNullType(data.type) &&
+      isInputObjectType(data.type.ofType))
   ) {
     throw new InvalidSchema(
-      `Mutation '${mutationName}' must not have an 'id: ID!' argument`,
+      `Mutation '${mutationName}' must have single 'data' argument with non-null input object type`,
     );
   }
 
-  // todo: maybe use string comparison instead?
-  // todo: validate is either scalar type, list type or input object type?? or non null
-  for (const arg of args) {
-    const column = columnsMap[arg.name];
+  const inputTableName = data.type.ofType.name;
+  const inputColumnsMap = data.type.ofType.getFields();
 
-    try {
-      assertEquals(arg.type, column.type);
-    } catch {
+  if (
+    !(Object.values(columnsMap).length - 1 ==
+      Object.values(inputColumnsMap).length)
+  ) {
+    throw new InvalidSchema(
+      `Mutation '${mutationName}' input table '${inputTableName}' must have one column for each column of table '${tableName}' except the 'id' column`,
+    );
+  }
+
+  if (inputColumnsMap["id"]) {
+    throw new InvalidSchema(
+      `Mutation '${mutationName}' input table '${inputTableName}' must not have an 'id' column`,
+    );
+  }
+
+  for (const [columnName, column] of Object.entries(columnsMap)) {
+    if (columnName == "id") {
+      continue;
+    }
+
+    if (!inputColumnsMap[columnName]) {
       throw new InvalidSchema(
-        `Mutation '${mutationName}' must have a matching argument for each column of table '${tableName}' except the 'id: ID!' column`,
+        `Mutation '${mutationName}' input table '${inputTableName}' must have a column '${columnName}'`,
       );
+    }
+
+    if (isType(column.type, isObjectType)) {
+      // reference column
+      if (
+        !(isType<GraphQLScalarType>(
+          inputColumnsMap[columnName].type,
+          (T): T is GraphQLScalarType => (isScalarType(T) && T.name == "ID"),
+        ) && isSameWrapping(column.type, inputColumnsMap[columnName].type))
+      ) {
+        throw new InvalidSchema(
+          `Mutation '${mutationName}' input table '${inputTableName}' column '${columnName}' must have same type as column in table '${tableName}' except as 'ID'`,
+        );
+      }
+    } else {
+      // leaf type column
+      if (
+        column.type.toString() != inputColumnsMap[columnName].type.toString()
+      ) {
+        throw new InvalidSchema(
+          `Mutation '${mutationName}' input table '${inputTableName}' column '${columnName}' must have same type as column in table '${tableName}'`,
+        );
+      }
     }
   }
 }

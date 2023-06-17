@@ -10,20 +10,24 @@ Deno.test("minimal working example", async () => {
     }
 
     type Mutation {
-      createBook(title: String): Book!
+      createBook(data: BookInput!): Result! @insert(table: "Book")
     }
 
     type Book {
       id: ID!,
       title: String,
     }
+
+    input BookInput {
+      title: String,
+    }
   `;
 
   const source = `
     mutation {
-      createBook(title: "Shadows of Eternity") {
-        id,
-        title,
+      createBook(data: { title: "Shadows of Eternity" }) {
+        ok,
+        versionstamp,
       }
     }
   `;
@@ -37,8 +41,8 @@ Deno.test("minimal working example", async () => {
   const exp = {
     data: {
       createBook: {
-        id: "1",
-        title: "Shadows of Eternity",
+        ok: true,
+        versionstamp: "00000000000000010000",
       },
     },
   };
@@ -48,6 +52,7 @@ Deno.test("minimal working example", async () => {
   assertEquals(res, exp);
 });
 
+// todo: fix, needs to query refetch
 Deno.test("autoincrementing id", async () => {
   const schemaSource = `
     type Query {
@@ -55,20 +60,24 @@ Deno.test("autoincrementing id", async () => {
     }
 
     type Mutation {
-      createBook(title: String): Book!
+      createBook(data: BookInput!): Result! @insert(table: "Book")
     }
 
     type Book {
       id: ID!,
       title: String,
     }
+
+    input BookInput {
+      title: String,
+    }
   `;
 
   const source = `
     mutation {
-      createBook(title: "Whispers of the Forgotten") {
-        id,
-        title,
+      createBook(data: { title: "Whispers of the Forgotten" }) {
+        ok,
+        versionstamp,
       }
     }
   `;
@@ -88,8 +97,8 @@ Deno.test("autoincrementing id", async () => {
   const exp = {
     data: {
       createBook: {
-        id: "2",
-        title: "Whispers of the Forgotten",
+        ok: true,
+        versionstamp: "00000000000000020000",
       },
     },
   };

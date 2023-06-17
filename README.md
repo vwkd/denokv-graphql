@@ -15,5 +15,3 @@ Use GraphQL as highly ergonomic API for your Deno KV database. GraphQL is a nice
 - generate GraphQL API for Deno KV from GraphQL schema
 - autoincrementing IDs
 - note: query that joins tables is not atomically consistent because multiple inter-dependent reads
-- mutation is not atomically consistent since reads again what just wrote
-- doesn't expose Deno KV concurrency controls, e.g. `consistency` argument, `versionstamp` string, etc.

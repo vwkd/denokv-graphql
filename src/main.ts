@@ -17,7 +17,18 @@ export function buildSchema(
   db: Deno.Kv,
   source: string | Source,
 ): GraphQLSchema {
-  const schemaAst = parse(source);
+  const source_extension = `
+    type Result {
+      ok: Boolean!
+      versionstamp: String!
+    }
+
+    directive @insert(
+      table: String!
+    ) on FIELD_DEFINITION
+  `;
+
+  const schemaAst = parse(source + source_extension);
 
   const schema = buildASTSchema(schemaAst);
 

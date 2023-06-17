@@ -1,17 +1,21 @@
 import { GraphQLSchema } from "../../deps.ts";
-import type { IFieldResolver, IResolvers } from "../../deps.ts";
+import type {
+  IFieldResolver,
+  IResolvers,
+  StringValueNode,
+} from "../../deps.ts";
 import {
   validateMutationArguments,
+  validateMutationDirectiveInsert,
   validateMutationReturn,
+  validateMutationTable,
   validateTable,
 } from "./utils.ts";
-import { createQueryResolver } from "./query.ts";
 
 /**
  * Create resolvers for mutations
  *
- * - walk recursively to next queriable table since not necessarily
- * included in query root type
+ * - don't walk recursively to next queriable table since always returns 'Result'
  * - validate table since not necessarily included in query tree
  * - note: mutates resolvers object
  * @param db Deno KV database
@@ -41,8 +45,24 @@ export function createRootMutationResolver(
 
     validateMutationReturn(type, mutationName);
 
-    const table = type.ofType;
-    const tableName = table.name;
+    const astNode = mutation.astNode!;
+
+    validateMutationDirectiveInsert(astNode, mutationName);
+
+    // note: assert in `validateMutationDirectiveInsert`
+    const directives = astNode.directives!;
+
+    const directive = directives.find(({ name }) => name.value == "insert")!;
+
+    // note: assumes valid schema
+    // beware: currently bug in graphql-js that doesn't validate custom schema directive argument types, see [#3912](https://github.com/graphql/graphql-js/issues/3912)
+    const args = directive.arguments!;
+    const argument = args.find((arg) => arg.name.value == "table")!;
+    const value = argument.value as StringValueNode;
+    const tableName = value.value;
+
+    const table = schema.getType(tableName);
+    validateMutationTable(table, tableName, mutationName);
 
     const columnsMap = table.getFields();
     const columns = Object.values(columnsMap);
@@ -59,29 +79,30 @@ export function createRootMutationResolver(
       _root,
       args,
     ): Promise<IFieldResolver<any, any>> => {
-      let newId = 1;
       let res: Deno.KvCommitResult | Deno.KvCommitError = { ok: false };
 
       while (!res.ok) {
+        // get previous entry (if any)
         const entries = db.list({ prefix: [tableName] }, {
           limit: 1,
           reverse: true,
         });
         const entry = await entries.next();
-
         const value = entry.value;
 
+        // no previous entry
         if (!value) {
-          const key = [tableName, newId];
-          const value = { id: newId, ...args };
+          const id = 1;
+          const key = [tableName, id];
+          const value = { id, ...args };
 
           res = await db.set(key, value);
         } else {
           const lastId = value.key.at(-1)!;
-          newId = Number(lastId) + 1;
+          const id = Number(lastId) + 1;
 
-          const key = [tableName, newId];
-          const val = { id: newId, ...args };
+          const key = [tableName, id];
+          const val = { id, ...args };
 
           res = await db
             .atomic()
@@ -91,16 +112,7 @@ export function createRootMutationResolver(
         }
       }
 
-      const key = [tableName, newId];
-      const r = await db.get(key);
-
-      if (r.versionstamp === null) {
-        throw new Error(`unexpected non-existent key, just set it above...`);
-      } else {
-        return r.value;
-      }
+      return res;
     };
-
-    createQueryResolver(db, table, resolvers);
   }
 }
