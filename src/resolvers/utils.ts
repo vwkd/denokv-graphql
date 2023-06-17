@@ -13,8 +13,82 @@ import type {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLOutputType,
+  GraphQLType,
 } from "../../deps.ts";
 import { InvalidSchema } from "../utils.ts";
+
+/**
+ * Test if two types have the same wrapping types
+ *
+ * e.g. `[T!]!` and `[S!]!`, but not `[T]! and `[S]`
+ * @param type1 first type
+ * @param type2 second type
+ */
+function isSameWrapping(type1: GraphQLType, type2: GraphQLType): boolean {
+  let innerType1 = type1;
+  let innerType2 = type2;
+
+  if (isNonNullType(type1) && isNonNullType(type2)) {
+    innerType1 = type1.ofType;
+    innerType2 = type2.ofType;
+  }
+
+  if (isListType(innerType1) && isListType(innerType2)) {
+    innerType1 = innerType1.ofType;
+    innerType2 = innerType2.ofType;
+  }
+
+  if (isNonNullType(innerType1) && isNonNullType(innerType2)) {
+    innerType1 = innerType1.ofType;
+    innerType2 = innerType2.ofType;
+  }
+
+  if (
+    isNonNullType(type1) || isListType(type1) || isNonNullType(type2) ||
+    isListType(type2)
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Test if type including wrapped in list or non-null
+ *
+ * - T
+ * - T!
+ * - [T]
+ * - [T!]
+ * - [T]!
+ * - [T!]!
+ * @param type column type
+ * @param testFn test function for wrapped type
+ */
+export function isType<T extends GraphQLType>(
+  type: unknown,
+  testFn: (t: unknown) => t is T,
+): boolean {
+  let innerType = type;
+
+  if (isNonNullType(type)) {
+    innerType = type.ofType;
+  }
+
+  if (isListType(innerType)) {
+    innerType = innerType.ofType;
+  }
+
+  if (isNonNullType(innerType)) {
+    innerType = innerType.ofType;
+  }
+
+  if (testFn(innerType)) {
+    return true;
+  }
+
+  return false;
+}
 
 /**
  * Test if field is a `id: ID!` field
@@ -92,9 +166,8 @@ export function validateTable(
 /**
  * Validate type of column
  *
- * - scalar type
- * - list type
- * - non-null
+ * - scalar type, possibly non-null
+ * - reference object type
  * @param type column type
  * @param tableName table name
  * @param columnName column name
@@ -104,30 +177,10 @@ export function validateColumn(
   tableName: string,
   columnName: string,
 ): void {
-  let innerType = type;
-
-  if (isNonNullType(type)) {
-    innerType = type.ofType;
-  }
-
-  if (isLeafType(innerType)) {
+  if (isLeafType(type) || (isNonNullType(type) && isLeafType(type.ofType))) {
     // ok
-  } else if (isObjectType(innerType)) {
+  } else if (isType(type, isObjectType)) {
     // ok
-  } else if (isListType(innerType)) {
-    innerType = innerType.ofType;
-
-    if (isNonNullType(innerType)) {
-      innerType = innerType.ofType;
-    }
-
-    if (isObjectType(innerType)) {
-      // ok
-    } else {
-      throw new InvalidSchema(
-        `Column '${columnName}' of table '${tableName}' has unexpected type '${type}'`,
-      );
-    }
   } else {
     throw new InvalidSchema(
       `Column '${columnName}' of table '${tableName}' has unexpected type '${type}'`,
