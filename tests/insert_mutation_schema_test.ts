@@ -361,7 +361,7 @@ Deno.test("no directive", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' must have one 'insert' directive",
+    "Mutation 'createBook' must have one 'insert' or 'delete' directive",
   );
 
   db.close();

@@ -1,14 +1,16 @@
 import { GraphQLSchema } from "../../deps.ts";
 import type { IResolvers, StringValueNode } from "../../deps.ts";
+import { createResolverDelete } from "./mutation_delete.ts";
 import { createResolverInsert } from "./mutation_insert.ts";
 import {
+  validateDeleteMutationReturn,
+  validateInsertMutationReturn,
   validateMutationDirective,
-  validateMutationReturn,
   validateMutationTable,
   validateTable,
 } from "./utils.ts";
 
-const directiveNames = ["insert"];
+const directiveNames = ["insert", "delete"];
 
 /**
  * Create resolvers for mutations
@@ -39,9 +41,6 @@ export function createRootMutationResolver(
 
   for (const mutation of Object.values(mutations)) {
     const mutationName = mutation.name;
-    const type = mutation.type;
-
-    validateMutationReturn(type, mutationName);
 
     const astNode = mutation.astNode!;
 
@@ -67,11 +66,25 @@ export function createRootMutationResolver(
     const columns = Object.values(columnsMap);
     validateTable(columns, tableName);
 
+    const type = mutation.type;
+
     if (directive.name.value == "insert") {
+      validateInsertMutationReturn(type, mutationName);
+
       createResolverInsert(
         db,
         mutation.args,
         columnsMap,
+        tableName,
+        mutationName,
+        resolvers[rootMutationName],
+      );
+    } else if (directive.name.value == "delete") {
+      validateDeleteMutationReturn(type, mutationName);
+
+      createResolverDelete(
+        db,
+        mutation.args,
         tableName,
         mutationName,
         resolvers[rootMutationName],

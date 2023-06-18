@@ -43,6 +43,10 @@ export function buildSchema(
       table: String!
     ) on FIELD_DEFINITION
 
+    directive @delete(
+      table: String!
+    ) on FIELD_DEFINITION
+
     scalar Void
   `;
 

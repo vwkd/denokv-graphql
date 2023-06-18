@@ -198,14 +198,14 @@ export function validateColumn(
 }
 
 /**
- * Validate mutation return value
+ * Validate insert mutation return value
  *
  * - name is 'Result'
  * - non null object type
  * @param type return value
  * @param mutationName mutation name
  */
-export function validateMutationReturn(
+export function validateInsertMutationReturn(
   returnValue: GraphQLOutputType,
   mutationName: string,
 ): asserts returnValue is GraphQLNonNull<GraphQLObjectType> {
@@ -215,6 +215,27 @@ export function validateMutationReturn(
   ) {
     throw new InvalidSchema(
       `Mutation '${mutationName}' must have non-null 'Result' type`,
+    );
+  }
+}
+
+/**
+ * Validate delete mutation return value
+ *
+ * - name is 'Void'
+ * - nullable scalar type
+ * @param type return value
+ * @param mutationName mutation name
+ */
+export function validateDeleteMutationReturn(
+  returnValue: GraphQLOutputType,
+  mutationName: string,
+): asserts returnValue is GraphQLNonNull<GraphQLScalarType> {
+  if (
+    !(isScalarType(returnValue) && returnValue.name == "Void")
+  ) {
+    throw new InvalidSchema(
+      `Mutation '${mutationName}' must have nullable 'Void' type`,
     );
   }
 }
@@ -362,6 +383,30 @@ export function validateInsertMutationArguments(
         );
       }
     }
+  }
+}
+
+/**
+ * Validate delete mutation arguments
+ *
+ * - single "id: ID!" argument
+ * @param args arguments
+ * @param mutationName mutation name
+ */
+export function validateDeleteMutationArguments(
+  args: readonly GraphQLArgument[],
+  mutationName: string,
+): void {
+  const id = args.find((arg) => arg.name == "id");
+
+  if (
+    !(id && args.length == 1 && isNonNullType(id.type) &&
+      isScalarType(id.type.ofType) &&
+      id.type.ofType.name == "ID")
+  ) {
+    throw new InvalidSchema(
+      `Mutation '${mutationName}' must have single 'id: ID!' argument`,
+    );
   }
 }
 
