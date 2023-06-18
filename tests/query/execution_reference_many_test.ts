@@ -1,5 +1,5 @@
-import { assertEquals, assertObjectMatch, graphql } from "../deps.ts";
-import { buildSchema } from "../src/main.ts";
+import { assertEquals, assertObjectMatch, graphql } from "../../deps.ts";
+import { buildSchema } from "../../src/main.ts";
 
 // note: needs to assert subset because error has additional properties like stacktrace
 

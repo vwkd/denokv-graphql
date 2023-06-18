@@ -1,5 +1,5 @@
-import { assertEquals, assertObjectMatch, graphql } from "../deps.ts";
-import { buildSchema } from "../src/main.ts";
+import { assertEquals, assertObjectMatch, graphql } from "../../deps.ts";
+import { buildSchema } from "../../src/main.ts";
 
 // todo: actually test that data is inserted
 

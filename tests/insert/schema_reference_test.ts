@@ -1,6 +1,6 @@
-import { assert, assertThrows } from "../deps.ts";
-import { buildSchema } from "../src/main.ts";
-import { InvalidSchema } from "../src/utils.ts";
+import { assert, assertThrows } from "../../deps.ts";
+import { buildSchema } from "../../src/main.ts";
+import { InvalidSchema } from "../../src/utils.ts";
 
 /**
  * Tests different combinations of reference column input type and table column type
@@ -15,7 +15,7 @@ import { InvalidSchema } from "../src/utils.ts";
  */
 
 /**
- * ---------- Group 1 ----------
+ * ---------- Group 1 ----------x
  *
  * naked vs X
  */

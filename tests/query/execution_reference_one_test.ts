@@ -1,5 +1,7 @@
-import { assertEquals, assertObjectMatch, graphql } from "../deps.ts";
-import { buildSchema } from "../src/main.ts";
+import { assertEquals, assertObjectMatch, graphql } from "../../deps.ts";
+import { buildSchema } from "../../src/main.ts";
+
+// note: needs to assert subset because error has additional properties like stacktrace
 
 Deno.test("minimal working example", async () => {
   const schemaSource = `
@@ -10,6 +12,12 @@ Deno.test("minimal working example", async () => {
     type Book {
       id: ID!,
       title: String,
+      author: Author,
+    }
+
+    type Author {
+      id: ID!,
+      name: String,
     }
   `;
 
@@ -18,6 +26,10 @@ Deno.test("minimal working example", async () => {
       bookById(id: "1") {
         id,
         title,
+        author {
+          id,
+          name,
+        }
       }
     }
   `;
@@ -27,6 +39,11 @@ Deno.test("minimal working example", async () => {
     .set(["Book", 1n], {
       id: 1n,
       title: "Shadows of Eternity",
+      author: 11n,
+    })
+    .set(["Author", 11n], {
+      id: 11n,
+      name: "Victoria Nightshade",
     })
     .commit();
 
@@ -39,196 +56,10 @@ Deno.test("minimal working example", async () => {
       bookById: {
         id: "1",
         title: "Shadows of Eternity",
-      },
-    },
-  };
-
-  db.close();
-
-  assertEquals(res, exp);
-});
-
-Deno.test("null row", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): Book
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-  `;
-
-  const source = `
-    query {
-      bookById(id: "999") {
-        id,
-        title,
-      }
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-  await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
-      title: "Shadows of Eternity",
-    })
-    .commit();
-
-  const schema = buildSchema(db, schemaSource);
-
-  const res = await graphql({ schema, source });
-
-  const exp = {
-    data: {
-      bookById: null,
-    },
-  };
-
-  db.close();
-
-  assertEquals(res, exp);
-});
-
-Deno.test("bad input id other", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): Book
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-  `;
-
-  const source = `
-    query {
-      bookById(id: "XXX") {
-        id,
-        title,
-      }
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-  await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
-      title: "Shadows of Eternity",
-    })
-    .commit();
-
-  const schema = buildSchema(db, schemaSource);
-
-  const res = await graphql({ schema, source });
-
-  const exp = {
-    data: {
-      bookById: null,
-    },
-    errors: [{
-      message:
-        "Expected table 'Book' argument 'id' to contain string of positive bigint",
-      locations: [{ line: 3, column: 7 }],
-      path: ["bookById"],
-    }],
-  };
-
-  db.close();
-
-  assertObjectMatch(res, exp);
-});
-
-Deno.test("bad input id negative bigint", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): Book
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-  `;
-
-  const source = `
-    query {
-      bookById(id: "-999") {
-        id,
-        title,
-      }
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-  await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
-      title: "Shadows of Eternity",
-    })
-    .commit();
-
-  const schema = buildSchema(db, schemaSource);
-
-  const res = await graphql({ schema, source });
-
-  const exp = {
-    data: {
-      bookById: null,
-    },
-    errors: [{
-      message:
-        "Expected table 'Book' argument 'id' to contain string of positive bigint",
-      locations: [{ line: 3, column: 7 }],
-      path: ["bookById"],
-    }],
-  };
-
-  db.close();
-
-  assertObjectMatch(res, exp);
-});
-
-Deno.test("null column", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): Book
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-  `;
-
-  const source = `
-    query {
-      bookById(id: "1") {
-        id,
-        title,
-      }
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-  await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
-    })
-    .commit();
-
-  const schema = buildSchema(db, schemaSource);
-
-  const res = await graphql({ schema, source });
-
-  const exp = {
-    data: {
-      bookById: {
-        id: "1",
-        title: null,
+        author: {
+          id: "11",
+          name: "Victoria Nightshade",
+        },
       },
     },
   };
@@ -247,6 +78,12 @@ Deno.test("bad id", async () => {
     type Book {
       id: ID!,
       title: String,
+      author: Author,
+    }
+
+    type Author {
+      id: ID!,
+      name: String,
     }
   `;
 
@@ -255,6 +92,10 @@ Deno.test("bad id", async () => {
       bookById(id: "1") {
         id,
         title,
+        author {
+          id,
+          name,
+        }
       }
     }
   `;
@@ -262,7 +103,205 @@ Deno.test("bad id", async () => {
   const db = await Deno.openKv(":memory:");
   await db.atomic()
     .set(["Book", 1n], {
+      id: 1n,
+      title: "Shadows of Eternity",
+      author: 999n,
+    })
+    .commit();
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source });
+
+  const exp = {
+    data: {
+      bookById: {
+        id: "1",
+        title: "Shadows of Eternity",
+        author: null,
+      },
+    },
+    errors: [{
+      message: "Expected referenced table 'Author' to have row with id '999'",
+      locations: [{ line: 6, column: 9 }],
+      path: ["bookById", "author"],
+    }],
+  };
+
+  db.close();
+
+  assertObjectMatch(res, exp);
+});
+
+Deno.test("other reference", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+      author: Author,
+    }
+
+    type Author {
+      id: ID!,
+      name: String,
+    }
+  `;
+
+  const source = `
+    query {
+      bookById(id: "1") {
+        id,
+        title,
+        author {
+          id,
+          name,
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+  await db.atomic()
+    .set(["Book", 1n], {
+      id: 1n,
+      title: "Shadows of Eternity",
+      author: 11n,
+    })
+    .set(["Author", 11n], "XXX")
+    .commit();
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source });
+
+  const exp = {
+    data: {
+      bookById: {
+        id: "1",
+        title: "Shadows of Eternity",
+        author: null,
+      },
+    },
+    errors: [{
+      message: "Expected referenced table 'Author' row '11' to be an object",
+      locations: [{ line: 6, column: 9 }],
+      path: ["bookById", "author"],
+    }],
+  };
+
+  db.close();
+
+  assertObjectMatch(res, exp);
+});
+
+Deno.test("bad id in reference", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+      author: Author,
+    }
+
+    type Author {
+      id: ID!,
+      name: String,
+    }
+  `;
+
+  const source = `
+    query {
+      bookById(id: "1") {
+        id,
+        title,
+        author {
+          id,
+          name,
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+  await db.atomic()
+    .set(["Book", 1n], {
+      id: 1n,
+      title: "Shadows of Eternity",
+      author: 11n,
+    })
+    .set(["Author", 11n], {
       id: 999n,
+      name: "Victoria Nightshade",
+    })
+    .commit();
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source });
+
+  const exp = {
+    data: {
+      bookById: {
+        id: "1",
+        title: "Shadows of Eternity",
+        author: null,
+      },
+    },
+    errors: [{
+      message:
+        "Expected referenced table 'Author' row '11' column 'id' to be equal to row id",
+      locations: [{ line: 6, column: 9 }],
+      path: ["bookById", "author"],
+    }],
+  };
+
+  db.close();
+
+  assertObjectMatch(res, exp);
+});
+
+Deno.test("non null", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+      author: Author!,
+    }
+
+    type Author {
+      id: ID!,
+      name: String,
+    }
+  `;
+
+  const source = `
+    query {
+      bookById(id: "1") {
+        id,
+        title,
+        author {
+          id,
+          name,
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+  await db.atomic()
+    .set(["Book", 1n], {
+      id: 1n,
       title: "Shadows of Eternity",
     })
     .commit();
@@ -276,10 +315,9 @@ Deno.test("bad id", async () => {
       bookById: null,
     },
     errors: [{
-      message:
-        "Expected table 'Book' row '1' column 'id' to be equal to row id",
-      locations: [{ line: 3, column: 7 }],
-      path: ["bookById"],
+      message: "Expected column 'author' to contain id",
+      locations: [{ line: 6, column: 9 }],
+      path: ["bookById", "author"],
     }],
   };
 
@@ -288,7 +326,7 @@ Deno.test("bad id", async () => {
   assertObjectMatch(res, exp);
 });
 
-Deno.test("bad row", async () => {
+Deno.test("minimal cyclical reference", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): Book
@@ -297,6 +335,13 @@ Deno.test("bad row", async () => {
     type Book {
       id: ID!,
       title: String,
+      author: Author,
+    }
+
+    type Author {
+      id: ID!,
+      name: String,
+      book: Book,
     }
   `;
 
@@ -305,13 +350,30 @@ Deno.test("bad row", async () => {
       bookById(id: "1") {
         id,
         title,
+        author {
+          id,
+          name,
+          book {
+            id,
+            title,
+          }
+        }
       }
     }
   `;
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", 1n], "XXX")
+    .set(["Book", 1n], {
+      id: 1n,
+      title: "Shadows of Eternity",
+      author: 11n,
+    })
+    .set(["Author", 11n], {
+      id: 11n,
+      name: "Victoria Nightshade",
+      book: 1n,
+    })
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -320,16 +382,22 @@ Deno.test("bad row", async () => {
 
   const exp = {
     data: {
-      bookById: null,
+      bookById: {
+        id: "1",
+        title: "Shadows of Eternity",
+        author: {
+          id: "11",
+          name: "Victoria Nightshade",
+          book: {
+            id: "1",
+            title: "Shadows of Eternity",
+          },
+        },
+      },
     },
-    errors: [{
-      message: "Expected table 'Book' row '1' to be an object",
-      locations: [{ line: 3, column: 7 }],
-      path: ["bookById"],
-    }],
   };
 
   db.close();
 
-  assertObjectMatch(res, exp);
+  assertEquals(res, exp);
 });

@@ -1,11 +1,15 @@
-import { assert, assertThrows } from "../deps.ts";
-import { buildSchema } from "../src/main.ts";
-import { InvalidSchema } from "../src/utils.ts";
+import { assert, assertThrows } from "../../deps.ts";
+import { buildSchema } from "../../src/main.ts";
+import { InvalidSchema } from "../../src/utils.ts";
 
 Deno.test("minimal working example", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): Book
+    }
+
+    type Mutation {
+      deleteBookById(id: ID!): Void @delete(table: "Book")
     }
 
     type Book {
@@ -26,7 +30,11 @@ Deno.test("minimal working example", async () => {
 Deno.test("no argument", async () => {
   const schemaSource = `
     type Query {
-      bookById: Book
+      bookById(id: ID!): Book
+    }
+
+    type Mutation {
+      deleteBookById: Void @delete(table: "Book")
     }
 
     type Book {
@@ -40,7 +48,7 @@ Deno.test("no argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query 'bookById' must have single 'id: ID!' argument",
+    "Mutation 'deleteBookById' must have single 'id: ID!' argument",
   );
 
   db.close();
@@ -49,7 +57,11 @@ Deno.test("no argument", async () => {
 Deno.test("other argument", async () => {
   const schemaSource = `
     type Query {
-      bookById(XXX: ID!): Book
+      bookById(id: ID!): Book
+    }
+
+    type Mutation {
+      deleteBookById(XXX: String): Void @delete(table: "Book")
     }
 
     type Book {
@@ -63,7 +75,7 @@ Deno.test("other argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query 'bookById' must have single 'id: ID!' argument",
+    "Mutation 'deleteBookById' must have single 'id: ID!' argument",
   );
 
   db.close();
@@ -72,7 +84,11 @@ Deno.test("other argument", async () => {
 Deno.test("extra argument", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!, XXX: String): Book
+      bookById(id: ID!): Book
+    }
+
+    type Mutation {
+      deleteBookById(id: ID!, XXX: String): Void @delete(table: "Book")
     }
 
     type Book {
@@ -86,7 +102,7 @@ Deno.test("extra argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query 'bookById' must have single 'id: ID!' argument",
+    "Mutation 'deleteBookById' must have single 'id: ID!' argument",
   );
 
   db.close();
@@ -95,7 +111,11 @@ Deno.test("extra argument", async () => {
 Deno.test("non-null type", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book!
+      bookById(id: ID!): Book
+    }
+
+    type Mutation {
+      deleteBookById(id: ID!): Void! @delete(table: "Book")
     }
 
     type Book {
@@ -109,7 +129,7 @@ Deno.test("non-null type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query 'bookById' must have optional object type",
+    "Mutation 'deleteBookById' must have nullable 'Void' type",
   );
 
   db.close();
@@ -118,7 +138,11 @@ Deno.test("non-null type", async () => {
 Deno.test("list type", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): [Book]
+      bookById(id: ID!): Book
+    }
+
+    type Mutation {
+      deleteBookById(id: ID!): [Void] @delete(table: "Book")
     }
 
     type Book {
@@ -132,16 +156,25 @@ Deno.test("list type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query 'bookById' must have optional object type",
+    "Mutation 'deleteBookById' must have nullable 'Void' type",
   );
 
   db.close();
 });
 
-Deno.test("no object type", async () => {
+Deno.test("other type", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): String
+      bookById(id: ID!): Book
+    }
+
+    type Mutation {
+      deleteBookById(id: ID!): String! @delete(table: "Book")
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
   `;
 
@@ -150,7 +183,120 @@ Deno.test("no object type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query 'bookById' must have optional object type",
+    "Mutation 'deleteBookById' must have nullable 'Void' type",
+  );
+
+  db.close();
+});
+
+Deno.test("no directive", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Mutation {
+      deleteBookById(id: ID!): Void
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' must have one 'insert' or 'delete' directive",
+  );
+
+  db.close();
+});
+
+// todo: delete when [#3912](https://github.com/graphql/graphql-js/issues/3912) is fixed
+Deno.test("other type to 'table' argument of 'delete' directive", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Mutation {
+      deleteBookById(id: ID!): Void @delete(table: 999)
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Table '999' in mutation 'deleteBookById' doesn't exist",
+  );
+
+  db.close();
+});
+
+Deno.test("no table", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Mutation {
+      deleteBookById(id: ID!): Void @delete(table: "XXX")
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Table 'XXX' in mutation 'deleteBookById' doesn't exist",
+  );
+
+  db.close();
+});
+
+Deno.test("no object type", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Mutation {
+      deleteBookById(id: ID!): Void @delete(table: "XXX")
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    enum XXX {
+      YYY
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Table 'XXX' in mutation 'deleteBookById' must be an object type",
   );
 
   db.close();
@@ -162,8 +308,17 @@ Deno.test("missing id column", async () => {
       bookById(id: ID!): Book
     }
 
+    type Mutation {
+      deleteBookById(id: ID!): Void @delete(table: "XXX")
+    }
+
     type Book {
-      XXX: ID!,
+      id: ID!,
+      title: String,
+    }
+
+    type XXX {
+      YYY: ID!,
       title: String,
     }
   `;
@@ -173,7 +328,7 @@ Deno.test("missing id column", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Table 'Book' must have an 'id: ID!' column",
+    "Table 'XXX' must have an 'id: ID!' column",
   );
 
   db.close();
@@ -185,7 +340,16 @@ Deno.test("missing second column", async () => {
       bookById(id: ID!): Book
     }
 
+    type Mutation {
+      deleteBookById(id: ID!): Void @delete(table: "XXX")
+    }
+
     type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type XXX {
       id: ID!,
     }
   `;
@@ -195,219 +359,7 @@ Deno.test("missing second column", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Table 'Book' must have at least two columns",
-  );
-
-  db.close();
-});
-
-Deno.test("scalar list column", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): Book
-    }
-
-    type Book {
-      id: ID!,
-      title: [String],
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type '[String]'",
-  );
-
-  db.close();
-});
-
-Deno.test("scalar non-null list column", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): Book
-    }
-
-    type Book {
-      id: ID!,
-      title: [String]!,
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type '[String]!'",
-  );
-
-  db.close();
-});
-
-Deno.test("non-null scalar list column", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): Book
-    }
-
-    type Book {
-      id: ID!,
-      title: [String!],
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type '[String!]'",
-  );
-
-  db.close();
-});
-
-Deno.test("non-null scalar non-null list column", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): Book
-    }
-
-    type Book {
-      id: ID!,
-      title: [String!]!,
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type '[String!]!'",
-  );
-
-  db.close();
-});
-
-Deno.test("interface column", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): Book
-    }
-
-    type Book {
-      id: ID!,
-      title: Foo,
-    }
-
-    interface Foo {
-      baz: String,
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type 'Foo'",
-  );
-
-  db.close();
-});
-
-Deno.test("non-null interface column", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): Book
-    }
-
-    type Book {
-      id: ID!,
-      title: Foo!,
-    }
-
-    interface Foo {
-      baz: String,
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type 'Foo!'",
-  );
-
-  db.close();
-});
-
-Deno.test("union column", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): Book
-    }
-
-    type Book {
-      id: ID!,
-      title: Foo,
-    }
-
-    union Foo = Bar | Baz
-  
-    type Bar {
-      bar: String,
-    }
-
-    type Baz {
-      baz: String,
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type 'Foo'",
-  );
-
-  db.close();
-});
-
-Deno.test("non-null union column", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): Book
-    }
-
-    type Book {
-      id: ID!,
-      title: Foo!,
-    }
-
-    union Foo = Bar | Baz
-  
-    type Bar {
-      bar: String,
-    }
-
-    type Baz {
-      baz: String,
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type 'Foo!'",
+    "Table 'XXX' must have at least two columns",
   );
 
   db.close();

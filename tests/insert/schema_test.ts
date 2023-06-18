@@ -1,6 +1,6 @@
-import { assert, assertThrows } from "../deps.ts";
-import { buildSchema } from "../src/main.ts";
-import { InvalidSchema } from "../src/utils.ts";
+import { assert, assertThrows } from "../../deps.ts";
+import { buildSchema } from "../../src/main.ts";
+import { InvalidSchema } from "../../src/utils.ts";
 
 Deno.test("minimal working example", async () => {
   const schemaSource = `
