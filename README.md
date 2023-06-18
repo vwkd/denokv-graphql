@@ -20,6 +20,114 @@ GraphQL is a highly ergonomic API for a remote server. Why shouldn't the same in
 
 
 
+## Usage
+
+```ts
+import { graphql } from "npm:graphql@16.6.0";
+import { buildSchema } from "https://raw.githubusercontent.com/vwkd/graphql-denokv/main/src/main.ts";
+
+const db = await Deno.openKv(":memory:");
+
+const schemaSource = `
+  type Query {
+    bookById(id: ID!): Book
+  }
+
+  type Mutation {
+    createBook(data: BookInput!): Result @insert(table: "Book")
+    createAuthor(data: AuthorInput!): Result @insert(table: "Author")
+    deleteBookById(id: ID!): Void @delete(table: "Book")
+    deleteAuthorById(id: ID!): Void @delete(table: "Book")
+  }
+  
+  type Book {
+    id: ID!,
+    title: String!,
+    author: Author!,
+  }
+
+  type Author {
+    id: ID!,
+    name: String!,
+  }
+  
+  input BookInput {
+    title: String!,
+    author: ID!,
+  }
+
+  input AuthorInput {
+    name: String!,
+  }
+`;
+
+const schema = buildSchema(db, schemaSource);
+
+const source1 = `
+  mutation {
+    createAuthor(data: { name: "Victoria Nightshade" }) {
+      id,
+      versionstamp,
+    }
+  }
+`;
+
+const res1 = await graphql({ schema, source: source1 });
+console.log(JSON.stringify(res1, null, 2));
+const authorId = res1.data.createAuthor.id;
+
+const source2 = `
+  mutation {
+    createBook(data: { title: "Shadows of Eternity", author: "${authorId}" }) {
+      id,
+      versionstamp,
+    }
+  }
+`;
+
+const res2 = await graphql({ schema, source: source2 });
+console.log(JSON.stringify(res2, null, 2));
+const bookId = res2.data.createBook.id;
+
+const source3 = `
+  query {
+    bookById(id: "${bookId}") {
+      id,
+      title,
+      author {
+        id,
+        name,
+      }
+    }
+  }
+`;
+
+const res3 = await graphql({ schema, source: source3 });
+console.log(JSON.stringify(res3, null, 2));
+
+const source4 = `
+  mutation {
+    deleteBookById(id: "${bookId}")
+  }
+`;
+
+const res4 = await graphql({ schema, source: source4 });
+console.log(JSON.stringify(res4, null, 2));
+
+const source5 = `
+  mutation {
+    deleteAuthorById(id: "${authorId}")
+  }
+`;
+
+const res5 = await graphql({ schema, source: source5 });
+console.log(JSON.stringify(res5, null, 2));
+
+db.close();
+```
+
+
+
 ## Concepts
 
 - an object type is a table, a field is a column
