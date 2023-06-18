@@ -1,4 +1,4 @@
-import { GraphQLSchema } from "../../deps.ts";
+import { GraphQLSchema, VoidResolver } from "../../deps.ts";
 import type { IResolvers } from "../../deps.ts";
 import { createRootMutationResolver } from "./root_mutation.ts";
 import { createRootQueryResolver } from "./root_query.ts";
@@ -13,7 +13,9 @@ export function generateResolvers(
   db: Deno.Kv,
   schema: GraphQLSchema,
 ): IResolvers {
-  const resolvers: IResolvers = {};
+  const resolvers: IResolvers = {
+    Void: VoidResolver,
+  };
 
   createRootQueryResolver(db, schema, resolvers);
 

@@ -26,6 +26,8 @@ export function buildSchema(
     directive @insert(
       table: String!
     ) on FIELD_DEFINITION
+
+    scalar Void
   `;
 
   const schemaAst = parse(source + source_extension);

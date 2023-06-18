@@ -41,3 +41,4 @@ export {
   assertObjectMatch,
   assertThrows,
 } from "https://deno.land/std@0.191.0/testing/asserts.ts";
+export { VoidResolver } from "npm:graphql-scalars@1.22.2";

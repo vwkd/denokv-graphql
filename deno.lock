@@ -11,6 +11,7 @@
       "@graphql-tools/schema@10.0.0": "@graphql-tools/schema@10.0.0_graphql@16.6.0",
       "@graphql-tools/utils@10.0.1": "@graphql-tools/utils@10.0.1_graphql@16.6.0",
       "graphql": "graphql@16.6.0",
+      "graphql-scalars@1.22.2": "graphql-scalars@1.22.2_graphql@16.6.0",
       "graphql@16.6.0": "graphql@16.6.0"
     },
     "packages": {
@@ -44,6 +45,13 @@
         "integrity": "sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==",
         "dependencies": {
           "graphql": "graphql@16.6.0"
+        }
+      },
+      "graphql-scalars@1.22.2_graphql@16.6.0": {
+        "integrity": "sha512-my9FB4GtghqXqi/lWSVAOPiTzTnnEzdOXCsAC2bb5V7EFNQjVjwy3cSSbUvgYOtDuDibd+ZsCDhz+4eykYOlhQ==",
+        "dependencies": {
+          "graphql": "graphql@16.6.0",
+          "tslib": "tslib@2.5.3"
         }
       },
       "graphql@16.6.0": {
