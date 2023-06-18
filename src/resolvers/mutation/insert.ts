@@ -3,8 +3,8 @@ import type {
   GraphQLFieldMap,
   IFieldResolver,
   IResolvers,
-} from "../../deps.ts";
-import { DatabaseCorruption } from "../utils.ts";
+} from "../../../deps.ts";
+import { DatabaseCorruption } from "../../utils.ts";
 import { validateInsertMutationArguments } from "./utils.ts";
 
 /**

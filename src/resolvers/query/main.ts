@@ -1,7 +1,7 @@
-import { isNonNullType } from "../../deps.ts";
-import type { GraphQLObjectType, IResolvers } from "../../deps.ts";
+import { isNonNullType } from "../../../deps.ts";
+import type { GraphQLObjectType, IResolvers } from "../../../deps.ts";
 import { validateColumn, validateTable } from "./utils.ts";
-import { createResolverListObjectScalar } from "./query_list_object_scalar.ts";
+import { createResolverListObjectScalar } from "./list_object_scalar.ts";
 
 /**
  * Create resolvers for a table

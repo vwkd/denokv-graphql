@@ -2,8 +2,9 @@ import type {
   GraphQLArgument,
   IFieldResolver,
   IResolvers,
-} from "../../deps.ts";
-import { parseId, validateDeleteMutationArguments } from "./utils.ts";
+} from "../../../deps.ts";
+import { parseId } from "./../utils.ts";
+import { validateDeleteMutationArguments } from "./utils.ts";
 
 /**
  * Create resolvers for delete mutations

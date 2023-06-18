@@ -4,13 +4,13 @@ import type {
   IFieldResolver,
   IResolvers,
 } from "../../deps.ts";
+import { parseId } from "./utils.ts";
 import {
-  parseId,
   validateQueryArguments,
   validateQueryReturn,
   validateRow,
-} from "./utils.ts";
-import { createQueryResolver } from "./query.ts";
+} from "./query/utils.ts";
+import { createQueryResolver } from "./query/main.ts";
 
 /**
  * Create resolvers for queries

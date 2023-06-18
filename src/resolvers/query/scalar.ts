@@ -1,4 +1,4 @@
-import type { GraphQLLeafType, IResolvers } from "../../deps.ts";
+import type { GraphQLLeafType, IResolvers } from "../../../deps.ts";
 
 /**
  * Create resolver for scalar column

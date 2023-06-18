@@ -1,6 +1,6 @@
-import { isNonNullType, isObjectType } from "../../deps.ts";
-import type { GraphQLOutputType, IResolvers } from "../../deps.ts";
-import { createResolverObjectMany } from "./query_object_many.ts";
+import { isNonNullType, isObjectType } from "../../../deps.ts";
+import type { GraphQLOutputType, IResolvers } from "../../../deps.ts";
+import { createResolverObjectMany } from "./object_many.ts";
 
 /**
  * Create resolver for list column

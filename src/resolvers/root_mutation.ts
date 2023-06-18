@@ -1,14 +1,14 @@
 import { GraphQLSchema } from "../../deps.ts";
 import type { IResolvers, StringValueNode } from "../../deps.ts";
-import { createResolverDelete } from "./mutation_delete.ts";
-import { createResolverInsert } from "./mutation_insert.ts";
+import { createResolverDelete } from "./mutation/delete.ts";
+import { createResolverInsert } from "./mutation/insert.ts";
 import {
   validateDeleteMutationReturn,
   validateInsertMutationReturn,
   validateMutationDirective,
   validateMutationTable,
-  validateTable,
-} from "./utils.ts";
+} from "./mutation/utils.ts";
+import { validateTable } from "./query/utils.ts";
 
 const directiveNames = ["insert", "delete"];
 

@@ -1,4 +1,4 @@
-import { isLeafType, isListType, isObjectType } from "../../deps.ts";
+import { isLeafType, isListType, isObjectType } from "../../../deps.ts";
 import type {
   GraphQLEnumType,
   GraphQLInterfaceType,
@@ -8,10 +8,10 @@ import type {
   GraphQLScalarType,
   GraphQLUnionType,
   IResolvers,
-} from "../../deps.ts";
-import { createResolverList } from "./query_list.ts";
-import { createResolverObjectOne } from "./query_object_one.ts";
-import { createResolverScalar } from "./query_scalar.ts";
+} from "../../../deps.ts";
+import { createResolverList } from "./list.ts";
+import { createResolverObjectOne } from "./object_one.ts";
+import { createResolverScalar } from "./scalar.ts";
 
 type NullableTypes =
   | GraphQLScalarType

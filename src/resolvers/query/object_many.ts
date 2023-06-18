@@ -2,9 +2,9 @@ import type {
   GraphQLObjectType,
   IFieldResolver,
   IResolvers,
-} from "../../deps.ts";
-import { DatabaseCorruption } from "../utils.ts";
-import { createQueryResolver } from "./query.ts";
+} from "../../../deps.ts";
+import { DatabaseCorruption } from "../../utils.ts";
+import { createQueryResolver } from "./main.ts";
 import { validateReferencedRow } from "./utils.ts";
 
 /**
