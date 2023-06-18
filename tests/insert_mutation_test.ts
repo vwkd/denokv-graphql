@@ -1,4 +1,4 @@
-import { assertEquals, graphql } from "../deps.ts";
+import { assertEquals, assertObjectMatch, graphql } from "../deps.ts";
 import { buildSchema } from "../src/main.ts";
 
 // todo: actually test that data is inserted
@@ -106,4 +106,114 @@ Deno.test("autoincrementing id", async () => {
   db.close();
 
   assertEquals(res, exp);
+});
+
+Deno.test("bad last id negative bigint", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Mutation {
+      createBook(data: BookInput!): Result! @insert(table: "Book")
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    input BookInput {
+      title: String,
+    }
+  `;
+
+  const source = `
+    mutation {
+      createBook(data: { title: "Shadows of Eternity" }) {
+        ok,
+        versionstamp,
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+  await db.atomic()
+    .set(["Book", -999n], {
+      id: -999n,
+      title: "Shadows of Eternity",
+    })
+    .commit();
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source });
+
+  const exp = {
+    data: null,
+    errors: [{
+      message: "Expected table 'Book' last row id to be positive bigint",
+      locations: [{ line: 3, column: 7 }],
+      path: ["createBook"],
+    }],
+  };
+
+  db.close();
+
+  assertObjectMatch(res, exp);
+});
+
+Deno.test("bad last id other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Mutation {
+      createBook(data: BookInput!): Result! @insert(table: "Book")
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    input BookInput {
+      title: String,
+    }
+  `;
+
+  const source = `
+    mutation {
+      createBook(data: { title: "Shadows of Eternity" }) {
+        ok,
+        versionstamp,
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+  await db.atomic()
+    .set(["Book", "999"], {
+      id: "999n",
+      title: "Shadows of Eternity",
+    })
+    .commit();
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source });
+
+  const exp = {
+    data: null,
+    errors: [{
+      message: "Expected table 'Book' last row id to be positive bigint",
+      locations: [{ line: 3, column: 7 }],
+      path: ["createBook"],
+    }],
+  };
+
+  db.close();
+
+  assertObjectMatch(res, exp);
 });

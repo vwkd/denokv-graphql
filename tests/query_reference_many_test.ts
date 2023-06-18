@@ -151,6 +151,148 @@ Deno.test("bad id", async () => {
   assertObjectMatch(res, exp);
 });
 
+Deno.test("other reference", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+      authors: [Author],
+    }
+
+    type Author {
+      id: ID!,
+      name: String,
+    }
+  `;
+
+  const source = `
+    query {
+      bookById(id: "1") {
+        id,
+        title,
+        authors {
+          id,
+          name,
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+  await db.atomic()
+    .set(["Book", 1n], {
+      id: 1n,
+      title: "Shadows of Eternity",
+      authors: [11n, 12n],
+    })
+    .set(["Author", 11n], "XXX")
+    .set(["Author", 12n], {
+      id: 12n,
+      name: "Sebastian Duskwood",
+    })
+    .commit();
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source });
+
+  const exp = {
+    data: {
+      bookById: {
+        id: "1",
+        title: "Shadows of Eternity",
+        authors: null,
+      },
+    },
+    errors: [{
+      message: "Expected referenced table 'Author' row '11' to be an object",
+      locations: [{ line: 6, column: 9 }],
+      path: ["bookById", "authors"],
+    }],
+  };
+
+  db.close();
+
+  assertObjectMatch(res, exp);
+});
+
+Deno.test("bad id in reference", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+      authors: [Author],
+    }
+
+    type Author {
+      id: ID!,
+      name: String,
+    }
+  `;
+
+  const source = `
+    query {
+      bookById(id: "1") {
+        id,
+        title,
+        authors {
+          id,
+          name,
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+  await db.atomic()
+    .set(["Book", 1n], {
+      id: 1n,
+      title: "Shadows of Eternity",
+      authors: [11n, 12n],
+    })
+    .set(["Author", 11n], {
+      id: 999n,
+      name: "Victoria Nightshade",
+    })
+    .set(["Author", 12n], {
+      id: 12n,
+      name: "Sebastian Duskwood",
+    })
+    .commit();
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source });
+
+  const exp = {
+    data: {
+      bookById: {
+        id: "1",
+        title: "Shadows of Eternity",
+        authors: null,
+      },
+    },
+    errors: [{
+      message:
+        "Expected referenced table 'Author' row '11' column 'id' to be equal to row id",
+      locations: [{ line: 6, column: 9 }],
+      path: ["bookById", "authors"],
+    }],
+  };
+
+  db.close();
+
+  assertObjectMatch(res, exp);
+});
+
 Deno.test("non null list", async () => {
   const schemaSource = `
     type Query {
@@ -197,6 +339,136 @@ Deno.test("non null list", async () => {
   const exp = {
     data: {
       bookById: null,
+    },
+    errors: [{
+      message:
+        "Expected table 'Book' column 'authors' to contain array of positive bigints",
+      locations: [{ line: 6, column: 9 }],
+      path: ["bookById", "authors"],
+    }],
+  };
+
+  db.close();
+
+  assertObjectMatch(res, exp);
+});
+
+Deno.test("bad reference id", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+      authors: [Author],
+    }
+
+    type Author {
+      id: ID!,
+      name: String,
+    }
+  `;
+
+  const source = `
+    query {
+      bookById(id: "1") {
+        id,
+        title,
+        authors {
+          id,
+          name,
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+  await db.atomic()
+    .set(["Book", 1n], {
+      id: 1n,
+      title: "Shadows of Eternity",
+      authors: [11n, -999n],
+    })
+    .commit();
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source });
+
+  const exp = {
+    data: {
+      bookById: {
+        id: "1",
+        title: "Shadows of Eternity",
+        authors: null,
+      },
+    },
+    errors: [{
+      message:
+        "Expected table 'Book' column 'authors' to contain array of positive bigints",
+      locations: [{ line: 6, column: 9 }],
+      path: ["bookById", "authors"],
+    }],
+  };
+
+  db.close();
+
+  assertObjectMatch(res, exp);
+});
+
+Deno.test("bad reference id other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+      authors: [Author],
+    }
+
+    type Author {
+      id: ID!,
+      name: String,
+    }
+  `;
+
+  const source = `
+    query {
+      bookById(id: "1") {
+        id,
+        title,
+        authors {
+          id,
+          name,
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+  await db.atomic()
+    .set(["Book", 1n], {
+      id: 1n,
+      title: "Shadows of Eternity",
+      authors: [11n, "999"],
+    })
+    .commit();
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source });
+
+  const exp = {
+    data: {
+      bookById: {
+        id: "1",
+        title: "Shadows of Eternity",
+        authors: null,
+      },
     },
     errors: [{
       message:

@@ -107,8 +107,137 @@ Deno.test("bad id", async () => {
       title: "Shadows of Eternity",
       author: 999n,
     })
+    .commit();
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source });
+
+  const exp = {
+    data: {
+      bookById: {
+        id: "1",
+        title: "Shadows of Eternity",
+        author: null,
+      },
+    },
+    errors: [{
+      message: "Expected referenced table 'Author' to have row with id '999'",
+      locations: [{ line: 6, column: 9 }],
+      path: ["bookById", "author"],
+    }],
+  };
+
+  db.close();
+
+  assertObjectMatch(res, exp);
+});
+
+Deno.test("other reference", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+      author: Author,
+    }
+
+    type Author {
+      id: ID!,
+      name: String,
+    }
+  `;
+
+  const source = `
+    query {
+      bookById(id: "1") {
+        id,
+        title,
+        author {
+          id,
+          name,
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+  await db.atomic()
+    .set(["Book", 1n], {
+      id: 1n,
+      title: "Shadows of Eternity",
+      author: 11n,
+    })
+    .set(["Author", 11n], "XXX")
+    .commit();
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source });
+
+  const exp = {
+    data: {
+      bookById: {
+        id: "1",
+        title: "Shadows of Eternity",
+        author: null,
+      },
+    },
+    errors: [{
+      message: "Expected referenced table 'Author' row '11' to be an object",
+      locations: [{ line: 6, column: 9 }],
+      path: ["bookById", "author"],
+    }],
+  };
+
+  db.close();
+
+  assertObjectMatch(res, exp);
+});
+
+Deno.test("bad id in reference", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): Book
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+      author: Author,
+    }
+
+    type Author {
+      id: ID!,
+      name: String,
+    }
+  `;
+
+  const source = `
+    query {
+      bookById(id: "1") {
+        id,
+        title,
+        author {
+          id,
+          name,
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+  await db.atomic()
+    .set(["Book", 1n], {
+      id: 1n,
+      title: "Shadows of Eternity",
+      author: 11n,
+    })
     .set(["Author", 11n], {
-      id: 11n,
+      id: 999n,
       name: "Victoria Nightshade",
     })
     .commit();
@@ -126,7 +255,8 @@ Deno.test("bad id", async () => {
       },
     },
     errors: [{
-      message: "Expected referenced table 'Author' to have row with id '999'",
+      message:
+        "Expected referenced table 'Author' row '11' column 'id' to be equal to row id",
       locations: [{ line: 6, column: 9 }],
       path: ["bookById", "author"],
     }],
