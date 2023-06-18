@@ -140,7 +140,7 @@ Deno.test("bad id", async () => {
       },
     },
     errors: [{
-      message: "Referenced table 'Author' has no row with id '998'",
+      message: "Expected referenced table 'Author' to have row with id '998'",
       locations: [{ line: 6, column: 9 }],
       path: ["bookById", "authors"],
     }],
@@ -212,7 +212,7 @@ Deno.test("bad ids", async () => {
       },
     },
     errors: [{
-      message: "Referenced table 'Author' has no rows with ids '998', '999'",
+      message: "Expected referenced table 'Author' to have row with id '998'",
       locations: [{ line: 6, column: 9 }],
       path: ["bookById", "authors"],
     }],
@@ -272,7 +272,7 @@ Deno.test("non null list", async () => {
     },
     errors: [{
       message:
-        "Expected column 'authors' to contain array of ids but found 'undefined'",
+        "Expected table 'Book' column 'authors' to contain array of positive bigints",
       locations: [{ line: 6, column: 9 }],
       path: ["bookById", "authors"],
     }],
@@ -337,7 +337,7 @@ Deno.test("non null item", async () => {
     },
     errors: [{
       message:
-        "Expected column 'authors' to contain at least one reference but found zero",
+        "Expected table 'Book' column 'authors' to contain at least one reference",
       locations: [{ line: 6, column: 9 }],
       path: ["bookById", "authors"],
     }],
@@ -398,7 +398,7 @@ Deno.test("non null list and item", async () => {
     },
     errors: [{
       message:
-        "Expected column 'authors' to contain at least one reference but found zero",
+        "Expected table 'Book' column 'authors' to contain at least one reference",
       locations: [{ line: 6, column: 9 }],
       path: ["bookById", "authors"],
     }],
@@ -610,7 +610,7 @@ Deno.test("bad id in cyclical reference", async () => {
       },
     },
     errors: [{
-      message: "Referenced table 'Book' has no row with id '998'",
+      message: "Expected referenced table 'Book' to have row with id '998'",
       locations: [{ line: 9, column: 11 }],
       path: ["bookById", "authors", 0, "books"],
     }],
@@ -714,7 +714,7 @@ Deno.test("bad ids in cyclical reference", async () => {
       },
     },
     errors: [{
-      message: "Referenced table 'Book' has no rows with ids '998', '999'",
+      message: "Expected referenced table 'Book' to have row with id '998'",
       locations: [{ line: 9, column: 11 }],
       path: ["bookById", "authors", 0, "books"],
     }],
@@ -814,7 +814,7 @@ Deno.test("non null list in cyclical reference", async () => {
     },
     errors: [{
       message:
-        "Expected column 'books' to contain array of ids but found 'undefined'",
+        "Expected table 'Author' column 'books' to contain array of positive bigints",
       locations: [{ line: 9, column: 11 }],
       path: ["bookById", "authors", 0, "books"],
     }],
@@ -919,7 +919,7 @@ Deno.test("non null item in cyclical reference", async () => {
     },
     errors: [{
       message:
-        "Expected column 'books' to contain at least one reference but found zero",
+        "Expected table 'Author' column 'books' to contain at least one reference",
       locations: [{ line: 9, column: 11 }],
       path: ["bookById", "authors", 0, "books"],
     }],
@@ -1020,7 +1020,7 @@ Deno.test("non null list and item in cyclical reference", async () => {
     },
     errors: [{
       message:
-        "Expected column 'books' to contain at least one reference but found zero",
+        "Expected table 'Author' column 'books' to contain at least one reference",
       locations: [{ line: 9, column: 11 }],
       path: ["bookById", "authors", 0, "books"],
     }],

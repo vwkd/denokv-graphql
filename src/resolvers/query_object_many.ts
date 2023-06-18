@@ -5,6 +5,7 @@ import type {
 } from "../../deps.ts";
 import { DatabaseCorruption } from "../utils.ts";
 import { createQueryResolver } from "./query.ts";
+import { validateReferencedRow } from "./utils.ts";
 
 /**
  * Create resolver for object column
@@ -40,11 +41,12 @@ export function createResolverObjectMany(
       return null;
     }
 
-    if (!Array.isArray(ids)) {
+    if (
+      !Array.isArray(ids) ||
+      ids.some((id) => !(typeof id == "bigint" && id > 0))
+    ) {
       throw new DatabaseCorruption(
-        `Expected column '${columnName}' to contain array of ids but found '${
-          JSON.stringify(ids)
-        }'`,
+        `Expected table '${tableName}' column '${columnName}' to contain array of positive bigints`,
       );
     }
 
@@ -54,7 +56,7 @@ export function createResolverObjectMany(
 
     if (ids.length == 0) {
       throw new DatabaseCorruption(
-        `Expected column '${columnName}' to contain at least one reference but found zero`,
+        `Expected table '${tableName}' column '${columnName}' to contain at least one reference`,
       );
     }
 
@@ -62,24 +64,14 @@ export function createResolverObjectMany(
 
     const entries = await db.getMany(keys);
 
-    const missing_ids: string[] = [];
-
     const values = entries.map(({ key, value }) => {
-      if (value === null) {
-        missing_ids.push(key.at(-1)!);
-      }
+      // note: throw on first invalid entry instead of continuing to find all
+      const id = key.at(-1)! as bigint;
+
+      validateReferencedRow(value, referencedTableName, id);
+
       return value;
     });
-
-    if (missing_ids.length) {
-      throw new DatabaseCorruption(
-        `Referenced table '${referencedTableName}' has no row${
-          missing_ids.length > 1 ? "s" : ""
-        } with id${missing_ids.length > 1 ? "s" : ""} '${
-          missing_ids.join("', '")
-        }'`,
-      );
-    }
 
     return values;
   };

@@ -4,9 +4,8 @@ import type {
   IFieldResolver,
   IResolvers,
 } from "../../deps.ts";
-import {
-  validateInsertMutationArguments,
-} from "./utils.ts";
+import { DatabaseCorruption } from "../utils.ts";
+import { validateInsertMutationArguments } from "./utils.ts";
 
 /**
  * Maximum number of retries to set value after failing due to concurrent write
@@ -68,6 +67,12 @@ export function createResolverInsert(
         res = await db.set(key, value);
       } else {
         const lastId = value.key.at(-1)!;
+
+        if (!(typeof lastId == "bigint" && lastId > 0n)) {
+          throw new DatabaseCorruption(
+            `Expected table '${tableName}' last row id to be positive bigint`,
+          );
+        }
 
         const id = lastId + 1n;
 

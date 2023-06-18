@@ -4,7 +4,12 @@ import type {
   IFieldResolver,
   IResolvers,
 } from "../../deps.ts";
-import { validateQueryArguments, validateQueryReturn } from "./utils.ts";
+import {
+  parseId,
+  validateQueryArguments,
+  validateQueryReturn,
+  validateRow,
+} from "./utils.ts";
 import { createQueryResolver } from "./query.ts";
 
 /**
@@ -44,17 +49,21 @@ export function createRootQueryResolver(
       _root,
       args,
     ): Promise<IFieldResolver<any, any>> => {
-      let id: bigint;
-
-      try {
-        id = BigInt(args.id);
-      }
+      const id = parseId(args.id, tableName);
 
       const key = [tableName, id];
 
       const entry = await db.get(key);
 
-      return entry.value;
+      const value = entry.value;
+
+      if (value === null) {
+        return null;
+      }
+
+      validateRow(value, tableName, id);
+
+      return value;
     };
 
     createQueryResolver(db, type, resolvers);

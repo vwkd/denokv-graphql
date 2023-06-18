@@ -5,6 +5,7 @@ import type {
 } from "../../deps.ts";
 import { DatabaseCorruption } from "../utils.ts";
 import { createQueryResolver } from "./query.ts";
+import { validateReferencedRow } from "./utils.ts";
 
 /**
  * Create resolver for object column
@@ -32,7 +33,7 @@ export function createResolverObjectOne(
   resolvers[tableName][columnName] = async (
     root,
   ): Promise<IFieldResolver<any, any>> => {
-    const id = root[columnName];
+    const id = root[columnName] as bigint | undefined;
 
     if (optional && id === undefined) {
       return null;
@@ -48,13 +49,11 @@ export function createResolverObjectOne(
 
     const entry = await db.get(key);
 
-    if (entry.value === null) {
-      throw new DatabaseCorruption(
-        `Referenced table '${referencedTableName}' has no row with id '${id}'`,
-      );
-    }
+    const value = entry.value;
 
-    return entry.value;
+    validateReferencedRow(value, referencedTableName, id);
+
+    return value;
   };
 
   createQueryResolver(db, type, resolvers);

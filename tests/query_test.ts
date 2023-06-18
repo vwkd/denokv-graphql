@@ -1,4 +1,4 @@
-import { assertEquals, graphql } from "../deps.ts";
+import { assertEquals, assertObjectMatch, graphql } from "../deps.ts";
 import { buildSchema } from "../src/main.ts";
 
 Deno.test("minimal working example", async () => {
@@ -138,8 +138,7 @@ Deno.test("null column", async () => {
   assertEquals(res, exp);
 });
 
-// todo: should this throw?
-Deno.test("corrupted id", async () => {
+Deno.test("bad id", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): Book
@@ -174,14 +173,17 @@ Deno.test("corrupted id", async () => {
 
   const exp = {
     data: {
-      bookById: {
-        id: "999",
-        title: "Shadows of Eternity",
-      },
+      bookById: null,
     },
+    errors: [{
+      message:
+        "Expected table 'Book' row '1' column 'id' to be equal to row id",
+      locations: [{ line: 3, column: 7 }],
+      path: ["bookById"],
+    }],
   };
 
   db.close();
 
-  assertEquals(res, exp);
+  assertObjectMatch(res, exp);
 });

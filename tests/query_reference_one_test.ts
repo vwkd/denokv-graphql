@@ -126,7 +126,7 @@ Deno.test("bad id", async () => {
       },
     },
     errors: [{
-      message: "Referenced table 'Author' has no row with id '999'",
+      message: "Expected referenced table 'Author' to have row with id '999'",
       locations: [{ line: 6, column: 9 }],
       path: ["bookById", "author"],
     }],
@@ -339,7 +339,7 @@ Deno.test("bad id in cyclical reference", async () => {
       },
     },
     errors: [{
-      message: "Referenced table 'Book' has no row with id '999'",
+      message: "Expected referenced table 'Book' to have row with id '999'",
       locations: [{ line: 9, column: 11 }],
       path: ["bookById", "author"],
     }],
