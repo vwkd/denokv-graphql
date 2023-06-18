@@ -5,6 +5,7 @@ import type {
   IResolvers,
 } from "../../../deps.ts";
 import { DatabaseCorruption } from "../../utils.ts";
+import { isReferenceField, parseIds } from "../utils.ts";
 import { validateInsertMutationArguments } from "./utils.ts";
 
 /**
@@ -63,7 +64,21 @@ export function createResolverInsert(
       if (!value) {
         const id = 1n;
         const key = [tableName, id];
-        const value = { id, ...args };
+
+        // parse string ids into bigints in references columns
+        const data = Object.fromEntries(
+          Object.entries(args.data).map(([columnName, value]) => {
+            const column = columnsMap[columnName];
+            if (isReferenceField(column)) {
+              const valueNew = parseIds(value, tableName, columnName);
+              return [columnName, valueNew];
+            } else {
+              return [columnName, value];
+            }
+          }),
+        );
+
+        const value = { id, ...data };
 
         res = await db.set(key, value);
       } else {
@@ -78,7 +93,21 @@ export function createResolverInsert(
         id = lastId + 1n;
 
         const key = [tableName, id];
-        const val = { id, ...args };
+
+        // parse string ids into bigints in reference columns
+        const data = Object.fromEntries(
+          Object.entries(args.data).map(([columnName, value]) => {
+            const column = columnsMap[columnName];
+            if (isReferenceField(column)) {
+              const valueNew = parseIds(value, tableName, columnName);
+              return [columnName, valueNew];
+            } else {
+              return [columnName, value];
+            }
+          }),
+        );
+
+        const val = { id, ...data };
 
         res = await db
           .atomic()

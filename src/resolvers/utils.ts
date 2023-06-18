@@ -1,4 +1,9 @@
-import { isListType, isNonNullType, isScalarType } from "../../deps.ts";
+import {
+  isListType,
+  isNonNullType,
+  isObjectType,
+  isScalarType,
+} from "../../deps.ts";
 import type { GraphQLField, GraphQLType } from "../../deps.ts";
 import { InvalidInput } from "../utils.ts";
 
@@ -90,7 +95,20 @@ export function isIdField(field: GraphQLField<any, any>): boolean {
 }
 
 /**
- * Parse a bigint id from a string id
+ * Test if field is a reference field
+ * @param type field type
+ * @returns boolean
+ */
+export function isReferenceField(field: GraphQLField<any, any>): boolean {
+  if (isType(field.type, isObjectType)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+/**
+ * Parse a string id into a bigint id
  * @param str string id
  * @param tableName table name
  */
@@ -112,4 +130,60 @@ export function parseId(str: string, tableName: string): bigint {
   }
 
   return id;
+}
+
+/**
+ * Parse one or more string ids into bigint ids
+ * @param strs string id or array of string ids
+ * @param tableName table name
+ * @param columnName column name
+ */
+export function parseIds(
+  strs: string | string[],
+  tableName: string,
+  columnName: string,
+): bigint {
+  if (!Array.isArray(strs)) {
+    let id: bigint;
+
+    try {
+      id = BigInt(strs);
+    } catch (e) {
+      throw new InvalidInput(
+        `Expected input table '${tableName}' column '${columnName}' to contain string of positive bigint`,
+      );
+    }
+
+    if (id <= 0n) {
+      throw new InvalidInput(
+        `Expected input table '${tableName}' column '${columnName}' to contain string of positive bigint`,
+      );
+    }
+
+    return id;
+  } else {
+    let ids: bigint[];
+
+    for (const str of strs) {
+      let id: bigint;
+
+      try {
+        id = BigInt(str);
+      } catch (e) {
+        throw new InvalidInput(
+          `Expected input table '${tableName}' column '${columnName}' to contain array of strings of positive bigints`,
+        );
+      }
+
+      if (id <= 0n) {
+        throw new InvalidInput(
+          `Expected input table '${tableName}' column '${columnName}' to contain array of strings of positive bigints`,
+        );
+      }
+
+      ids.push(id);
+    }
+
+    return ids;
+  }
 }
