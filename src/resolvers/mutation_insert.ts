@@ -9,6 +9,11 @@ import {
 } from "./utils.ts";
 
 /**
+ * Maximum number of retries to set value after failing due to concurrent write
+ */
+const MAX_RETRIES = 100;
+
+/**
  * Create resolvers for insert mutations
  *
  * - note: mutates resolvers object
@@ -41,6 +46,10 @@ export function createResolverInsert(
     let res: Deno.KvCommitResult | Deno.KvCommitError = { ok: false };
 
     while (!res.ok) {
+      // failure condition
+      if (count > MAX_RETRIES) {
+        break;
+      }
 
       // get previous entry (if any)
       const entries = db.list({ prefix: [tableName] }, {
