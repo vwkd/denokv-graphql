@@ -44,7 +44,11 @@ export function createRootQueryResolver(
       _root,
       args,
     ): Promise<IFieldResolver<any, any>> => {
-      const id = args.id;
+      let id: bigint;
+
+      try {
+        id = BigInt(args.id);
+      }
 
       const key = [tableName, id];
 

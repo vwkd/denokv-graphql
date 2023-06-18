@@ -61,14 +61,15 @@ export function createResolverInsert(
 
       // no previous entry
       if (!value) {
-        const id = 1;
+        const id = 1n;
         const key = [tableName, id];
         const value = { id, ...args };
 
         res = await db.set(key, value);
       } else {
         const lastId = value.key.at(-1)!;
-        const id = Number(lastId) + 1;
+
+        const id = lastId + 1n;
 
         const key = [tableName, id];
         const val = { id, ...args };

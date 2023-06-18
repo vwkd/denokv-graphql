@@ -23,7 +23,7 @@ Deno.test("minimal working example", async () => {
 
   const source = `
     query {
-      bookById(id: 1) {
+      bookById(id: "1") {
         id,
         title,
         author {
@@ -36,13 +36,13 @@ Deno.test("minimal working example", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
+    .set(["Book", 1n], {
+      id: 1n,
       title: "Shadows of Eternity",
-      author: "11",
+      author: 11n,
     })
-    .set(["Author", "11"], {
-      id: "11",
+    .set(["Author", 11n], {
+      id: 11n,
       name: "Victoria Nightshade",
     })
     .commit();
@@ -89,7 +89,7 @@ Deno.test("bad id", async () => {
 
   const source = `
     query {
-      bookById(id: 1) {
+      bookById(id: "1") {
         id,
         title,
         author {
@@ -102,13 +102,13 @@ Deno.test("bad id", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
+    .set(["Book", 1n], {
+      id: 1n,
       title: "Shadows of Eternity",
-      author: "999",
+      author: 999n,
     })
-    .set(["Author", "11"], {
-      id: "11",
+    .set(["Author", 11n], {
+      id: 11n,
       name: "Victoria Nightshade",
     })
     .commit();
@@ -157,7 +157,7 @@ Deno.test("non null", async () => {
 
   const source = `
     query {
-      bookById(id: 1) {
+      bookById(id: "1") {
         id,
         title,
         author {
@@ -170,8 +170,8 @@ Deno.test("non null", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
+    .set(["Book", 1n], {
+      id: 1n,
       title: "Shadows of Eternity",
     })
     .commit();
@@ -217,7 +217,7 @@ Deno.test("minimal cyclical reference", async () => {
 
   const source = `
     query {
-      bookById(id: 1) {
+      bookById(id: "1") {
         id,
         title,
         author {
@@ -234,15 +234,15 @@ Deno.test("minimal cyclical reference", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
+    .set(["Book", 1n], {
+      id: 1n,
       title: "Shadows of Eternity",
-      author: "11",
+      author: 11n,
     })
-    .set(["Author", "11"], {
-      id: "11",
+    .set(["Author", 11n], {
+      id: 11n,
       name: "Victoria Nightshade",
-      book: "1",
+      book: 1n,
     })
     .commit();
 
@@ -293,7 +293,7 @@ Deno.test("bad id in cyclical reference", async () => {
 
   const source = `
     query {
-      bookById(id: 1) {
+      bookById(id: "1") {
         id,
         title,
         author {
@@ -310,15 +310,15 @@ Deno.test("bad id in cyclical reference", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
+    .set(["Book", 1n], {
+      id: 1n,
       title: "Shadows of Eternity",
-      author: "11",
+      author: 11n,
     })
-    .set(["Author", "11"], {
-      id: "11",
+    .set(["Author", 11n], {
+      id: 11n,
       name: "Victoria Nightshade",
-      book: "999",
+      book: 999n,
     })
     .commit();
 
@@ -371,7 +371,7 @@ Deno.test("non null in cyclical reference", async () => {
 
   const source = `
     query {
-      bookById(id: 1) {
+      bookById(id: "1") {
         id,
         title,
         author {
@@ -388,13 +388,13 @@ Deno.test("non null in cyclical reference", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
+    .set(["Book", 1n], {
+      id: 1n,
       title: "Shadows of Eternity",
-      author: "11",
+      author: 11n,
     })
-    .set(["Author", "11"], {
-      id: "11",
+    .set(["Author", 11n], {
+      id: 11n,
       name: "Victoria Nightshade",
     })
     .commit();

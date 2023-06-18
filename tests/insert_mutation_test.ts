@@ -84,8 +84,8 @@ Deno.test("autoincrementing id", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
+    .set(["Book", 1n], {
+      id: 1n,
       title: "Shadows of Eternity",
     })
     .commit();

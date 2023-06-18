@@ -15,7 +15,7 @@ Deno.test("minimal working example", async () => {
 
   const source = `
     query {
-      bookById(id: 1) {
+      bookById(id: "1") {
         id,
         title,
       }
@@ -24,8 +24,8 @@ Deno.test("minimal working example", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
+    .set(["Book", 1n], {
+      id: 1n,
       title: "Shadows of Eternity",
     })
     .commit();
@@ -62,7 +62,7 @@ Deno.test("null row", async () => {
 
   const source = `
     query {
-      bookById(id: 999) {
+      bookById(id: "999") {
         id,
         title,
       }
@@ -71,8 +71,8 @@ Deno.test("null row", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
+    .set(["Book", 1n], {
+      id: 1n,
       title: "Shadows of Eternity",
     })
     .commit();
@@ -106,7 +106,7 @@ Deno.test("null column", async () => {
 
   const source = `
     query {
-      bookById(id: 1) {
+      bookById(id: "1") {
         id,
         title,
       }
@@ -115,8 +115,8 @@ Deno.test("null column", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
+    .set(["Book", 1n], {
+      id: 1n,
     })
     .commit();
 
@@ -153,7 +153,7 @@ Deno.test("corrupted id", async () => {
 
   const source = `
     query {
-      bookById(id: 1) {
+      bookById(id: "1") {
         id,
         title,
       }
@@ -162,8 +162,8 @@ Deno.test("corrupted id", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "999",
+    .set(["Book", 1n], {
+      id: 999n,
       title: "Shadows of Eternity",
     })
     .commit();
