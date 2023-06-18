@@ -215,17 +215,20 @@ export function validateMutationReturn(
 }
 
 /**
- * Validate existence of directives on mutation field
+ * Validate one directive on mutation field
  *
- * note: assumes parsed IDL to access through `astNode`, currently graphql-js doesn't offer other way since doesn't allow defining directives programmatically
+ * - note: still allows additional unknown directives, e.g. `deprecated`, etc.
+ * - note: assumes parsed IDL to access through `astNode`, currently graphql-js doesn't offer other way since doesn't allow defining directives programmatically
  * see [#1343](https://github.com/graphql/graphql-js/issues/1343)
  *
  * @param mutationName mutation name
+ * @param directiveNames directive names
  */
 
-export function validateMutationDirectiveInsert(
+export function validateMutationDirective(
   astNode: FieldDefinitionNode,
   mutationName: string,
+  directiveNames: string[],
 ) {
   const directives = astNode.directives;
 
@@ -233,11 +236,19 @@ export function validateMutationDirectiveInsert(
     throw new InvalidSchema(`Mutation '${mutationName}' must have a directive`);
   }
 
-  const directive = directives.find(({ name }) => name.value == "insert");
+  const directive = directives.filter(({ name }) =>
+    directiveNames.includes(name.value)
+  );
 
-  if (!directive) {
+  if (directive.length != 1) {
     throw new InvalidSchema(
-      `Mutation '${mutationName}' must have a 'insert' directive`,
+      `Mutation '${mutationName}' must have one '${
+        directiveNames.length > 1
+          ? `${directiveNames.slice(0, -1).join("', '")}' or '${
+            directiveNames.at(-1)
+          }`
+          : directiveNames[0]
+      }' directive`,
     );
   }
 }
@@ -267,7 +278,7 @@ export function validateMutationTable(
 }
 
 /**
- * Validate mutation arguments
+ * Validate insert mutation arguments
  *
  * - single "data" argument with non-null input object type
  * - input object contains all fields, except `id: ID!` argument
@@ -278,7 +289,7 @@ export function validateMutationTable(
  * @param mutationName mutation name
  * @param tableName table name
  */
-export function validateMutationArguments(
+export function validateInsertMutationArguments(
   args: readonly GraphQLArgument[],
   columnsMap: GraphQLFieldMap<any, any>,
   mutationName: string,

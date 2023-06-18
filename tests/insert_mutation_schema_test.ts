@@ -336,7 +336,7 @@ Deno.test("other type", async () => {
   db.close();
 });
 
-Deno.test("no 'insert' directive", async () => {
+Deno.test("no directive", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): Book
@@ -361,7 +361,7 @@ Deno.test("no 'insert' directive", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' must have a 'insert' directive",
+    "Mutation 'createBook' must have one 'insert' directive",
   );
 
   db.close();

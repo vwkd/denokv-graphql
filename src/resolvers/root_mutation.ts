@@ -1,16 +1,14 @@
 import { GraphQLSchema } from "../../deps.ts";
-import type {
-  IFieldResolver,
-  IResolvers,
-  StringValueNode,
-} from "../../deps.ts";
+import type { IResolvers, StringValueNode } from "../../deps.ts";
+import { createResolverInsert } from "./mutation_insert.ts";
 import {
-  validateMutationArguments,
-  validateMutationDirectiveInsert,
+  validateMutationDirective,
   validateMutationReturn,
   validateMutationTable,
   validateTable,
 } from "./utils.ts";
+
+const directiveNames = ["insert"];
 
 /**
  * Create resolvers for mutations
@@ -47,12 +45,13 @@ export function createRootMutationResolver(
 
     const astNode = mutation.astNode!;
 
-    validateMutationDirectiveInsert(astNode, mutationName);
+    validateMutationDirective(astNode, mutationName, directiveNames);
 
     // note: assert in `validateMutationDirectiveInsert`
     const directives = astNode.directives!;
-
-    const directive = directives.find(({ name }) => name.value == "insert")!;
+    const directive = directives.filter(({ name }) =>
+      directiveNames.includes(name.value)
+    )[0];
 
     // note: assumes valid schema
     // beware: currently bug in graphql-js that doesn't validate custom schema directive argument types, see [#3912](https://github.com/graphql/graphql-js/issues/3912)
@@ -68,51 +67,15 @@ export function createRootMutationResolver(
     const columns = Object.values(columnsMap);
     validateTable(columns, tableName);
 
-    validateMutationArguments(
-      mutation.args,
-      columnsMap,
-      mutationName,
-      tableName,
-    );
-
-    resolvers[rootMutationName][mutationName] = async (
-      _root,
-      args,
-    ): Promise<IFieldResolver<any, any>> => {
-      let res: Deno.KvCommitResult | Deno.KvCommitError = { ok: false };
-
-      while (!res.ok) {
-        // get previous entry (if any)
-        const entries = db.list({ prefix: [tableName] }, {
-          limit: 1,
-          reverse: true,
-        });
-        const entry = await entries.next();
-        const value = entry.value;
-
-        // no previous entry
-        if (!value) {
-          const id = 1;
-          const key = [tableName, id];
-          const value = { id, ...args };
-
-          res = await db.set(key, value);
-        } else {
-          const lastId = value.key.at(-1)!;
-          const id = Number(lastId) + 1;
-
-          const key = [tableName, id];
-          const val = { id, ...args };
-
-          res = await db
-            .atomic()
-            .check(value)
-            .set(key, val)
-            .commit();
-        }
-      }
-
-      return res;
-    };
+    if (directive.name.value == "insert") {
+      createResolverInsert(
+        db,
+        mutation.args,
+        columnsMap,
+        tableName,
+        mutationName,
+        resolvers[rootMutationName],
+      );
+    }
   }
 }
