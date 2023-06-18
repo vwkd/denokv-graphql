@@ -27,7 +27,7 @@ Deno.test("naked vs naked", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -63,7 +63,7 @@ Deno.test("naked vs non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -101,7 +101,7 @@ Deno.test("naked vs list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -139,7 +139,7 @@ Deno.test("naked vs list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -177,7 +177,7 @@ Deno.test("naked vs non-null list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -215,7 +215,7 @@ Deno.test("naked vs non-null list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -259,7 +259,7 @@ Deno.test("non-null vs naked", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -297,7 +297,7 @@ Deno.test("non-null vs non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -333,7 +333,7 @@ Deno.test("non-null vs list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -371,7 +371,7 @@ Deno.test("non-null vs list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -409,7 +409,7 @@ Deno.test("non-null vs non-null list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -447,7 +447,7 @@ Deno.test("non-null vs non-null list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -491,7 +491,7 @@ Deno.test("list vs naked", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -529,7 +529,7 @@ Deno.test("list vs non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -567,7 +567,7 @@ Deno.test("list vs list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -603,7 +603,7 @@ Deno.test("list vs list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -641,7 +641,7 @@ Deno.test("list vs non-null list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -679,7 +679,7 @@ Deno.test("list vs non-null list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -723,7 +723,7 @@ Deno.test("list non-null vs naked", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -761,7 +761,7 @@ Deno.test("list non-null vs non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -799,7 +799,7 @@ Deno.test("list non-null vs list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -837,7 +837,7 @@ Deno.test("list non-null vs list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -875,7 +875,7 @@ Deno.test("list non-null vs non-null list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -911,7 +911,7 @@ Deno.test("list non-null vs non-null list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -955,7 +955,7 @@ Deno.test("non-null list vs naked", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -993,7 +993,7 @@ Deno.test("non-null list vs non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1031,7 +1031,7 @@ Deno.test("non-null list vs list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1069,7 +1069,7 @@ Deno.test("non-null list vs list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1105,7 +1105,7 @@ Deno.test("non-null list vs non-null list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1143,7 +1143,7 @@ Deno.test("non-null list vs non-null list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1187,7 +1187,7 @@ Deno.test("non-null list non-null vs naked", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1225,7 +1225,7 @@ Deno.test("non-null list non-null vs non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1263,7 +1263,7 @@ Deno.test("non-null list non-null vs list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1301,7 +1301,7 @@ Deno.test("non-null list non-null vs list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1339,7 +1339,7 @@ Deno.test("non-null list non-null vs non-null list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1377,7 +1377,7 @@ Deno.test("non-null list non-null vs non-null list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1425,7 +1425,7 @@ Deno.test("naked vs naked", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1463,7 +1463,7 @@ Deno.test("naked vs non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1501,7 +1501,7 @@ Deno.test("naked vs list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1539,7 +1539,7 @@ Deno.test("naked vs list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1577,7 +1577,7 @@ Deno.test("naked vs non-null list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1615,7 +1615,7 @@ Deno.test("naked vs non-null list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1659,7 +1659,7 @@ Deno.test("non-null vs naked", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1697,7 +1697,7 @@ Deno.test("non-null vs non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1735,7 +1735,7 @@ Deno.test("non-null vs list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1773,7 +1773,7 @@ Deno.test("non-null vs list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1811,7 +1811,7 @@ Deno.test("non-null vs non-null list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1849,7 +1849,7 @@ Deno.test("non-null vs non-null list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1893,7 +1893,7 @@ Deno.test("list vs naked", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1931,7 +1931,7 @@ Deno.test("list vs non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -1969,7 +1969,7 @@ Deno.test("list vs list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2007,7 +2007,7 @@ Deno.test("list vs list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2045,7 +2045,7 @@ Deno.test("list vs non-null list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2083,7 +2083,7 @@ Deno.test("list vs non-null list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2127,7 +2127,7 @@ Deno.test("list non-null vs naked", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2165,7 +2165,7 @@ Deno.test("list non-null vs non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2203,7 +2203,7 @@ Deno.test("list non-null vs list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2241,7 +2241,7 @@ Deno.test("list non-null vs list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2279,7 +2279,7 @@ Deno.test("list non-null vs non-null list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2317,7 +2317,7 @@ Deno.test("list non-null vs non-null list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2361,7 +2361,7 @@ Deno.test("non-null list vs naked", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2399,7 +2399,7 @@ Deno.test("non-null list vs non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2437,7 +2437,7 @@ Deno.test("non-null list vs list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2475,7 +2475,7 @@ Deno.test("non-null list vs list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2513,7 +2513,7 @@ Deno.test("non-null list vs non-null list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2551,7 +2551,7 @@ Deno.test("non-null list vs non-null list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2595,7 +2595,7 @@ Deno.test("non-null list non-null vs naked", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2633,7 +2633,7 @@ Deno.test("non-null list non-null vs non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2671,7 +2671,7 @@ Deno.test("non-null list non-null vs list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2709,7 +2709,7 @@ Deno.test("non-null list non-null vs list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2747,7 +2747,7 @@ Deno.test("non-null list non-null vs non-null list", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -2785,7 +2785,7 @@ Deno.test("non-null list non-null vs non-null list non-null", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {

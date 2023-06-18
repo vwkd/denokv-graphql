@@ -21,7 +21,7 @@ import { isSameWrapping, isType } from "../utils.ts";
  * Validate insert mutation return value
  *
  * - name is 'Result'
- * - non null object type
+ * - object type
  * @param type return value
  * @param mutationName mutation name
  */
@@ -30,11 +30,11 @@ export function validateInsertMutationReturn(
   mutationName: string,
 ): asserts returnValue is GraphQLNonNull<GraphQLObjectType> {
   if (
-    !(isNonNullType(returnValue) && isObjectType(returnValue.ofType) &&
-      returnValue.ofType.name == "Result")
+    !(isObjectType(returnValue) &&
+      returnValue.name == "Result")
   ) {
     throw new InvalidSchema(
-      `Mutation '${mutationName}' must have non-null 'Result' type`,
+      `Mutation '${mutationName}' must have nullable 'Result' type`,
     );
   }
 }

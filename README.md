@@ -29,7 +29,7 @@ GraphQL is a highly ergonomic API for a remote server. Why shouldn't the same in
 - a table must have a non-null `id: ID!` column and at least one other column
 - a query must have a non-null `id: ID!` argument and return a nullable table
 - a mutation must have a directive with a single `table` argument as the table name as string
-- an insert mutation must take a single `data` argument of a non-null input object type and return a non-null `Result`
+- an insert mutation must take a single `data` argument of a non-null input object type and return a nullable `Result`
 - the input data type must have matching fields to the table type, except no `id` field and in reference fields `ID`s in place of the referenced table's type
 
 

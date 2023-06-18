@@ -35,7 +35,7 @@ export function buildSchema(
 ): GraphQLSchema {
   const source_extension = `
     type Result {
-      ok: Boolean!
+      id: ID!,
       versionstamp: String!
     }
 

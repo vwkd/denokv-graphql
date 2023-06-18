@@ -9,7 +9,7 @@ Deno.test("minimal working example", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -38,7 +38,7 @@ Deno.test("id input", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -69,7 +69,7 @@ Deno.test("extra id input", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -101,7 +101,7 @@ Deno.test("other input", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -134,7 +134,7 @@ Deno.test("different scalar input", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -165,7 +165,7 @@ Deno.test("no argument", async () => {
     }
 
     type Mutation {
-      createBook: Result! @insert(table: "Book")
+      createBook: Result @insert(table: "Book")
     }
 
     type Book {
@@ -192,7 +192,7 @@ Deno.test("other argument", async () => {
     }
 
     type Mutation {
-      createBook(XXX: String): Result! @insert(table: "Book")
+      createBook(XXX: String): Result @insert(table: "Book")
     }
 
     type Book {
@@ -219,7 +219,7 @@ Deno.test("extra argument", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!, XXX: String): Result! @insert(table: "Book")
+      createBook(data: BookInput!, XXX: String): Result @insert(table: "Book")
     }
 
     type Book {
@@ -243,14 +243,14 @@ Deno.test("extra argument", async () => {
   db.close();
 });
 
-Deno.test("null type", async () => {
+Deno.test("non-null type", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): Book
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "Book")
+      createBook(data: BookInput!): Result! @insert(table: "Book")
     }
 
     type Book {
@@ -268,7 +268,7 @@ Deno.test("null type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' must have non-null 'Result' type",
+    "Mutation 'createBook' must have nullable 'Result' type",
   );
 
   db.close();
@@ -299,7 +299,7 @@ Deno.test("list type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' must have non-null 'Result' type",
+    "Mutation 'createBook' must have nullable 'Result' type",
   );
 
   db.close();
@@ -312,7 +312,7 @@ Deno.test("other type", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): String! @insert(table: "Book")
+      createBook(data: BookInput!): String @insert(table: "Book")
     }
 
     type Book {
@@ -330,7 +330,7 @@ Deno.test("other type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' must have non-null 'Result' type",
+    "Mutation 'createBook' must have nullable 'Result' type",
   );
 
   db.close();
@@ -343,7 +343,7 @@ Deno.test("no directive", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result!
+      createBook(data: BookInput!): Result
     }
 
     type Book {
@@ -375,7 +375,7 @@ Deno.test("other type to 'table' argument of 'insert' directive", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: 999)
+      createBook(data: BookInput!): Result @insert(table: 999)
     }
 
     type Book {
@@ -406,7 +406,7 @@ Deno.test("no table", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "XXX")
+      createBook(data: BookInput!): Result @insert(table: "XXX")
     }
 
     type Book {
@@ -437,7 +437,7 @@ Deno.test("no object type", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "XXX")
+      createBook(data: BookInput!): Result @insert(table: "XXX")
     }
 
     type Book {
@@ -472,7 +472,7 @@ Deno.test("missing id column", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "XXX")
+      createBook(data: BookInput!): Result @insert(table: "XXX")
     }
 
     type Book {
@@ -508,7 +508,7 @@ Deno.test("missing second column", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "XXX")
+      createBook(data: BookInput!): Result @insert(table: "XXX")
     }
 
     type Book {

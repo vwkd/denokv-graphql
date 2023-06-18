@@ -10,7 +10,7 @@ Deno.test("minimal working example", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -26,7 +26,7 @@ Deno.test("minimal working example", async () => {
   const source = `
     mutation {
       createBook(data: { title: "Shadows of Eternity" }) {
-        ok,
+        id,
         versionstamp,
       }
     }
@@ -41,7 +41,7 @@ Deno.test("minimal working example", async () => {
   const exp = {
     data: {
       createBook: {
-        ok: true,
+        id: "1",
         versionstamp: "00000000000000010000",
       },
     },
@@ -60,7 +60,7 @@ Deno.test("autoincrementing id", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -76,7 +76,7 @@ Deno.test("autoincrementing id", async () => {
   const source = `
     mutation {
       createBook(data: { title: "Whispers of the Forgotten" }) {
-        ok,
+        id,
         versionstamp,
       }
     }
@@ -97,7 +97,7 @@ Deno.test("autoincrementing id", async () => {
   const exp = {
     data: {
       createBook: {
-        ok: true,
+        id: "2",
         versionstamp: "00000000000000020000",
       },
     },
@@ -115,7 +115,7 @@ Deno.test("bad last id negative bigint", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -131,7 +131,7 @@ Deno.test("bad last id negative bigint", async () => {
   const source = `
     mutation {
       createBook(data: { title: "Shadows of Eternity" }) {
-        ok,
+        id,
         versionstamp,
       }
     }
@@ -150,7 +150,9 @@ Deno.test("bad last id negative bigint", async () => {
   const res = await graphql({ schema, source });
 
   const exp = {
-    data: null,
+    data: {
+      createBook: null,
+    },
     errors: [{
       message: "Expected table 'Book' last row id to be positive bigint",
       locations: [{ line: 3, column: 7 }],
@@ -170,7 +172,7 @@ Deno.test("bad last id other", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: BookInput!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -186,7 +188,7 @@ Deno.test("bad last id other", async () => {
   const source = `
     mutation {
       createBook(data: { title: "Shadows of Eternity" }) {
-        ok,
+        id,
         versionstamp,
       }
     }
@@ -205,7 +207,9 @@ Deno.test("bad last id other", async () => {
   const res = await graphql({ schema, source });
 
   const exp = {
-    data: null,
+    data: {
+      createBook: null,
+    },
     errors: [{
       message: "Expected table 'Book' last row id to be positive bigint",
       locations: [{ line: 3, column: 7 }],

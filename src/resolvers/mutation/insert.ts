@@ -42,12 +42,13 @@ export function createResolverInsert(
     args,
   ): Promise<IFieldResolver<any, any>> => {
     let count = 0;
+    let id = 1n;
     let res: Deno.KvCommitResult | Deno.KvCommitError = { ok: false };
 
     while (!res.ok) {
       // failure condition
       if (count > MAX_RETRIES) {
-        break;
+        return null;
       }
 
       // get previous entry (if any)
@@ -74,7 +75,7 @@ export function createResolverInsert(
           );
         }
 
-        const id = lastId + 1n;
+        id = lastId + 1n;
 
         const key = [tableName, id];
         const val = { id, ...args };
@@ -87,6 +88,6 @@ export function createResolverInsert(
       }
     }
 
-    return res;
+    return { id, versionstamp: res.versionstamp };
   };
 }
