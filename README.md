@@ -86,21 +86,21 @@ console.log(JSON.stringify(res1, null, 2));
 const authorId = res1.data.createAuthor.id;
 
 const source2 = `
-  mutation {
-    createBook(data: { title: "Shadows of Eternity", author: "${authorId}" }) {
+  mutation($authorId: ID!) {
+    createBook(data: { title: "Shadows of Eternity", author: $authorId }) {
       id,
       versionstamp,
     }
   }
 `;
 
-const res2 = await graphql({ schema, source: source2 });
+const res2 = await graphql({ schema, source: source2, variableValues: { authorId } });
 console.log(JSON.stringify(res2, null, 2));
 const bookId = res2.data.createBook.id;
 
 const source3 = `
-  query {
-    bookById(id: "${bookId}") {
+  query($bookId: ID!) {
+    bookById(id: $bookId) {
       id,
       versionstamp,
       value {
@@ -115,25 +115,25 @@ const source3 = `
   }
 `;
 
-const res3 = await graphql({ schema, source: source3 });
+const res3 = await graphql({ schema, source: source3, variableValues: { bookId } });
 console.log(JSON.stringify(res3, null, 2));
 
 const source4 = `
-  mutation {
-    deleteBookById(id: "${bookId}")
+  mutation($bookId: ID!) {
+    deleteBookById(id: $bookId)
   }
 `;
 
-const res4 = await graphql({ schema, source: source4 });
+const res4 = await graphql({ schema, source: source4, variableValues: { bookId } });
 console.log(JSON.stringify(res4, null, 2));
 
 const source5 = `
-  mutation {
-    deleteAuthorById(id: "${authorId}")
+  mutation($authorId: ID!) {
+    deleteAuthorById(id: $authorId)
   }
 `;
 
-const res5 = await graphql({ schema, source: source5 });
+const res5 = await graphql({ schema, source: source5, variableValues: { authorId } });
 console.log(JSON.stringify(res5, null, 2));
 
 db.close();
