@@ -6,17 +6,18 @@ A GraphQL API for Deno KV
 
 ## Motivation
 
-GraphQL is a highly ergonomic API for a remote server. Why shouldn't the same interface work locally against your database? GraphQL provides built-in support for querying across joined tables, selective querying, aliasing, detailed error messages, and much more. This library offers a GraphQL API for your Deno KV database. It won't replace your high-performance customizable enterprise database, but for small application the better ergonomics might be well worth the price.
+GraphQL is an ergonomic interface for reading and writing data. GraphQL provides built-in support for querying across tables ("joins"), sub-selections, aliasing, etc. and all with a strict schema that enables input validation, detailed error messages, introspection, etc. GraphQL is usually used as API on a remote server but why shouldn't it be used locally for a database? It won't do as a high-performance customizable enterprise database, but for small application the better ergonomics might be well worth the price. This library is an experiment to create a GraphQL Schema for a Deno KV database from a GraphQL IDL schema string that can then be used with any executor like `graphql()` from `graphql-js`.
 
 
 
 ## Features
 
-- generates GraphQL API for Deno KV from GraphQL IDL schema
-- query across tables joins tables automatically
-- insert mutation with auto-incrementing IDs
-- delete mutation
-- atomically consistent, except for queries that join across tables since each row depends on the previous row
+- relational storage schema with tables and rows
+- query, insert and delete mutations
+- query "joins" tables automatically
+- insert mutation automatically generates auto-incrementing row id
+- strict schema enables input validation, database validation, error messages, introspection, etc.
+- atomically consistent, except for queries that join tables since each row depends on the previous row
 
 
 
