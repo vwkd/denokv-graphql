@@ -33,7 +33,7 @@ const db = await Deno.openKv(":memory:");
 
 const schemaSource = `
   type Query {
-    bookById(id: ID!): Book
+    bookById(id: ID!): BookResult
   }
 
   type Mutation {
@@ -53,7 +53,13 @@ const schemaSource = `
     id: ID!,
     name: String!,
   }
-  
+
+  type BookResult {
+    id: ID!
+    versionstamp: String!
+    value: Book!
+  }
+
   input BookInput {
     title: String!,
     author: ID!,
@@ -96,10 +102,14 @@ const source3 = `
   query {
     bookById(id: "${bookId}") {
       id,
-      title,
-      author {
-        id,
-        name,
+      versionstamp,
+      value {
+        id,  
+        title,
+        author {
+          id,
+          name,
+        }
       }
     }
   }

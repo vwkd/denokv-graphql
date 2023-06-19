@@ -4,12 +4,18 @@ import { buildSchema } from "../../src/main.ts";
 Deno.test("minimal working example", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -17,7 +23,11 @@ Deno.test("minimal working example", async () => {
     query {
       bookById(id: "1") {
         id,
-        title,
+        versionstamp
+        value {
+          id,
+          title,
+        }
       }
     }
   `;
@@ -38,7 +48,11 @@ Deno.test("minimal working example", async () => {
     data: {
       bookById: {
         id: "1",
-        title: "Shadows of Eternity",
+        versionstamp: "00000000000000010000",
+        value: {
+          id: "1",
+          title: "Shadows of Eternity",
+        },
       },
     },
   };
@@ -51,12 +65,18 @@ Deno.test("minimal working example", async () => {
 Deno.test("null row", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -64,7 +84,11 @@ Deno.test("null row", async () => {
     query {
       bookById(id: "999") {
         id,
-        title,
+        versionstamp
+        value {
+          id,
+          title,
+        }
       }
     }
   `;
@@ -95,12 +119,18 @@ Deno.test("null row", async () => {
 Deno.test("bad input id other", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -108,7 +138,11 @@ Deno.test("bad input id other", async () => {
     query {
       bookById(id: "XXX") {
         id,
-        title,
+        versionstamp
+        value {
+          id,
+          title,
+        }
       }
     }
   `;
@@ -145,12 +179,18 @@ Deno.test("bad input id other", async () => {
 Deno.test("bad input id negative bigint", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -158,7 +198,11 @@ Deno.test("bad input id negative bigint", async () => {
     query {
       bookById(id: "-999") {
         id,
-        title,
+        versionstamp
+        value {
+          id,
+          title,
+        }
       }
     }
   `;
@@ -195,12 +239,18 @@ Deno.test("bad input id negative bigint", async () => {
 Deno.test("null column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -208,7 +258,11 @@ Deno.test("null column", async () => {
     query {
       bookById(id: "1") {
         id,
-        title,
+        versionstamp
+        value {
+          id,
+          title,
+        }
       }
     }
   `;
@@ -228,7 +282,11 @@ Deno.test("null column", async () => {
     data: {
       bookById: {
         id: "1",
-        title: null,
+        versionstamp: "00000000000000010000",
+        value: {
+          id: "1",
+          title: null,
+        },
       },
     },
   };
@@ -241,12 +299,18 @@ Deno.test("null column", async () => {
 Deno.test("bad id", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -254,7 +318,11 @@ Deno.test("bad id", async () => {
     query {
       bookById(id: "1") {
         id,
-        title,
+        versionstamp,
+        value {
+          id,
+          title,
+        }
       }
     }
   `;
@@ -291,12 +359,18 @@ Deno.test("bad id", async () => {
 Deno.test("bad row", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -304,7 +378,11 @@ Deno.test("bad row", async () => {
     query {
       bookById(id: "1") {
         id,
-        title,
+        versionstamp
+        value {
+          id,
+          title,
+        }
       }
     }
   `;

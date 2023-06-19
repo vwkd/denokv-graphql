@@ -37,9 +37,13 @@ export function createRootQueryResolver(
 
   for (const query of Object.values(queries)) {
     const queryName = query.name;
-    const type = query.type;
 
-    validateQueryReturn(type, queryName);
+    validateQueryReturn(query.type, queryName);
+
+    const fields = query.type.getFields();
+
+    // note: asserted in `validateQueryReturn`
+    const type = fields["value"].type.ofType as GraphQLObjectType;
 
     const tableName = type.name;
 
@@ -55,6 +59,8 @@ export function createRootQueryResolver(
 
       const entry = await db.get(key);
 
+      // todo: what versionstamp to return here? has multiple versionstamps for nested queries across tables... make nested queries consistent using `atomic().check(..)`, then return its versionstamp here?
+      const versionstamp = entry.versionstamp;
       const value = entry.value;
 
       if (value === null) {
@@ -63,7 +69,7 @@ export function createRootQueryResolver(
 
       validateRow(value, tableName, id);
 
-      return value;
+      return { id, value, versionstamp };
     };
 
     createQueryResolver(db, type, resolvers);

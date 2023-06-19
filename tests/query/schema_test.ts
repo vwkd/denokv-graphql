@@ -5,12 +5,18 @@ import { InvalidSchema } from "../../src/utils.ts";
 Deno.test("minimal working example", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -26,12 +32,18 @@ Deno.test("minimal working example", async () => {
 Deno.test("no argument", async () => {
   const schemaSource = `
     type Query {
-      bookById: Book
+      bookById: BookResult
     }
 
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -49,12 +61,18 @@ Deno.test("no argument", async () => {
 Deno.test("other argument", async () => {
   const schemaSource = `
     type Query {
-      bookById(XXX: ID!): Book
+      bookById(XXX: ID!): BookResult
     }
 
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -72,12 +90,18 @@ Deno.test("other argument", async () => {
 Deno.test("extra argument", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!, XXX: String): Book
+      bookById(id: ID!, XXX: String): BookResult
     }
 
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -92,15 +116,21 @@ Deno.test("extra argument", async () => {
   db.close();
 });
 
-Deno.test("non-null type", async () => {
+Deno.test("non-null return type", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book!
+      bookById(id: ID!): BookResult!
     }
 
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -109,21 +139,27 @@ Deno.test("non-null type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query 'bookById' must have optional object type",
+    "Query 'bookById' must return nullable object type",
   );
 
   db.close();
 });
 
-Deno.test("list type", async () => {
+Deno.test("list return type", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): [Book]
+      bookById(id: ID!): [BookResult]
     }
 
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -132,13 +168,13 @@ Deno.test("list type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query 'bookById' must have optional object type",
+    "Query 'bookById' must return nullable object type",
   );
 
   db.close();
 });
 
-Deno.test("no object type", async () => {
+Deno.test("no object return type", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): String
@@ -150,7 +186,7 @@ Deno.test("no object type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Query 'bookById' must have optional object type",
+    "Query 'bookById' must return nullable object type",
   );
 
   db.close();
@@ -159,12 +195,18 @@ Deno.test("no object type", async () => {
 Deno.test("missing id column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       XXX: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -182,11 +224,17 @@ Deno.test("missing id column", async () => {
 Deno.test("missing second column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       id: ID!,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -201,15 +249,165 @@ Deno.test("missing second column", async () => {
   db.close();
 });
 
+Deno.test("return type missing fields", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      value: Book!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Query 'bookById' return type must have three fields",
+  );
+
+  db.close();
+});
+
+Deno.test("return type extra fields", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+      XXX: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Query 'bookById' return type must have three fields",
+  );
+
+  db.close();
+});
+
+Deno.test("return type missing 'id'", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      XXX: ID!
+      versionstamp: String!
+      value: Book!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Query 'bookById' return type must have field 'id' with non-null 'ID' type",
+  );
+
+  db.close();
+});
+
+Deno.test("return type missing 'versionstamp'", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      XXX: String!
+      value: Book!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Query 'bookById' return type must have field 'versionstamp' with non-null 'String' type",
+  );
+
+  db.close();
+});
+
+Deno.test("return type missing 'value'", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      XXX: Book!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Query 'bookById' return type must have field 'value' with non-null object type",
+  );
+
+  db.close();
+});
+
 Deno.test("scalar list column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       id: ID!,
       title: [String],
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -227,12 +425,18 @@ Deno.test("scalar list column", async () => {
 Deno.test("scalar non-null list column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       id: ID!,
       title: [String]!,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -250,12 +454,18 @@ Deno.test("scalar non-null list column", async () => {
 Deno.test("non-null scalar list column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       id: ID!,
       title: [String!],
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -273,12 +483,18 @@ Deno.test("non-null scalar list column", async () => {
 Deno.test("non-null scalar non-null list column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
       id: ID!,
       title: [String!]!,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -296,7 +512,7 @@ Deno.test("non-null scalar non-null list column", async () => {
 Deno.test("interface column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
@@ -306,6 +522,12 @@ Deno.test("interface column", async () => {
 
     interface Foo {
       baz: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -323,7 +545,7 @@ Deno.test("interface column", async () => {
 Deno.test("non-null interface column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
@@ -333,6 +555,12 @@ Deno.test("non-null interface column", async () => {
 
     interface Foo {
       baz: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -350,7 +578,7 @@ Deno.test("non-null interface column", async () => {
 Deno.test("union column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
@@ -366,6 +594,12 @@ Deno.test("union column", async () => {
 
     type Baz {
       baz: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -383,7 +617,7 @@ Deno.test("union column", async () => {
 Deno.test("non-null union column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
@@ -399,6 +633,12 @@ Deno.test("non-null union column", async () => {
 
     type Baz {
       baz: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 

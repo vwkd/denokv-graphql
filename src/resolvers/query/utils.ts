@@ -17,17 +17,60 @@ import { isIdField, isType } from "../utils.ts";
  * Validate query return value
  *
  * - nullable object type
+ * - has fields of `Result` and additional `value` field of non-null object type
  * @param type return value
  * @param queryName query name
  */
 // todo: better error messages, e.g. non-null `bookById: Book!` is error because database might return null, etc.
 export function validateQueryReturn(
-  returnValue: GraphQLOutputType,
+  value: GraphQLOutputType,
   queryName: string,
-): asserts returnValue is GraphQLObjectType {
-  if (!(isObjectType(returnValue))) {
+): asserts value is GraphQLObjectType {
+  if (!(isObjectType(value))) {
     throw new InvalidSchema(
-      `Query '${queryName}' must have optional object type`,
+      `Query '${queryName}' must return nullable object type`,
+    );
+  }
+
+  const fields = value.getFields();
+
+  if (
+    !(Object.keys(fields).length == 3)
+  ) {
+    throw new InvalidSchema(
+      `Query '${queryName}' return type must have three fields`,
+    );
+  }
+
+  if (
+    !(fields["id"] &&
+      isNonNullType(fields["id"].type) &&
+      isScalarType(fields["id"].type.ofType) &&
+      fields["id"].type.ofType.name == "ID")
+  ) {
+    throw new InvalidSchema(
+      `Query '${queryName}' return type must have field 'id' with non-null 'ID' type`,
+    );
+  }
+
+  if (
+    !(fields["versionstamp"] &&
+      isNonNullType(fields["versionstamp"].type) &&
+      isScalarType(fields["versionstamp"].type.ofType) &&
+      fields["versionstamp"].type.ofType.name == "String")
+  ) {
+    throw new InvalidSchema(
+      `Query '${queryName}' return type must have field 'versionstamp' with non-null 'String' type`,
+    );
+  }
+
+  if (
+    !(fields["value"] &&
+      isNonNullType(fields["value"].type) &&
+      isObjectType(fields["value"].type.ofType))
+  ) {
+    throw new InvalidSchema(
+      `Query '${queryName}' return type must have field 'value' with non-null object type`,
     );
   }
 }

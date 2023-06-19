@@ -6,7 +6,7 @@ import { buildSchema } from "../../src/main.ts";
 Deno.test("minimal working example", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -16,6 +16,12 @@ Deno.test("minimal working example", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -45,7 +51,7 @@ Deno.test("minimal working example", async () => {
 Deno.test("null row", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -55,6 +61,12 @@ Deno.test("null row", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -84,7 +96,7 @@ Deno.test("null row", async () => {
 Deno.test("bad id argument other", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -94,6 +106,12 @@ Deno.test("bad id argument other", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -129,7 +147,7 @@ Deno.test("bad id argument other", async () => {
 Deno.test("bad id argument negative bigint", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -139,6 +157,12 @@ Deno.test("bad id argument negative bigint", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 

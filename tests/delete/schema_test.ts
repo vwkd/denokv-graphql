@@ -5,7 +5,7 @@ import { InvalidSchema } from "../../src/utils.ts";
 Deno.test("minimal working example", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -15,6 +15,12 @@ Deno.test("minimal working example", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -30,7 +36,7 @@ Deno.test("minimal working example", async () => {
 Deno.test("no argument", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -40,6 +46,12 @@ Deno.test("no argument", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -57,7 +69,7 @@ Deno.test("no argument", async () => {
 Deno.test("other argument", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -67,6 +79,12 @@ Deno.test("other argument", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -84,7 +102,7 @@ Deno.test("other argument", async () => {
 Deno.test("extra argument", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -94,6 +112,12 @@ Deno.test("extra argument", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -111,7 +135,7 @@ Deno.test("extra argument", async () => {
 Deno.test("non-null type", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -121,6 +145,12 @@ Deno.test("non-null type", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -138,7 +168,7 @@ Deno.test("non-null type", async () => {
 Deno.test("list type", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -148,6 +178,12 @@ Deno.test("list type", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -165,7 +201,7 @@ Deno.test("list type", async () => {
 Deno.test("other type", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -175,6 +211,12 @@ Deno.test("other type", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -192,7 +234,7 @@ Deno.test("other type", async () => {
 Deno.test("no directive", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -202,6 +244,12 @@ Deno.test("no directive", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -220,7 +268,7 @@ Deno.test("no directive", async () => {
 Deno.test("other type to 'table' argument of 'delete' directive", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -230,6 +278,12 @@ Deno.test("other type to 'table' argument of 'delete' directive", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -247,7 +301,7 @@ Deno.test("other type to 'table' argument of 'delete' directive", async () => {
 Deno.test("no table", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -257,6 +311,12 @@ Deno.test("no table", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
   `;
 
@@ -274,7 +334,7 @@ Deno.test("no table", async () => {
 Deno.test("no object type", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -284,6 +344,12 @@ Deno.test("no object type", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     enum XXX {
@@ -305,7 +371,7 @@ Deno.test("no object type", async () => {
 Deno.test("missing id column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -315,6 +381,12 @@ Deno.test("missing id column", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     type XXX {
@@ -337,7 +409,7 @@ Deno.test("missing id column", async () => {
 Deno.test("missing second column", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -347,6 +419,12 @@ Deno.test("missing second column", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     type XXX {

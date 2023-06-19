@@ -6,7 +6,7 @@ import { buildSchema } from "../../src/main.ts";
 Deno.test("minimal working example", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
@@ -19,16 +19,26 @@ Deno.test("minimal working example", async () => {
       id: ID!,
       name: String,
     }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
   `;
 
   const source = `
     query {
       bookById(id: "1") {
         id,
-        title,
-        author {
+        versionstamp,
+        value {
           id,
-          name,
+          title,
+          author {
+            id,
+            name,
+          }
         }
       }
     }
@@ -55,10 +65,14 @@ Deno.test("minimal working example", async () => {
     data: {
       bookById: {
         id: "1",
-        title: "Shadows of Eternity",
-        author: {
-          id: "11",
-          name: "Victoria Nightshade",
+        versionstamp: "00000000000000010000",
+        value: {
+          id: "1",
+          title: "Shadows of Eternity",
+          author: {
+            id: "11",
+            name: "Victoria Nightshade",
+          },
         },
       },
     },
@@ -72,7 +86,7 @@ Deno.test("minimal working example", async () => {
 Deno.test("bad id", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
@@ -85,16 +99,26 @@ Deno.test("bad id", async () => {
       id: ID!,
       name: String,
     }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
   `;
 
   const source = `
     query {
       bookById(id: "1") {
         id,
-        title,
-        author {
+        versionstamp,
+        value {
           id,
-          name,
+          title,
+          author {
+            id,
+            name,
+          }
         }
       }
     }
@@ -117,14 +141,18 @@ Deno.test("bad id", async () => {
     data: {
       bookById: {
         id: "1",
-        title: "Shadows of Eternity",
-        author: null,
+        versionstamp: "00000000000000010000",
+        value: {
+          id: "1",
+          title: "Shadows of Eternity",
+          author: null,
+        },
       },
     },
     errors: [{
       message: "Expected referenced table 'Author' to have row with id '999'",
-      locations: [{ line: 6, column: 9 }],
-      path: ["bookById", "author"],
+      locations: [{ line: 9, column: 11 }],
+      path: ["bookById", "value"],
     }],
   };
 
@@ -136,7 +164,7 @@ Deno.test("bad id", async () => {
 Deno.test("other reference", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
@@ -149,16 +177,26 @@ Deno.test("other reference", async () => {
       id: ID!,
       name: String,
     }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
   `;
 
   const source = `
     query {
       bookById(id: "1") {
         id,
-        title,
-        author {
+        versionstamp,
+        value {
           id,
-          name,
+          title,
+          author {
+            id,
+            name,
+          }
         }
       }
     }
@@ -182,14 +220,18 @@ Deno.test("other reference", async () => {
     data: {
       bookById: {
         id: "1",
-        title: "Shadows of Eternity",
-        author: null,
+        versionstamp: "00000000000000010000",
+        value: {
+          id: "1",
+          title: "Shadows of Eternity",
+          author: null,
+        },
       },
     },
     errors: [{
       message: "Expected referenced table 'Author' row '11' to be an object",
-      locations: [{ line: 6, column: 9 }],
-      path: ["bookById", "author"],
+      locations: [{ line: 9, column: 11 }],
+      path: ["bookById", "value"],
     }],
   };
 
@@ -201,7 +243,7 @@ Deno.test("other reference", async () => {
 Deno.test("bad id in reference", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
@@ -214,16 +256,26 @@ Deno.test("bad id in reference", async () => {
       id: ID!,
       name: String,
     }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
   `;
 
   const source = `
     query {
       bookById(id: "1") {
         id,
-        title,
-        author {
+        versionstamp,
+        value {
           id,
-          name,
+          title,
+          author {
+            id,
+            name,
+          }
         }
       }
     }
@@ -250,15 +302,19 @@ Deno.test("bad id in reference", async () => {
     data: {
       bookById: {
         id: "1",
-        title: "Shadows of Eternity",
-        author: null,
+        versionstamp: "00000000000000010000",
+        value: {
+          id: "1",
+          title: "Shadows of Eternity",
+          author: null,
+        },
       },
     },
     errors: [{
       message:
         "Expected referenced table 'Author' row '11' column 'id' to be equal to row id",
-      locations: [{ line: 6, column: 9 }],
-      path: ["bookById", "author"],
+      locations: [{ line: 9, column: 11 }],
+      path: ["bookById", "value"],
     }],
   };
 
@@ -270,7 +326,7 @@ Deno.test("bad id in reference", async () => {
 Deno.test("non null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
@@ -283,16 +339,26 @@ Deno.test("non null", async () => {
       id: ID!,
       name: String,
     }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
   `;
 
   const source = `
     query {
       bookById(id: "1") {
         id,
-        title,
-        author {
+        versionstamp,
+        value {
           id,
-          name,
+          title,
+          author {
+            id,
+            name,
+          }
         }
       }
     }
@@ -316,8 +382,8 @@ Deno.test("non null", async () => {
     },
     errors: [{
       message: "Expected column 'author' to contain id",
-      locations: [{ line: 6, column: 9 }],
-      path: ["bookById", "author"],
+      locations: [{ line: 9, column: 11 }],
+      path: ["bookById", "value"],
     }],
   };
 
@@ -329,7 +395,7 @@ Deno.test("non null", async () => {
 Deno.test("minimal cyclical reference", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Book {
@@ -343,19 +409,29 @@ Deno.test("minimal cyclical reference", async () => {
       name: String,
       book: Book,
     }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
   `;
 
   const source = `
     query {
       bookById(id: "1") {
         id,
-        title,
-        author {
+        versionstamp,
+        value {
           id,
-          name,
-          book {
+          title,
+          author {
             id,
-            title,
+            name,
+            book {
+              id,
+              title,
+            }
           }
         }
       }
@@ -384,13 +460,17 @@ Deno.test("minimal cyclical reference", async () => {
     data: {
       bookById: {
         id: "1",
-        title: "Shadows of Eternity",
-        author: {
-          id: "11",
-          name: "Victoria Nightshade",
-          book: {
-            id: "1",
-            title: "Shadows of Eternity",
+        versionstamp: "00000000000000010000",
+        value: {
+          id: "1",
+          title: "Shadows of Eternity",
+          author: {
+            id: "11",
+            name: "Victoria Nightshade",
+            book: {
+              id: "1",
+              title: "Shadows of Eternity",
+            },
           },
         },
       },

@@ -23,7 +23,7 @@ import { InvalidSchema } from "../../src/utils.ts";
 Deno.test("naked vs naked", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -39,6 +39,12 @@ Deno.test("naked vs naked", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -59,7 +65,7 @@ Deno.test("naked vs naked", async () => {
 Deno.test("naked vs non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -75,6 +81,12 @@ Deno.test("naked vs non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -97,7 +109,7 @@ Deno.test("naked vs non-null", async () => {
 Deno.test("naked vs list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -113,6 +125,12 @@ Deno.test("naked vs list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -135,7 +153,7 @@ Deno.test("naked vs list", async () => {
 Deno.test("naked vs list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -151,6 +169,12 @@ Deno.test("naked vs list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -173,7 +197,7 @@ Deno.test("naked vs list non-null", async () => {
 Deno.test("naked vs non-null list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -189,6 +213,12 @@ Deno.test("naked vs non-null list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -211,7 +241,7 @@ Deno.test("naked vs non-null list", async () => {
 Deno.test("naked vs non-null list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -227,6 +257,12 @@ Deno.test("naked vs non-null list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -255,7 +291,7 @@ Deno.test("naked vs non-null list non-null", async () => {
 Deno.test("non-null vs naked", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -271,6 +307,12 @@ Deno.test("non-null vs naked", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -293,7 +335,7 @@ Deno.test("non-null vs naked", async () => {
 Deno.test("non-null vs non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -309,6 +351,12 @@ Deno.test("non-null vs non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -329,7 +377,7 @@ Deno.test("non-null vs non-null", async () => {
 Deno.test("non-null vs list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -345,6 +393,12 @@ Deno.test("non-null vs list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -367,7 +421,7 @@ Deno.test("non-null vs list", async () => {
 Deno.test("non-null vs list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -383,6 +437,12 @@ Deno.test("non-null vs list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -405,7 +465,7 @@ Deno.test("non-null vs list non-null", async () => {
 Deno.test("non-null vs non-null list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -421,6 +481,12 @@ Deno.test("non-null vs non-null list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -443,7 +509,7 @@ Deno.test("non-null vs non-null list", async () => {
 Deno.test("non-null vs non-null list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -459,6 +525,12 @@ Deno.test("non-null vs non-null list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -487,7 +559,7 @@ Deno.test("non-null vs non-null list non-null", async () => {
 Deno.test("list vs naked", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -503,6 +575,12 @@ Deno.test("list vs naked", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -525,7 +603,7 @@ Deno.test("list vs naked", async () => {
 Deno.test("list vs non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -541,6 +619,12 @@ Deno.test("list vs non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -563,7 +647,7 @@ Deno.test("list vs non-null", async () => {
 Deno.test("list vs list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -579,6 +663,12 @@ Deno.test("list vs list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -599,7 +689,7 @@ Deno.test("list vs list", async () => {
 Deno.test("list vs list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -615,6 +705,12 @@ Deno.test("list vs list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -637,7 +733,7 @@ Deno.test("list vs list non-null", async () => {
 Deno.test("list vs non-null list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -653,6 +749,12 @@ Deno.test("list vs non-null list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -675,7 +777,7 @@ Deno.test("list vs non-null list", async () => {
 Deno.test("list vs non-null list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -691,6 +793,12 @@ Deno.test("list vs non-null list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -719,7 +827,7 @@ Deno.test("list vs non-null list non-null", async () => {
 Deno.test("list non-null vs naked", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -735,6 +843,12 @@ Deno.test("list non-null vs naked", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -757,7 +871,7 @@ Deno.test("list non-null vs naked", async () => {
 Deno.test("list non-null vs non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -773,6 +887,12 @@ Deno.test("list non-null vs non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -795,7 +915,7 @@ Deno.test("list non-null vs non-null", async () => {
 Deno.test("list non-null vs list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -811,6 +931,12 @@ Deno.test("list non-null vs list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -833,7 +959,7 @@ Deno.test("list non-null vs list", async () => {
 Deno.test("list non-null vs list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -849,6 +975,12 @@ Deno.test("list non-null vs list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -871,7 +1003,7 @@ Deno.test("list non-null vs list non-null", async () => {
 Deno.test("list non-null vs non-null list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -887,6 +1019,12 @@ Deno.test("list non-null vs non-null list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -907,7 +1045,7 @@ Deno.test("list non-null vs non-null list", async () => {
 Deno.test("list non-null vs non-null list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -923,6 +1061,12 @@ Deno.test("list non-null vs non-null list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -951,7 +1095,7 @@ Deno.test("list non-null vs non-null list non-null", async () => {
 Deno.test("non-null list vs naked", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -967,6 +1111,12 @@ Deno.test("non-null list vs naked", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -989,7 +1139,7 @@ Deno.test("non-null list vs naked", async () => {
 Deno.test("non-null list vs non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1005,6 +1155,12 @@ Deno.test("non-null list vs non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1027,7 +1183,7 @@ Deno.test("non-null list vs non-null", async () => {
 Deno.test("non-null list vs list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1043,6 +1199,12 @@ Deno.test("non-null list vs list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1065,7 +1227,7 @@ Deno.test("non-null list vs list", async () => {
 Deno.test("non-null list vs list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1081,6 +1243,12 @@ Deno.test("non-null list vs list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1101,7 +1269,7 @@ Deno.test("non-null list vs list non-null", async () => {
 Deno.test("non-null list vs non-null list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1117,6 +1285,12 @@ Deno.test("non-null list vs non-null list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1139,7 +1313,7 @@ Deno.test("non-null list vs non-null list", async () => {
 Deno.test("non-null list vs non-null list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1155,6 +1329,12 @@ Deno.test("non-null list vs non-null list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1183,7 +1363,7 @@ Deno.test("non-null list vs non-null list non-null", async () => {
 Deno.test("non-null list non-null vs naked", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1199,6 +1379,12 @@ Deno.test("non-null list non-null vs naked", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1221,7 +1407,7 @@ Deno.test("non-null list non-null vs naked", async () => {
 Deno.test("non-null list non-null vs non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1237,6 +1423,12 @@ Deno.test("non-null list non-null vs non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1259,7 +1451,7 @@ Deno.test("non-null list non-null vs non-null", async () => {
 Deno.test("non-null list non-null vs list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1275,6 +1467,12 @@ Deno.test("non-null list non-null vs list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1297,7 +1495,7 @@ Deno.test("non-null list non-null vs list", async () => {
 Deno.test("non-null list non-null vs list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1313,6 +1511,12 @@ Deno.test("non-null list non-null vs list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1335,7 +1539,7 @@ Deno.test("non-null list non-null vs list non-null", async () => {
 Deno.test("non-null list non-null vs non-null list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1351,6 +1555,12 @@ Deno.test("non-null list non-null vs non-null list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1373,7 +1583,7 @@ Deno.test("non-null list non-null vs non-null list", async () => {
 Deno.test("non-null list non-null vs non-null list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1389,6 +1599,12 @@ Deno.test("non-null list non-null vs non-null list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1421,7 +1637,7 @@ Deno.test("non-null list non-null vs non-null list non-null", async () => {
 Deno.test("naked vs naked", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1437,6 +1653,12 @@ Deno.test("naked vs naked", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1459,7 +1681,7 @@ Deno.test("naked vs naked", async () => {
 Deno.test("naked vs non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1475,6 +1697,12 @@ Deno.test("naked vs non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1497,7 +1725,7 @@ Deno.test("naked vs non-null", async () => {
 Deno.test("naked vs list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1513,6 +1741,12 @@ Deno.test("naked vs list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1535,7 +1769,7 @@ Deno.test("naked vs list", async () => {
 Deno.test("naked vs list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1551,6 +1785,12 @@ Deno.test("naked vs list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1573,7 +1813,7 @@ Deno.test("naked vs list non-null", async () => {
 Deno.test("naked vs non-null list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1589,6 +1829,12 @@ Deno.test("naked vs non-null list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1611,7 +1857,7 @@ Deno.test("naked vs non-null list", async () => {
 Deno.test("naked vs non-null list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1627,6 +1873,12 @@ Deno.test("naked vs non-null list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1655,7 +1907,7 @@ Deno.test("naked vs non-null list non-null", async () => {
 Deno.test("non-null vs naked", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1671,6 +1923,12 @@ Deno.test("non-null vs naked", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1693,7 +1951,7 @@ Deno.test("non-null vs naked", async () => {
 Deno.test("non-null vs non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1709,6 +1967,12 @@ Deno.test("non-null vs non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1731,7 +1995,7 @@ Deno.test("non-null vs non-null", async () => {
 Deno.test("non-null vs list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1747,6 +2011,12 @@ Deno.test("non-null vs list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1769,7 +2039,7 @@ Deno.test("non-null vs list", async () => {
 Deno.test("non-null vs list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1785,6 +2055,12 @@ Deno.test("non-null vs list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1807,7 +2083,7 @@ Deno.test("non-null vs list non-null", async () => {
 Deno.test("non-null vs non-null list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1823,6 +2099,12 @@ Deno.test("non-null vs non-null list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1845,7 +2127,7 @@ Deno.test("non-null vs non-null list", async () => {
 Deno.test("non-null vs non-null list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1861,6 +2143,12 @@ Deno.test("non-null vs non-null list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1889,7 +2177,7 @@ Deno.test("non-null vs non-null list non-null", async () => {
 Deno.test("list vs naked", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1905,6 +2193,12 @@ Deno.test("list vs naked", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1927,7 +2221,7 @@ Deno.test("list vs naked", async () => {
 Deno.test("list vs non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1943,6 +2237,12 @@ Deno.test("list vs non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -1965,7 +2265,7 @@ Deno.test("list vs non-null", async () => {
 Deno.test("list vs list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -1981,6 +2281,12 @@ Deno.test("list vs list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2003,7 +2309,7 @@ Deno.test("list vs list", async () => {
 Deno.test("list vs list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2019,6 +2325,12 @@ Deno.test("list vs list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2041,7 +2353,7 @@ Deno.test("list vs list non-null", async () => {
 Deno.test("list vs non-null list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2057,6 +2369,12 @@ Deno.test("list vs non-null list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2079,7 +2397,7 @@ Deno.test("list vs non-null list", async () => {
 Deno.test("list vs non-null list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2095,6 +2413,12 @@ Deno.test("list vs non-null list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2123,7 +2447,7 @@ Deno.test("list vs non-null list non-null", async () => {
 Deno.test("list non-null vs naked", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2139,6 +2463,12 @@ Deno.test("list non-null vs naked", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2161,7 +2491,7 @@ Deno.test("list non-null vs naked", async () => {
 Deno.test("list non-null vs non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2177,6 +2507,12 @@ Deno.test("list non-null vs non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2199,7 +2535,7 @@ Deno.test("list non-null vs non-null", async () => {
 Deno.test("list non-null vs list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2215,6 +2551,12 @@ Deno.test("list non-null vs list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2237,7 +2579,7 @@ Deno.test("list non-null vs list", async () => {
 Deno.test("list non-null vs list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2253,6 +2595,12 @@ Deno.test("list non-null vs list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2275,7 +2623,7 @@ Deno.test("list non-null vs list non-null", async () => {
 Deno.test("list non-null vs non-null list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2291,6 +2639,12 @@ Deno.test("list non-null vs non-null list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2313,7 +2667,7 @@ Deno.test("list non-null vs non-null list", async () => {
 Deno.test("list non-null vs non-null list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2329,6 +2683,12 @@ Deno.test("list non-null vs non-null list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2357,7 +2717,7 @@ Deno.test("list non-null vs non-null list non-null", async () => {
 Deno.test("non-null list vs naked", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2373,6 +2733,12 @@ Deno.test("non-null list vs naked", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2395,7 +2761,7 @@ Deno.test("non-null list vs naked", async () => {
 Deno.test("non-null list vs non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2411,6 +2777,12 @@ Deno.test("non-null list vs non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2433,7 +2805,7 @@ Deno.test("non-null list vs non-null", async () => {
 Deno.test("non-null list vs list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2449,6 +2821,12 @@ Deno.test("non-null list vs list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2471,7 +2849,7 @@ Deno.test("non-null list vs list", async () => {
 Deno.test("non-null list vs list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2487,6 +2865,12 @@ Deno.test("non-null list vs list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2509,7 +2893,7 @@ Deno.test("non-null list vs list non-null", async () => {
 Deno.test("non-null list vs non-null list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2525,6 +2909,12 @@ Deno.test("non-null list vs non-null list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2547,7 +2937,7 @@ Deno.test("non-null list vs non-null list", async () => {
 Deno.test("non-null list vs non-null list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2563,6 +2953,12 @@ Deno.test("non-null list vs non-null list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2591,7 +2987,7 @@ Deno.test("non-null list vs non-null list non-null", async () => {
 Deno.test("non-null list non-null vs naked", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2607,6 +3003,12 @@ Deno.test("non-null list non-null vs naked", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2629,7 +3031,7 @@ Deno.test("non-null list non-null vs naked", async () => {
 Deno.test("non-null list non-null vs non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2645,6 +3047,12 @@ Deno.test("non-null list non-null vs non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2667,7 +3075,7 @@ Deno.test("non-null list non-null vs non-null", async () => {
 Deno.test("non-null list non-null vs list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2683,6 +3091,12 @@ Deno.test("non-null list non-null vs list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2705,7 +3119,7 @@ Deno.test("non-null list non-null vs list", async () => {
 Deno.test("non-null list non-null vs list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2721,6 +3135,12 @@ Deno.test("non-null list non-null vs list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2743,7 +3163,7 @@ Deno.test("non-null list non-null vs list non-null", async () => {
 Deno.test("non-null list non-null vs non-null list", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2759,6 +3179,12 @@ Deno.test("non-null list non-null vs non-null list", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -2781,7 +3207,7 @@ Deno.test("non-null list non-null vs non-null list", async () => {
 Deno.test("non-null list non-null vs non-null list non-null", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -2797,6 +3223,12 @@ Deno.test("non-null list non-null vs non-null list non-null", async () => {
     type Author {
       id: ID!,
       name: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {

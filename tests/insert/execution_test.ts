@@ -6,7 +6,7 @@ import { buildSchema } from "../../src/main.ts";
 Deno.test("minimal working example", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -16,6 +16,12 @@ Deno.test("minimal working example", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -56,7 +62,7 @@ Deno.test("minimal working example", async () => {
 Deno.test("autoincrementing id", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -66,6 +72,12 @@ Deno.test("autoincrementing id", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -111,7 +123,7 @@ Deno.test("autoincrementing id", async () => {
 Deno.test("bad last id negative bigint", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -121,6 +133,12 @@ Deno.test("bad last id negative bigint", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
@@ -168,7 +186,7 @@ Deno.test("bad last id negative bigint", async () => {
 Deno.test("bad last id other", async () => {
   const schemaSource = `
     type Query {
-      bookById(id: ID!): Book
+      bookById(id: ID!): BookResult
     }
 
     type Mutation {
@@ -178,6 +196,12 @@ Deno.test("bad last id other", async () => {
     type Book {
       id: ID!,
       title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
     }
 
     input BookInput {
