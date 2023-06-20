@@ -21,7 +21,6 @@ import { isIdField, isType } from "../utils.ts";
  * @param type return value
  * @param queryName query name
  */
-// todo: better error messages, e.g. non-null `bookById: Book!` is error because database might return null, etc.
 export function validateQueryReturn(
   value: GraphQLOutputType,
   queryName: string,

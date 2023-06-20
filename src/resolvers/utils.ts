@@ -142,7 +142,7 @@ export function parseIds(
   strs: string | string[],
   tableName: string,
   columnName: string,
-): bigint {
+): bigint | bigint[] {
   if (!Array.isArray(strs)) {
     let id: bigint;
 
@@ -150,19 +150,19 @@ export function parseIds(
       id = BigInt(strs);
     } catch (e) {
       throw new InvalidInput(
-        `Expected input table '${tableName}' column '${columnName}' to contain string of positive bigint`,
+        `Expected input table '${tableName}' column '${columnName}' to contain bigint as string`,
       );
     }
 
     if (id <= 0n) {
       throw new InvalidInput(
-        `Expected input table '${tableName}' column '${columnName}' to contain string of positive bigint`,
+        `Expected input table '${tableName}' column '${columnName}' to contain positive bigint as string`,
       );
     }
 
     return id;
   } else {
-    let ids: bigint[];
+    let ids: bigint[] = [];
 
     for (const str of strs) {
       let id: bigint;
@@ -171,13 +171,13 @@ export function parseIds(
         id = BigInt(str);
       } catch (e) {
         throw new InvalidInput(
-          `Expected input table '${tableName}' column '${columnName}' to contain array of strings of positive bigints`,
+          `Expected input table '${tableName}' column '${columnName}' to contain array of bigints as strings`,
         );
       }
 
       if (id <= 0n) {
         throw new InvalidInput(
-          `Expected input table '${tableName}' column '${columnName}' to contain array of strings of positive bigints`,
+          `Expected input table '${tableName}' column '${columnName}' to contain array of positive bigints as strings`,
         );
       }
 

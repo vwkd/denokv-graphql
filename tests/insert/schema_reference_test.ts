@@ -100,7 +100,7 @@ Deno.test("naked vs non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -144,7 +144,7 @@ Deno.test("naked vs list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -188,7 +188,7 @@ Deno.test("naked vs list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -232,7 +232,7 @@ Deno.test("naked vs non-null list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -276,7 +276,7 @@ Deno.test("naked vs non-null list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -326,7 +326,7 @@ Deno.test("non-null vs naked", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -412,7 +412,7 @@ Deno.test("non-null vs list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -456,7 +456,7 @@ Deno.test("non-null vs list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -500,7 +500,7 @@ Deno.test("non-null vs non-null list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -544,7 +544,7 @@ Deno.test("non-null vs non-null list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -594,7 +594,7 @@ Deno.test("list vs naked", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -638,7 +638,7 @@ Deno.test("list vs non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -724,7 +724,7 @@ Deno.test("list vs list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -768,7 +768,7 @@ Deno.test("list vs non-null list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -812,7 +812,7 @@ Deno.test("list vs non-null list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -862,7 +862,7 @@ Deno.test("list non-null vs naked", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -906,7 +906,7 @@ Deno.test("list non-null vs non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -950,7 +950,7 @@ Deno.test("list non-null vs list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -994,7 +994,7 @@ Deno.test("list non-null vs list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1080,7 +1080,7 @@ Deno.test("list non-null vs non-null list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1130,7 +1130,7 @@ Deno.test("non-null list vs naked", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1174,7 +1174,7 @@ Deno.test("non-null list vs non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1218,7 +1218,7 @@ Deno.test("non-null list vs list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1304,7 +1304,7 @@ Deno.test("non-null list vs non-null list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1348,7 +1348,7 @@ Deno.test("non-null list vs non-null list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1398,7 +1398,7 @@ Deno.test("non-null list non-null vs naked", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1442,7 +1442,7 @@ Deno.test("non-null list non-null vs non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1486,7 +1486,7 @@ Deno.test("non-null list non-null vs list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1530,7 +1530,7 @@ Deno.test("non-null list non-null vs list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1574,7 +1574,7 @@ Deno.test("non-null list non-null vs non-null list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1672,7 +1672,7 @@ Deno.test("naked vs naked", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1716,7 +1716,7 @@ Deno.test("naked vs non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1760,7 +1760,7 @@ Deno.test("naked vs list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1804,7 +1804,7 @@ Deno.test("naked vs list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1848,7 +1848,7 @@ Deno.test("naked vs non-null list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1892,7 +1892,7 @@ Deno.test("naked vs non-null list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1942,7 +1942,7 @@ Deno.test("non-null vs naked", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -1986,7 +1986,7 @@ Deno.test("non-null vs non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2030,7 +2030,7 @@ Deno.test("non-null vs list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2074,7 +2074,7 @@ Deno.test("non-null vs list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2118,7 +2118,7 @@ Deno.test("non-null vs non-null list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2162,7 +2162,7 @@ Deno.test("non-null vs non-null list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2212,7 +2212,7 @@ Deno.test("list vs naked", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2256,7 +2256,7 @@ Deno.test("list vs non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2300,7 +2300,7 @@ Deno.test("list vs list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2344,7 +2344,7 @@ Deno.test("list vs list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2388,7 +2388,7 @@ Deno.test("list vs non-null list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2432,7 +2432,7 @@ Deno.test("list vs non-null list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2482,7 +2482,7 @@ Deno.test("list non-null vs naked", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2526,7 +2526,7 @@ Deno.test("list non-null vs non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2570,7 +2570,7 @@ Deno.test("list non-null vs list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2614,7 +2614,7 @@ Deno.test("list non-null vs list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2658,7 +2658,7 @@ Deno.test("list non-null vs non-null list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2702,7 +2702,7 @@ Deno.test("list non-null vs non-null list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2752,7 +2752,7 @@ Deno.test("non-null list vs naked", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2796,7 +2796,7 @@ Deno.test("non-null list vs non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2840,7 +2840,7 @@ Deno.test("non-null list vs list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2884,7 +2884,7 @@ Deno.test("non-null list vs list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2928,7 +2928,7 @@ Deno.test("non-null list vs non-null list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -2972,7 +2972,7 @@ Deno.test("non-null list vs non-null list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -3022,7 +3022,7 @@ Deno.test("non-null list non-null vs naked", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -3066,7 +3066,7 @@ Deno.test("non-null list non-null vs non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -3110,7 +3110,7 @@ Deno.test("non-null list non-null vs list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -3154,7 +3154,7 @@ Deno.test("non-null list non-null vs list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -3198,7 +3198,7 @@ Deno.test("non-null list non-null vs non-null list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();
@@ -3242,7 +3242,7 @@ Deno.test("non-null list non-null vs non-null list non-null", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' except as 'ID'",
+    "Mutation 'createBook' input table 'BookInput' column 'author' must have same type as column in table 'Book' as 'ID'",
   );
 
   db.close();

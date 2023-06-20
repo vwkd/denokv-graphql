@@ -133,7 +133,7 @@ Deno.test("bad id argument other", async () => {
     },
     errors: [{
       message:
-        "Expected table 'Book' argument 'id' to contain string of positive bigint",
+        "Expected table 'Book' argument 'id' to contain bigint as string",
       locations: [{ line: 3, column: 7 }],
       path: ["deleteBookById"],
     }],
@@ -184,7 +184,7 @@ Deno.test("bad id argument negative bigint", async () => {
     },
     errors: [{
       message:
-        "Expected table 'Book' argument 'id' to contain string of positive bigint",
+        "Expected table 'Book' argument 'id' to contain positive bigint as string",
       locations: [{ line: 3, column: 7 }],
       path: ["deleteBookById"],
     }],

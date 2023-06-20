@@ -190,7 +190,7 @@ export function validateInsertMutationArguments(
         ) && isSameWrapping(column.type, inputColumnsMap[columnName].type))
       ) {
         throw new InvalidSchema(
-          `Mutation '${mutationName}' input table '${inputTableName}' column '${columnName}' must have same type as column in table '${tableName}' except as 'ID'`,
+          `Mutation '${mutationName}' input table '${inputTableName}' column '${columnName}' must have same type as column in table '${tableName}' as 'ID'`,
         );
       }
     } else {
