@@ -36,21 +36,28 @@ export function createResolverInsert(
     _root,
     args,
   ): Promise<IFieldResolver<any, any>> => {
-    const id = args.data.id;
-    const key = [tableName, id];
+    const datas = args.data;
 
-    const res = await db
-      .atomic()
-      .check({ key, versionstamp: null })
-      .set(key, args.data)
-      .commit();
+    let op = db
+      .atomic();
+
+    for (const data of datas) {
+      const id = data.id;
+      const key = [tableName, id];
+
+      op = op
+        .check({ key, versionstamp: null })
+        .set(key, data);
+    }
+
+    const res = await op.commit();
 
     if (!res.ok) {
       throw new InvalidInput(
-        `Can't insert row with id '${id}' into table '${tableName}' because already exists`,
+        `Mutation '${mutationName}' failed to insert rows into table '${tableName}' because some ids already exist`,
       );
     }
 
-    return { id, versionstamp: res.versionstamp };
+    return { versionstamp: res.versionstamp };
   };
 }

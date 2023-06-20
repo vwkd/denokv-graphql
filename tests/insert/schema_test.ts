@@ -9,7 +9,7 @@ Deno.test("minimal working example", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "Book")
+      createBook(data: [BookInput!]!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -45,7 +45,7 @@ Deno.test("missing input", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "Book")
+      createBook(data: [BookInput!]!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -82,7 +82,7 @@ Deno.test("extra input", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "Book")
+      createBook(data: [BookInput!]!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -121,7 +121,7 @@ Deno.test("other input", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "Book")
+      createBook(data: [BookInput!]!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -161,7 +161,7 @@ Deno.test("different scalar input", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "Book")
+      createBook(data: [BookInput!]!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -219,7 +219,7 @@ Deno.test("no argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' must have single 'data' argument with non-null input object type",
+    "Mutation 'createBook' must have single 'data' argument with non-null list non-null input object type",
   );
 
   db.close();
@@ -252,7 +252,7 @@ Deno.test("other argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' must have single 'data' argument with non-null input object type",
+    "Mutation 'createBook' must have single 'data' argument with non-null list non-null input object type",
   );
 
   db.close();
@@ -265,7 +265,7 @@ Deno.test("extra argument", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!, XXX: String): Result @insert(table: "Book")
+      createBook(data: [BookInput!]!, XXX: String): Result @insert(table: "Book")
     }
 
     type Book {
@@ -290,7 +290,7 @@ Deno.test("extra argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' must have single 'data' argument with non-null input object type",
+    "Mutation 'createBook' must have single 'data' argument with non-null list non-null input object type",
   );
 
   db.close();
@@ -303,7 +303,7 @@ Deno.test("non-null type", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result! @insert(table: "Book")
+      createBook(data: [BookInput!]!): Result! @insert(table: "Book")
     }
 
     type Book {
@@ -341,7 +341,7 @@ Deno.test("list type", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): [Result] @insert(table: "Book")
+      createBook(data: [BookInput!]!): [Result] @insert(table: "Book")
     }
 
     type Book {
@@ -379,7 +379,7 @@ Deno.test("other type", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): String @insert(table: "Book")
+      createBook(data: [BookInput!]!): String @insert(table: "Book")
     }
 
     type Book {
@@ -417,7 +417,7 @@ Deno.test("no directive", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result
+      createBook(data: [BookInput!]!): Result
     }
 
     type Book {
@@ -456,7 +456,7 @@ Deno.test("other type to 'table' argument of 'insert' directive", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result @insert(table: 999)
+      createBook(data: [BookInput!]!): Result @insert(table: 999)
     }
 
     type Book {
@@ -494,7 +494,7 @@ Deno.test("no table", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "XXX")
+      createBook(data: [BookInput!]!): Result @insert(table: "XXX")
     }
 
     type Book {
@@ -532,7 +532,7 @@ Deno.test("no object type", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "XXX")
+      createBook(data: [BookInput!]!): Result @insert(table: "XXX")
     }
 
     type Book {
@@ -574,7 +574,7 @@ Deno.test("missing id column", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "XXX")
+      createBook(data: [BookInput!]!): Result @insert(table: "XXX")
     }
 
     type Book {
@@ -617,7 +617,7 @@ Deno.test("missing second column", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "XXX")
+      createBook(data: [BookInput!]!): Result @insert(table: "XXX")
     }
 
     type Book {
