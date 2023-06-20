@@ -36,8 +36,8 @@ const schemaSource = `
   }
 
   type Mutation {
-    createBook(data: BookInput!): Result @insert(table: "Book")
-    createAuthor(data: AuthorInput!): Result @insert(table: "Author")
+    createBook(data: [BookInput]!): Result @insert(table: "Book")
+    createAuthor(data: [AuthorInput]!): Result @insert(table: "Author")
     deleteBookById(id: ID!): Void @delete(table: "Book")
     deleteAuthorById(id: ID!): Void @delete(table: "Book")
   }
@@ -77,8 +77,7 @@ const authorId = "11";
 
 const source1 = `
   mutation($authorId: ID!) {
-    createAuthor(data: { id: $authorId, name: "Victoria Nightshade" }) {
-      id,
+    createAuthor(data: [{ id: $authorId, name: "Victoria Nightshade" }]) {
       versionstamp,
     }
   }
@@ -91,8 +90,7 @@ const bookId = "1";
 
 const source2 = `
   mutation($bookId: ID!, $authorId: ID!) {
-    createBook(data: { id: $bookId, title: "Shadows of Eternity", author: $authorId }) {
-      id,
+    createBook(data: [{ id: $bookId, title: "Shadows of Eternity", author: $authorId }]) {
       versionstamp,
     }
   }

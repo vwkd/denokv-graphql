@@ -1,5 +1,6 @@
 import {
   isInputObjectType,
+  isListType,
   isNonNullType,
   isObjectType,
   isScalarType,
@@ -126,7 +127,7 @@ export function validateMutationTable(
 /**
  * Validate insert mutation arguments
  *
- * - single "data" argument with non-null input object type
+ * - single "data" argument with non-null list non-null input object type
  * - input object contains all fields
  * - input object reference field is of `ID` type, wrapped in list or non-null depending on table field
  * - remaining input object fields are of same name and type as table fields
@@ -145,15 +146,16 @@ export function validateInsertMutationArguments(
 
   if (
     !(data && args.length == 1 && isNonNullType(data.type) &&
-      isInputObjectType(data.type.ofType))
+      isListType(data.type.ofType) && isNonNullType(data.type.ofType.ofType) &&
+      isInputObjectType(data.type.ofType.ofType.ofType))
   ) {
     throw new InvalidSchema(
-      `Mutation '${mutationName}' must have single 'data' argument with non-null input object type`,
+      `Mutation '${mutationName}' must have single 'data' argument with non-null list non-null input object type`,
     );
   }
 
-  const inputTableName = data.type.ofType.name;
-  const inputColumnsMap = data.type.ofType.getFields();
+  const inputTableName = data.type.ofType.ofType.ofType.name;
+  const inputColumnsMap = data.type.ofType.ofType.ofType.getFields();
 
   if (
     !(Object.values(columnsMap).length ==

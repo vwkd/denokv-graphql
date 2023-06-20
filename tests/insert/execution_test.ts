@@ -10,7 +10,7 @@ Deno.test("minimal working example", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "Book")
+      createBook(data: [BookInput!]!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -32,8 +32,7 @@ Deno.test("minimal working example", async () => {
 
   const source = `
     mutation {
-      createBook(data: { id: "1", title: "Shadows of Eternity" }) {
-        id,
+      createBook(data: [{ id: "1", title: "Shadows of Eternity" }]) {
         versionstamp,
       }
     }
@@ -48,7 +47,6 @@ Deno.test("minimal working example", async () => {
   const exp = {
     data: {
       createBook: {
-        id: "1",
         versionstamp: "00000000000000010000",
       },
     },
@@ -67,7 +65,7 @@ Deno.test("existing id", async () => {
     }
 
     type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "Book")
+      createBook(data: [BookInput!]!): Result @insert(table: "Book")
     }
 
     type Book {
@@ -89,8 +87,7 @@ Deno.test("existing id", async () => {
 
   const source = `
     mutation {
-      createBook(data: { id: "1", title: "Whispers of the Forgotten" }) {
-        id,
+      createBook(data: [{ id: "1", title: "Whispers of the Forgotten" }]) {
         versionstamp,
       }
     }
@@ -114,7 +111,7 @@ Deno.test("existing id", async () => {
     },
     errors: [{
       message:
-        "Can't insert row with id '1' into table 'Book' because already exists",
+        "Mutation 'createBook' failed to insert rows into table 'Book' because some ids already exist",
       locations: [{ line: 3, column: 7 }],
       path: ["createBook"],
     }],
