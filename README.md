@@ -19,7 +19,7 @@ GraphQL is an ergonomic interface for reading and writing data. GraphQL provides
 - query "joins" tables automatically
 - insert mutation automatically generates auto-incrementing row id
 - strict schema enables input validation, database validation, error messages, introspection, etc.
-- atomically consistent, except for queries that join tables since each row depends on the previous row
+- atomically consistent
 
 
 
@@ -81,7 +81,7 @@ const source1 = `
   }
 `;
 
-const res1 = await graphql({ schema, source: source1 });
+const res1 = await graphql({ schema, source: source1, contextValue: {} });
 console.log(JSON.stringify(res1, null, 2));
 const authorId = res1.data.createAuthor.id;
 
@@ -94,7 +94,7 @@ const source2 = `
   }
 `;
 
-const res2 = await graphql({ schema, source: source2, variableValues: { authorId } });
+const res2 = await graphql({ schema, source: source2, contextValue: {}, variableValues: { authorId } });
 console.log(JSON.stringify(res2, null, 2));
 const bookId = res2.data.createBook.id;
 
@@ -115,7 +115,7 @@ const source3 = `
   }
 `;
 
-const res3 = await graphql({ schema, source: source3, variableValues: { bookId } });
+const res3 = await graphql({ schema, source: source3, contextValue: {}, variableValues: { bookId } });
 console.log(JSON.stringify(res3, null, 2));
 
 const source4 = `
@@ -124,7 +124,7 @@ const source4 = `
   }
 `;
 
-const res4 = await graphql({ schema, source: source4, variableValues: { bookId } });
+const res4 = await graphql({ schema, source: source4, contextValue: {}, variableValues: { bookId } });
 console.log(JSON.stringify(res4, null, 2));
 
 const source5 = `
@@ -133,7 +133,7 @@ const source5 = `
   }
 `;
 
-const res5 = await graphql({ schema, source: source5, variableValues: { authorId } });
+const res5 = await graphql({ schema, source: source5, contextValue: {}, variableValues: { authorId } });
 console.log(JSON.stringify(res5, null, 2));
 
 db.close();
@@ -161,6 +161,5 @@ db.close();
 - an id is a bigint, but due to limitations of JSON it must serialize it to string in the response and parse it from string in the request
 - a reference to another row is stored as an id or array of ids
 - a query can then resolve those referenced ids consecutively and put together the resulting aggregate object
-- note: a query across multiple tables is not atomically consistent because it needs multiple inter-dependent reads
 - the schema is extended with the `Result` type, the mutation directives, and the `Void` scalar
 - it checks the data is valid when it accepts it and before it returns it, and throws `InvalidSchema`, `InvalidInput`, `DatabaseCorruption` errors otherwise

@@ -22,6 +22,14 @@ export class InvalidInput extends Error {
   }
 }
 
+export class ConcurrentChange extends Error {
+  constructor(message?: string, options?: ErrorOptions) {
+    super(message, options);
+
+    this.name = "ConcurrentChange";
+  }
+}
+
 export function isObject(value: unknown): value is object {
   return value != null && value.constructor.name === "Object";
 }

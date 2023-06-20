@@ -1,5 +1,9 @@
 import { isNonNullType } from "../../../deps.ts";
-import type { GraphQLObjectType, IResolvers } from "../../../deps.ts";
+import type {
+  GraphQLObjectType,
+  IMiddleware,
+  IResolvers,
+} from "../../../deps.ts";
 import { validateColumn, validateTable } from "./utils.ts";
 import { createResolverListObjectScalar } from "./list_object_scalar.ts";
 
@@ -7,15 +11,17 @@ import { createResolverListObjectScalar } from "./list_object_scalar.ts";
  * Create resolvers for a table
  *
  * - walk recursively to next queriable table
- * - note: mutates resolvers object
+ * - note: mutates resolvers and middleware object
  * @param db Deno KV database
  * @param table table object
- * @param resolvers resolvers object
+ * @param resolvers resolvers
+ * @param middleware middleware
  */
 export function createQueryResolver(
   db: Deno.Kv,
   table: GraphQLObjectType,
   resolvers: IResolvers,
+  middleware: IMiddleware,
 ): void {
   const tableName = table.name;
 
@@ -27,6 +33,8 @@ export function createQueryResolver(
   }
 
   resolvers[tableName] = {};
+
+  middleware[tableName] = {};
 
   const columns = Object.values(table.getFields());
 
@@ -48,6 +56,7 @@ export function createQueryResolver(
         tableName,
         columnName,
         resolvers,
+        middleware,
         false,
       );
     } else {
@@ -57,6 +66,7 @@ export function createQueryResolver(
         tableName,
         columnName,
         resolvers,
+        middleware,
         true,
       );
     }

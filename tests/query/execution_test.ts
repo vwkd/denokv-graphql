@@ -42,7 +42,7 @@ Deno.test("minimal working example", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -103,7 +103,7 @@ Deno.test("null row", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -157,7 +157,7 @@ Deno.test("bad input id other", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -217,7 +217,7 @@ Deno.test("bad input id negative bigint", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -276,7 +276,7 @@ Deno.test("null column", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -337,7 +337,7 @@ Deno.test("bad id", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -394,7 +394,7 @@ Deno.test("bad row", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {

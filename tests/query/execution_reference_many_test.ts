@@ -63,7 +63,7 @@ Deno.test("minimal working example", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -153,7 +153,7 @@ Deno.test("bad id", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -236,7 +236,7 @@ Deno.test("other reference", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -322,7 +322,7 @@ Deno.test("bad id in reference", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -400,7 +400,7 @@ Deno.test("non null list", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -471,7 +471,7 @@ Deno.test("bad reference id", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -550,7 +550,7 @@ Deno.test("bad reference id other", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -629,7 +629,7 @@ Deno.test("non null item", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -708,7 +708,7 @@ Deno.test("non null list and item", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {
@@ -799,7 +799,7 @@ Deno.test("minimal cyclical reference", async () => {
 
   const schema = buildSchema(db, schemaSource);
 
-  const res = await graphql({ schema, source });
+  const res = await graphql({ schema, source, contextValue: {} });
 
   const exp = {
     data: {

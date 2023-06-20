@@ -7,6 +7,7 @@ import type {
   GraphQLOutputType,
   GraphQLScalarType,
   GraphQLUnionType,
+  IMiddleware,
   IResolvers,
 } from "../../../deps.ts";
 import { createResolverList } from "./list.ts";
@@ -25,12 +26,13 @@ type NullableTypes =
  * Create resolver for a list, object or scalar column
  *
  * - one or many values, no or single or multiple references
- * - note: mutates resolvers object
+ * - note: mutates resolvers and middleware object
  * @param db Deno KV database
  * @param type nullable type
  * @param tableName table name
  * @param columnName column name
  * @param resolvers resolvers
+ * @param middleware middleware
  * @param optional if result can be null
  */
 export function createResolverListObjectScalar(
@@ -39,10 +41,11 @@ export function createResolverListObjectScalar(
   tableName: string,
   columnName: string,
   resolvers: IResolvers,
+  middleware: IMiddleware,
   optional: boolean,
 ): void {
   if (isLeafType(type)) {
-    createResolverScalar(db, type, tableName, resolvers, optional);
+    createResolverScalar(db, type, tableName, resolvers, middleware, optional);
   } else if (isObjectType(type)) {
     createResolverObjectOne(
       db,
@@ -50,6 +53,7 @@ export function createResolverListObjectScalar(
       tableName,
       columnName,
       resolvers,
+      middleware,
       optional,
     );
   } else if (isListType(type)) {
@@ -60,6 +64,7 @@ export function createResolverListObjectScalar(
       tableName,
       columnName,
       resolvers,
+      middleware,
       optional,
     );
   }

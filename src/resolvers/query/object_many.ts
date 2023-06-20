@@ -1,9 +1,10 @@
 import type {
   GraphQLObjectType,
   IFieldResolver,
+  IMiddleware,
   IResolvers,
 } from "../../../deps.ts";
-import { DatabaseCorruption } from "../../utils.ts";
+import { ConcurrentChange, DatabaseCorruption } from "../../utils.ts";
 import { createQueryResolver } from "./main.ts";
 import { validateReferencedRow } from "./utils.ts";
 
@@ -11,12 +12,13 @@ import { validateReferencedRow } from "./utils.ts";
  * Create resolver for object column
  *
  * - many values, multiple references
- * - note: mutates resolvers object
+ * - note: mutates resolvers and middleware object
  * @param db Deno KV database
  * @param type object type
  * @param tableName table name
  * @param columnName column name
  * @param resolvers resolvers
+ * @param middleware middleware
  * @param optionalList if result list can be null
  * @param optional if result can be null
  */
@@ -26,6 +28,7 @@ export function createResolverObjectMany(
   tableName: string,
   columnName: string,
   resolvers: IResolvers,
+  middleware: IMiddleware,
   optionalList: boolean,
   optional: boolean,
 ): void {
@@ -34,6 +37,8 @@ export function createResolverObjectMany(
   // overwrites array of ids in field value to array of objects
   resolvers[tableName][columnName] = async (
     root,
+    _args,
+    context,
   ): Promise<IFieldResolver<any, any>> => {
     const ids = root[columnName];
 
@@ -60,15 +65,29 @@ export function createResolverObjectMany(
       );
     }
 
+    const checks = context.checks;
+
+    let res = await db.atomic()
+      .check(...checks)
+      .commit();
+
+    if (!res.ok) {
+      throw new ConcurrentChange(
+        `Detected concurrent change in some of the read rows. Try request again.`,
+      );
+    }
+
     const keys = ids.map((id) => [referencedTableName, id]);
 
     const entries = await db.getMany(keys);
 
-    const values = entries.map(({ key, value }) => {
+    const values = entries.map(({ key, value, versionstamp }) => {
       // note: throw on first invalid entry instead of continuing to find all
       const id = key.at(-1)! as bigint;
 
       validateReferencedRow(value, referencedTableName, id);
+
+      checks.push({ key, versionstamp });
 
       return value;
     });
@@ -76,5 +95,5 @@ export function createResolverObjectMany(
     return values;
   };
 
-  createQueryResolver(db, type, resolvers);
+  createQueryResolver(db, type, resolvers, middleware);
 }

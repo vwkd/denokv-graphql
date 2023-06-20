@@ -1,5 +1,6 @@
 import {
   addResolversToSchema,
+  applyMiddleware,
   assertValidSchema,
   buildASTSchema,
   parse,
@@ -56,9 +57,11 @@ export function buildSchema(
 
   assertValidSchema(schema);
 
-  const resolvers = generateResolvers(db, schema);
+  const { resolvers, middleware } = generateResolvers(db, schema);
 
   const schemaNew = addResolversToSchema({ schema, resolvers });
 
-  return schemaNew;
+  const schemaNewNew = applyMiddleware(schemaNew, middleware);
+
+  return schemaNewNew;
 }
