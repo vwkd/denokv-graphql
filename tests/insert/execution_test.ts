@@ -25,13 +25,14 @@ Deno.test("minimal working example", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
     }
   `;
 
   const source = `
     mutation {
-      createBook(data: { title: "Shadows of Eternity" }) {
+      createBook(data: { id: "1", title: "Shadows of Eternity" }) {
         id,
         versionstamp,
       }
@@ -59,7 +60,7 @@ Deno.test("minimal working example", async () => {
 });
 
 // todo: fix, needs to query refetch
-Deno.test("autoincrementing id", async () => {
+Deno.test("existing id", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
@@ -81,13 +82,14 @@ Deno.test("autoincrementing id", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
     }
   `;
 
   const source = `
     mutation {
-      createBook(data: { title: "Whispers of the Forgotten" }) {
+      createBook(data: { id: "1", title: "Whispers of the Forgotten" }) {
         id,
         versionstamp,
       }
@@ -108,134 +110,11 @@ Deno.test("autoincrementing id", async () => {
 
   const exp = {
     data: {
-      createBook: {
-        id: "2",
-        versionstamp: "00000000000000020000",
-      },
-    },
-  };
-
-  db.close();
-
-  assertEquals(res, exp);
-});
-
-Deno.test("bad last id negative bigint", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): BookResult
-    }
-
-    type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "Book")
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
-    }
-
-    input BookInput {
-      title: String,
-    }
-  `;
-
-  const source = `
-    mutation {
-      createBook(data: { title: "Shadows of Eternity" }) {
-        id,
-        versionstamp,
-      }
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-  await db.atomic()
-    .set(["Book", -999n], {
-      id: -999n,
-      title: "Shadows of Eternity",
-    })
-    .commit();
-
-  const schema = buildSchema(db, schemaSource);
-
-  const res = await graphql({ schema, source, contextValue: {} });
-
-  const exp = {
-    data: {
       createBook: null,
     },
     errors: [{
-      message: "Expected table 'Book' last row id to be positive bigint",
-      locations: [{ line: 3, column: 7 }],
-      path: ["createBook"],
-    }],
-  };
-
-  db.close();
-
-  assertObjectMatch(res, exp);
-});
-
-Deno.test("bad last id other", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): BookResult
-    }
-
-    type Mutation {
-      createBook(data: BookInput!): Result @insert(table: "Book")
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
-    }
-
-    input BookInput {
-      title: String,
-    }
-  `;
-
-  const source = `
-    mutation {
-      createBook(data: { title: "Shadows of Eternity" }) {
-        id,
-        versionstamp,
-      }
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-  await db.atomic()
-    .set(["Book", "999"], {
-      id: "999n",
-      title: "Shadows of Eternity",
-    })
-    .commit();
-
-  const schema = buildSchema(db, schemaSource);
-
-  const res = await graphql({ schema, source, contextValue: {} });
-
-  const exp = {
-    data: {
-      createBook: null,
-    },
-    errors: [{
-      message: "Expected table 'Book' last row id to be positive bigint",
+      message:
+        "Can't insert row with id '1' into table 'Book' because already exists",
       locations: [{ line: 3, column: 7 }],
       path: ["createBook"],
     }],

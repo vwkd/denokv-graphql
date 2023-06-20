@@ -119,13 +119,13 @@ export function parseId(str: string, tableName: string): bigint {
     id = BigInt(str);
   } catch (e) {
     throw new InvalidInput(
-      `Expected table '${tableName}' argument 'id' to contain string of positive bigint`,
+      `Expected table '${tableName}' argument 'id' to contain bigint as string`,
     );
   }
 
   if (id <= 0n) {
     throw new InvalidInput(
-      `Expected table '${tableName}' argument 'id' to contain string of positive bigint`,
+      `Expected table '${tableName}' argument 'id' to contain positive bigint as string`,
     );
   }
 

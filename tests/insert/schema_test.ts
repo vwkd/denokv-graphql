@@ -24,6 +24,7 @@ Deno.test("minimal working example", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
     }
   `;
@@ -37,7 +38,7 @@ Deno.test("minimal working example", async () => {
   db.close();
 });
 
-Deno.test("id input", async () => {
+Deno.test("missing input", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
@@ -68,13 +69,13 @@ Deno.test("id input", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' must not have an 'id' column",
+    "Mutation 'createBook' input table 'BookInput' must have one column for each column of table 'Book'",
   );
 
   db.close();
 });
 
-Deno.test("extra id input", async () => {
+Deno.test("extra input", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
@@ -98,6 +99,7 @@ Deno.test("extra id input", async () => {
     input BookInput {
       id: ID!
       title: String,
+      read: Boolean,
     }
   `;
 
@@ -106,7 +108,7 @@ Deno.test("extra id input", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' must have one column for each column of table 'Book' except the 'id' column",
+    "Mutation 'createBook' input table 'BookInput' must have one column for each column of table 'Book'",
   );
 
   db.close();
@@ -135,6 +137,7 @@ Deno.test("other input", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       read: Boolean,
     }
@@ -173,6 +176,7 @@ Deno.test("different scalar input", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: Int,
     }
   `;
@@ -276,6 +280,7 @@ Deno.test("extra argument", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
     }
   `;
@@ -313,6 +318,7 @@ Deno.test("non-null type", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
     }
   `;
@@ -350,6 +356,7 @@ Deno.test("list type", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
     }
   `;
@@ -387,6 +394,7 @@ Deno.test("other type", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
     }
   `;
@@ -424,6 +432,7 @@ Deno.test("no directive", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
     }
   `;
@@ -462,6 +471,7 @@ Deno.test("other type to 'table' argument of 'insert' directive", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
     }
   `;
@@ -499,6 +509,7 @@ Deno.test("no table", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
     }
   `;
@@ -536,6 +547,7 @@ Deno.test("no object type", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
     }
 
@@ -577,6 +589,7 @@ Deno.test("missing id column", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
     }
 
@@ -619,6 +632,7 @@ Deno.test("missing second column", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
     }
 

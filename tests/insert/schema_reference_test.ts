@@ -48,6 +48,7 @@ Deno.test("naked vs naked", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: ID,
     }
@@ -90,6 +91,7 @@ Deno.test("naked vs non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: ID,
     }
@@ -134,6 +136,7 @@ Deno.test("naked vs list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: ID,
     }
@@ -178,6 +181,7 @@ Deno.test("naked vs list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: ID,
     }
@@ -222,6 +226,7 @@ Deno.test("naked vs non-null list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: ID,
     }
@@ -266,6 +271,7 @@ Deno.test("naked vs non-null list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: ID,
     }
@@ -316,6 +322,7 @@ Deno.test("non-null vs naked", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: ID!,
     }
@@ -360,6 +367,7 @@ Deno.test("non-null vs non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: ID!,
     }
@@ -402,6 +410,7 @@ Deno.test("non-null vs list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: ID!,
     }
@@ -446,6 +455,7 @@ Deno.test("non-null vs list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: ID!,
     }
@@ -490,6 +500,7 @@ Deno.test("non-null vs non-null list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: ID!,
     }
@@ -534,6 +545,7 @@ Deno.test("non-null vs non-null list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: ID!,
     }
@@ -584,6 +596,7 @@ Deno.test("list vs naked", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID],
     }
@@ -628,6 +641,7 @@ Deno.test("list vs non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID],
     }
@@ -672,6 +686,7 @@ Deno.test("list vs list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID],
     }
@@ -714,6 +729,7 @@ Deno.test("list vs list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID],
     }
@@ -758,6 +774,7 @@ Deno.test("list vs non-null list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID],
     }
@@ -802,6 +819,7 @@ Deno.test("list vs non-null list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID],
     }
@@ -852,6 +870,7 @@ Deno.test("list non-null vs naked", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID]!,
     }
@@ -896,6 +915,7 @@ Deno.test("list non-null vs non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID]!,
     }
@@ -940,6 +960,7 @@ Deno.test("list non-null vs list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID]!,
     }
@@ -984,6 +1005,7 @@ Deno.test("list non-null vs list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID]!,
     }
@@ -1028,6 +1050,7 @@ Deno.test("list non-null vs non-null list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID]!,
     }
@@ -1070,6 +1093,7 @@ Deno.test("list non-null vs non-null list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID]!,
     }
@@ -1120,6 +1144,7 @@ Deno.test("non-null list vs naked", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID!],
     }
@@ -1164,6 +1189,7 @@ Deno.test("non-null list vs non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID!],
     }
@@ -1208,6 +1234,7 @@ Deno.test("non-null list vs list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID!],
     }
@@ -1252,6 +1279,7 @@ Deno.test("non-null list vs list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID!],
     }
@@ -1294,6 +1322,7 @@ Deno.test("non-null list vs non-null list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID!],
     }
@@ -1338,6 +1367,7 @@ Deno.test("non-null list vs non-null list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID!],
     }
@@ -1388,6 +1418,7 @@ Deno.test("non-null list non-null vs naked", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID!]!,
     }
@@ -1432,6 +1463,7 @@ Deno.test("non-null list non-null vs non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID!]!,
     }
@@ -1476,6 +1508,7 @@ Deno.test("non-null list non-null vs list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID!]!,
     }
@@ -1520,6 +1553,7 @@ Deno.test("non-null list non-null vs list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID!]!,
     }
@@ -1564,6 +1598,7 @@ Deno.test("non-null list non-null vs non-null list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID!]!,
     }
@@ -1608,6 +1643,7 @@ Deno.test("non-null list non-null vs non-null list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [ID!]!,
     }
@@ -1662,6 +1698,7 @@ Deno.test("naked vs naked", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: String,
     }
@@ -1706,6 +1743,7 @@ Deno.test("naked vs non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: String,
     }
@@ -1750,6 +1788,7 @@ Deno.test("naked vs list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: String,
     }
@@ -1794,6 +1833,7 @@ Deno.test("naked vs list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: String,
     }
@@ -1838,6 +1878,7 @@ Deno.test("naked vs non-null list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: String,
     }
@@ -1882,6 +1923,7 @@ Deno.test("naked vs non-null list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: String,
     }
@@ -1932,6 +1974,7 @@ Deno.test("non-null vs naked", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: String!,
     }
@@ -1976,6 +2019,7 @@ Deno.test("non-null vs non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: String!,
     }
@@ -2020,6 +2064,7 @@ Deno.test("non-null vs list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: String!,
     }
@@ -2064,6 +2109,7 @@ Deno.test("non-null vs list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: String!,
     }
@@ -2108,6 +2154,7 @@ Deno.test("non-null vs non-null list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: String!,
     }
@@ -2152,6 +2199,7 @@ Deno.test("non-null vs non-null list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: String!,
     }
@@ -2202,6 +2250,7 @@ Deno.test("list vs naked", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String],
     }
@@ -2246,6 +2295,7 @@ Deno.test("list vs non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String],
     }
@@ -2290,6 +2340,7 @@ Deno.test("list vs list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String],
     }
@@ -2334,6 +2385,7 @@ Deno.test("list vs list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String],
     }
@@ -2378,6 +2430,7 @@ Deno.test("list vs non-null list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String],
     }
@@ -2422,6 +2475,7 @@ Deno.test("list vs non-null list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String],
     }
@@ -2472,6 +2526,7 @@ Deno.test("list non-null vs naked", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String]!,
     }
@@ -2516,6 +2571,7 @@ Deno.test("list non-null vs non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String]!,
     }
@@ -2560,6 +2616,7 @@ Deno.test("list non-null vs list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String]!,
     }
@@ -2604,6 +2661,7 @@ Deno.test("list non-null vs list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String]!,
     }
@@ -2648,6 +2706,7 @@ Deno.test("list non-null vs non-null list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String]!,
     }
@@ -2692,6 +2751,7 @@ Deno.test("list non-null vs non-null list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String]!,
     }
@@ -2742,6 +2802,7 @@ Deno.test("non-null list vs naked", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String!],
     }
@@ -2786,6 +2847,7 @@ Deno.test("non-null list vs non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String!],
     }
@@ -2830,6 +2892,7 @@ Deno.test("non-null list vs list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String!],
     }
@@ -2874,6 +2937,7 @@ Deno.test("non-null list vs list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String!],
     }
@@ -2918,6 +2982,7 @@ Deno.test("non-null list vs non-null list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String!],
     }
@@ -2962,6 +3027,7 @@ Deno.test("non-null list vs non-null list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String!],
     }
@@ -3012,6 +3078,7 @@ Deno.test("non-null list non-null vs naked", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String!]!,
     }
@@ -3056,6 +3123,7 @@ Deno.test("non-null list non-null vs non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String!]!,
     }
@@ -3100,6 +3168,7 @@ Deno.test("non-null list non-null vs list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String!]!,
     }
@@ -3144,6 +3213,7 @@ Deno.test("non-null list non-null vs list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String!]!,
     }
@@ -3188,6 +3258,7 @@ Deno.test("non-null list non-null vs non-null list", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String!]!,
     }
@@ -3232,6 +3303,7 @@ Deno.test("non-null list non-null vs non-null list non-null", async () => {
     }
 
     input BookInput {
+      id: ID!,
       title: String,
       author: [String!]!,
     }

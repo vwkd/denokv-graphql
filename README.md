@@ -17,7 +17,6 @@ GraphQL is an ergonomic interface for reading and writing data. GraphQL provides
 - relational storage schema with tables and rows
 - query, insert and delete mutations
 - query "joins" tables automatically
-- insert mutation automatically generates auto-incrementing row id
 - strict schema enables input validation, database validation, error messages, introspection, etc.
 - atomically consistent
 
@@ -61,42 +60,46 @@ const schemaSource = `
   }
 
   input BookInput {
+    id: ID!,
     title: String!,
     author: ID!,
   }
 
   input AuthorInput {
+    id: ID!,
     name: String!,
   }
 `;
 
 const schema = buildSchema(db, schemaSource);
 
+const authorId = "11";
+
 const source1 = `
-  mutation {
-    createAuthor(data: { name: "Victoria Nightshade" }) {
+  mutation($authorId: ID!) {
+    createAuthor(data: { id: $authorId, name: "Victoria Nightshade" }) {
       id,
       versionstamp,
     }
   }
 `;
 
-const res1 = await graphql({ schema, source: source1, contextValue: {} });
+const res1 = await graphql({ schema, source: source1, contextValue: {}, variableValues: { authorId } });
 console.log(JSON.stringify(res1, null, 2));
-const authorId = res1.data.createAuthor.id;
+
+const bookId = "1";
 
 const source2 = `
-  mutation($authorId: ID!) {
-    createBook(data: { title: "Shadows of Eternity", author: $authorId }) {
+  mutation($bookId: ID!, $authorId: ID!) {
+    createBook(data: { id: $bookId, title: "Shadows of Eternity", author: $authorId }) {
       id,
       versionstamp,
     }
   }
 `;
 
-const res2 = await graphql({ schema, source: source2, contextValue: {}, variableValues: { authorId } });
+const res2 = await graphql({ schema, source: source2, contextValue: {}, variableValues: { bookId, authorId } });
 console.log(JSON.stringify(res2, null, 2));
-const bookId = res2.data.createBook.id;
 
 const source3 = `
   query($bookId: ID!) {

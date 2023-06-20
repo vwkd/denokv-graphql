@@ -127,7 +127,7 @@ export function validateMutationTable(
  * Validate insert mutation arguments
  *
  * - single "data" argument with non-null input object type
- * - input object contains all fields, except `id: ID!` argument
+ * - input object contains all fields
  * - input object reference field is of `ID` type, wrapped in list or non-null depending on table field
  * - remaining input object fields are of same name and type as table fields
  * @param args arguments
@@ -156,25 +156,14 @@ export function validateInsertMutationArguments(
   const inputColumnsMap = data.type.ofType.getFields();
 
   if (
-    !(Object.values(columnsMap).length - 1 ==
+    !(Object.values(columnsMap).length ==
       Object.values(inputColumnsMap).length)
   ) {
     throw new InvalidSchema(
-      `Mutation '${mutationName}' input table '${inputTableName}' must have one column for each column of table '${tableName}' except the 'id' column`,
+      `Mutation '${mutationName}' input table '${inputTableName}' must have one column for each column of table '${tableName}'`,
     );
   }
-
-  if (inputColumnsMap["id"]) {
-    throw new InvalidSchema(
-      `Mutation '${mutationName}' input table '${inputTableName}' must not have an 'id' column`,
-    );
-  }
-
   for (const [columnName, column] of Object.entries(columnsMap)) {
-    if (columnName == "id") {
-      continue;
-    }
-
     if (!inputColumnsMap[columnName]) {
       throw new InvalidSchema(
         `Mutation '${mutationName}' input table '${inputTableName}' must have a column '${columnName}'`,
