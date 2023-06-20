@@ -80,7 +80,11 @@ export function createResolverInsert(
 
         const value = { id, ...data };
 
-        res = await db.set(key, value);
+        res = await db
+          .atomic()
+          .check({ key, versionstamp: null })
+          .set(key, value)
+          .commit();
       } else {
         const lastId = value.key.at(-1)!;
 
@@ -111,7 +115,7 @@ export function createResolverInsert(
 
         res = await db
           .atomic()
-          .check(value)
+          .check({ key, versionstamp: null })
           .set(key, val)
           .commit();
       }
