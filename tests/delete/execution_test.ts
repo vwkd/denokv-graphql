@@ -1,8 +1,6 @@
 import { assertEquals, assertObjectMatch, graphql } from "../../deps.ts";
 import { buildSchema } from "../../src/main.ts";
 
-// todo: actually test that data is deleted
-
 Deno.test("minimal working example", async () => {
   const schemaSource = `
     type Query {
@@ -32,6 +30,13 @@ Deno.test("minimal working example", async () => {
   `;
 
   const db = await Deno.openKv(":memory:");
+  const key = ["Book", "1"];
+  await db.atomic()
+    .set(key, {
+      id: "1",
+      title: "Shadows of Eternity",
+    })
+    .commit();
 
   const schema = buildSchema(db, schemaSource);
 
@@ -43,9 +48,19 @@ Deno.test("minimal working example", async () => {
     },
   };
 
+  assertEquals(res, exp);
+
+  const resDb = await db.get(key);
+
+  const expDb = {
+    key,
+    value: null,
+    versionstamp: null,
+  };
+
   db.close();
 
-  assertEquals(res, exp);
+  assertEquals(resDb, expDb);
 });
 
 Deno.test("null row", async () => {
@@ -88,7 +103,18 @@ Deno.test("null row", async () => {
     },
   };
 
+  assertEquals(res, exp);
+
+  const key = ["Book", "999"];
+  const resDb = await db.get(key);
+
+  const expDb = {
+    key,
+    value: null,
+    versionstamp: null,
+  };
+
   db.close();
 
-  assertEquals(res, exp);
+  assertEquals(resDb, expDb);
 });
