@@ -44,8 +44,8 @@ const schemaSource = `
   }
 
   input DeleteInput {
-    deleteBook: [DeleteInput!]! @insert(table: "Book")
-    deleteAuthor: [DeleteInput!]! @insert(table: "Author")
+    deleteBook: [Identifier!]! @delete(table: "Book")
+    deleteAuthor: [Identifier!]! @delete(table: "Author")
   }
   
   type Book {
@@ -75,37 +75,44 @@ const schemaSource = `
     id: ID!,
     name: String!,
   }
+
+  type Result {
+    versionstamp: String!
+  }
+  
+  input Identifier {
+    id: ID!,
+    versionstamp: String!
+  }
 `;
 
 const schema = buildSchema(db, schemaSource);
 
 const authorId = "11";
-
-const source1 = `
-  mutation($authorId: ID!) {
-    createAuthor(data: [{ id: $authorId, name: "Victoria Nightshade" }]) {
-      versionstamp,
-    }
-  }
-`;
-
-const res1 = await graphql({ schema, source: source1, contextValue: {}, variableValues: { authorId } });
-console.log(JSON.stringify(res1, null, 2));
-
 const bookId = "1";
 
-const source2 = `
-  mutation($bookId: ID!, $authorId: ID!) {
-    createBook(data: [{ id: $bookId, title: "Shadows of Eternity", author: $authorId }]) {
-      versionstamp,
+const sourceInsert = `
+  mutation($authorId: ID!, $bookId: ID!) {
+    createTransaction(data: {
+      createAuthor: [{ id: $authorId, name: "Victoria Nightshade" }],
+      createBook: [{ id: $bookId, title: "Shadows of Eternity", author: $authorId }],
+    }) {
+      versionstamp
     }
   }
 `;
 
-const res2 = await graphql({ schema, source: source2, contextValue: {}, variableValues: { bookId, authorId } });
-console.log(JSON.stringify(res2, null, 2));
+const resultInsert = await graphql({
+  schema,
+  source: sourceInsert,
+  contextValue: {},
+  variableValues: { authorId, bookId },
+});
+console.log(JSON.stringify(resultInsert, null, 2));
 
-const source3 = `
+const versionstamp = resultInsert.data.createTransaction.versionstamp;
+
+const sourceRead = `
   query($bookId: ID!) {
     bookById(id: $bookId) {
       id,
@@ -122,26 +129,32 @@ const source3 = `
   }
 `;
 
-const res3 = await graphql({ schema, source: source3, contextValue: {}, variableValues: { bookId } });
-console.log(JSON.stringify(res3, null, 2));
+const resultRead = await graphql({
+  schema,
+  source: sourceRead,
+  contextValue: {},
+  variableValues: { bookId },
+});
+console.log(JSON.stringify(resultRead, null, 2));
 
-const source4 = `
-  mutation($bookId: ID!) {
-    deleteBookById(id: $bookId)
+const sourceDelete = `
+  mutation($authorId: ID!, $bookId: ID!, $versionstamp: String!) {
+    deleteTransaction(data: {
+      deleteAuthor: [{ id: $authorId, versionstamp: $versionstamp }],
+      deleteBook: [{ id: $bookId, versionstamp: $versionstamp }],
+    }) {
+      versionstamp
+    }
   }
 `;
 
-const res4 = await graphql({ schema, source: source4, contextValue: {}, variableValues: { bookId } });
-console.log(JSON.stringify(res4, null, 2));
-
-const source5 = `
-  mutation($authorId: ID!) {
-    deleteAuthorById(id: $authorId)
-  }
-`;
-
-const res5 = await graphql({ schema, source: source5, contextValue: {}, variableValues: { authorId } });
-console.log(JSON.stringify(res5, null, 2));
+const resultDelete = await graphql({
+  schema,
+  source: sourceDelete,
+  contextValue: {},
+  variableValues: { authorId, bookId, versionstamp },
+});
+console.log(JSON.stringify(resultDelete, null, 2));
 
 db.close();
 ```
