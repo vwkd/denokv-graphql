@@ -1,8 +1,6 @@
 import { assertEquals, assertObjectMatch, graphql } from "../../deps.ts";
 import { buildSchema } from "../../src/main.ts";
 
-// todo: actually test that data is inserted
-
 Deno.test("minimal working example", async () => {
   const schemaSource = `
     type Query {
@@ -52,12 +50,22 @@ Deno.test("minimal working example", async () => {
     },
   };
 
+  assertEquals(res, exp);
+
+  const key = ["Book", "1"];
+  const resDb = await db.get(key);
+
+  const expDb = {
+    key,
+    value: { id: "1", title: "Shadows of Eternity" },
+    versionstamp: "00000000000000010000",
+  };
+
   db.close();
 
-  assertEquals(res, exp);
+  assertEquals(resDb, expDb);
 });
 
-// todo: fix, needs to query refetch
 Deno.test("existing id", async () => {
   const schemaSource = `
     type Query {
@@ -94,8 +102,9 @@ Deno.test("existing id", async () => {
   `;
 
   const db = await Deno.openKv(":memory:");
+  const key = ["Book", "1"];
   await db.atomic()
-    .set(["Book", "1"], {
+    .set(key, {
       id: "1",
       title: "Shadows of Eternity",
     })
@@ -117,7 +126,17 @@ Deno.test("existing id", async () => {
     }],
   };
 
+  assertObjectMatch(res, exp);
+
+  const resDb = await db.get(key);
+
+  const expDb = {
+    key,
+    value: { id: "1", title: "Shadows of Eternity" },
+    versionstamp: "00000000000000010000",
+  };
+
   db.close();
 
-  assertObjectMatch(res, exp);
+  assertEquals(resDb, expDb);
 });
