@@ -87,8 +87,8 @@ export function validateMutationTable(
 /**
  * Validate transaction return value
  *
- * - name is 'Result'
  * - nullable object type
+ * - field 'versionstamp' of non-null 'String' type
  * @param type return value
  * @param transactionName transaction name
  */
@@ -97,11 +97,31 @@ export function validateTransactionReturn(
   transactionName: string,
 ): asserts type is GraphQLObjectType {
   if (
-    !(isObjectType(type) &&
-      type.name == "Result")
+    !(isObjectType(type))
   ) {
     throw new InvalidSchema(
-      `Transaction '${transactionName}' must return nullable 'Result' type`,
+      `Transaction '${transactionName}' must return nullable 'object' type`,
+    );
+  }
+
+  const fields = type.getFields();
+
+  if (
+    !(Object.keys(fields).length == 1)
+  ) {
+    throw new InvalidSchema(
+      `Transaction '${transactionName}' return type must have two fields`,
+    );
+  }
+
+  if (
+    !(fields["versionstamp"] &&
+      isNonNullType(fields["versionstamp"].type) &&
+      isScalarType(fields["versionstamp"].type.ofType) &&
+      fields["versionstamp"].type.ofType.name == "String")
+  ) {
+    throw new InvalidSchema(
+      `Transaction '${transactionName}' return type must have field 'versionstamp' with non-null 'String' type`,
     );
   }
 }
