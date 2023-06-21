@@ -17,6 +17,8 @@ export type {
   GraphQLEnumType,
   GraphQLField,
   GraphQLFieldMap,
+  GraphQLInputObjectType,
+  GraphQLInputType,
   GraphQLInterfaceType,
   GraphQLLeafType,
   GraphQLList,
@@ -27,6 +29,7 @@ export type {
   GraphQLScalarType,
   GraphQLType,
   GraphQLUnionType,
+  InputValueDefinitionNode,
   Source,
   StringValueNode,
 } from "npm:graphql@16.6.0";
@@ -41,7 +44,6 @@ export {
   assertObjectMatch,
   assertThrows,
 } from "https://deno.land/std@0.191.0/testing/asserts.ts";
-export { VoidResolver } from "npm:graphql-scalars@1.22.2";
 export { applyMiddleware } from "npm:graphql-middleware@6.1.34";
 export type {
   IMiddleware,

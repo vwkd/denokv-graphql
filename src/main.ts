@@ -20,19 +20,21 @@ export function buildSchema(
 ): GraphQLSchema {
   const source_extension = `
     type Result {
+      versionstamp: String!
+    }
+
+    type DeleteInput {
       id: ID!,
       versionstamp: String!
     }
 
     directive @insert(
       table: String!
-    ) on FIELD_DEFINITION
+    ) on INPUT_FIELD_DEFINITION
 
     directive @delete(
       table: String!
-    ) on FIELD_DEFINITION
-
-    scalar Void
+    ) on INPUT_FIELD_DEFINITION
   `;
 
   const schemaAst = parse(source + source_extension);
