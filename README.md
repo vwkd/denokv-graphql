@@ -160,8 +160,7 @@ db.close();
 
 ## Internals
 
-- a row is an object with an id, stored at the key of the table name and id
-- an id is a bigint, but due to limitations of JSON it must serialize it to string in the response and parse it from string in the request
+- a row is an object with a string as id, stored at the key of the table name and id
 - a reference to another row is stored as an id or array of ids
 - a query can then resolve those referenced ids consecutively and put together the resulting aggregate object
 - the schema is extended with the `Result` type, the mutation directives, and the `Void` scalar

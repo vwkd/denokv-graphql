@@ -5,13 +5,7 @@ import type {
   IResolvers,
 } from "../../../deps.ts";
 import { InvalidInput } from "../../utils.ts";
-import { isIdField, isReferenceField, parseIds } from "../utils.ts";
 import { validateInsertMutationArguments } from "./utils.ts";
-
-/**
- * Maximum number of retries to set value after failing due to concurrent write
- */
-const MAX_RETRIES = 100;
 
 /**
  * Create resolvers for insert mutations
@@ -42,26 +36,13 @@ export function createResolverInsert(
     _root,
     args,
   ): Promise<IFieldResolver<any, any>> => {
-    // parse string ids into bigints in id column and reference columns
-    const data = Object.fromEntries(
-      Object.entries(args.data).map(([columnName, value]) => {
-        const column = columnsMap[columnName];
-        if (isIdField(column) || isReferenceField(column)) {
-          const valueNew = parseIds(value, tableName, columnName);
-          return [columnName, valueNew];
-        } else {
-          return [columnName, value];
-        }
-      }),
-    );
-
-    const id = data.id;
+    const id = args.data.id;
     const key = [tableName, id];
 
     const res = await db
       .atomic()
       .check({ key, versionstamp: null })
-      .set(key, data)
+      .set(key, args.data)
       .commit();
 
     if (!res.ok) {

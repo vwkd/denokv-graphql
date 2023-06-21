@@ -38,7 +38,7 @@ export function createResolverObjectOne(
     _args,
     context,
   ): Promise<IFieldResolver<any, any>> => {
-    const id = root[columnName] as bigint | undefined;
+    const id = root[columnName] as string | undefined;
 
     if (optional && id === undefined) {
       return null;

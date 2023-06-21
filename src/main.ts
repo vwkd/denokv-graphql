@@ -9,22 +9,6 @@ import type { GraphQLSchema, Source } from "../deps.ts";
 import { generateResolvers } from "./resolvers/main.ts";
 
 /**
- * Patch `GraphQLID` to support serializing bigint to string in ID
- *
- * - spoofes bigint as number in `Number.isInteger`
- * - used internally when creating JSON response
- * - note: since JSON doesn't support bigints must send as strings in request, parse manually to bigint
- * - note: integer number in JSON is parsed to string by `GraphQLID`, must manually parse back to number too
- */
-Number.isInteger = function (num) {
-  if (typeof num == "bigint") {
-    return true;
-  } else {
-    return Number.isInteger(num);
-  }
-};
-
-/**
  * Build a GraphQLSchema for Deno KV
  * @param db Deno KV database
  * @param source schema source document

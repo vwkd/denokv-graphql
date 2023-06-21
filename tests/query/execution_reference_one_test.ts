@@ -46,13 +46,13 @@ Deno.test("minimal working example", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
+    .set(["Book", "1"], {
+      id: "1",
       title: "Shadows of Eternity",
-      author: 11n,
+      author: "11",
     })
-    .set(["Author", 11n], {
-      id: 11n,
+    .set(["Author", "11"], {
+      id: "11",
       name: "Victoria Nightshade",
     })
     .commit();
@@ -126,10 +126,10 @@ Deno.test("bad id", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
+    .set(["Book", "1"], {
+      id: "1",
       title: "Shadows of Eternity",
-      author: 999n,
+      author: "999",
     })
     .commit();
 
@@ -204,12 +204,12 @@ Deno.test("other reference", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
+    .set(["Book", "1"], {
+      id: "1",
       title: "Shadows of Eternity",
-      author: 11n,
+      author: "11",
     })
-    .set(["Author", 11n], "XXX")
+    .set(["Author", "11"], "XXX")
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -283,13 +283,13 @@ Deno.test("bad id in reference", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
+    .set(["Book", "1"], {
+      id: "1",
       title: "Shadows of Eternity",
-      author: 11n,
+      author: "11",
     })
-    .set(["Author", 11n], {
-      id: 999n,
+    .set(["Author", "11"], {
+      id: "999",
       name: "Victoria Nightshade",
     })
     .commit();
@@ -366,8 +366,8 @@ Deno.test("non null", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
+    .set(["Book", "1"], {
+      id: "1",
       title: "Shadows of Eternity",
     })
     .commit();
@@ -440,15 +440,15 @@ Deno.test("minimal cyclical reference", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
+    .set(["Book", "1"], {
+      id: "1",
       title: "Shadows of Eternity",
-      author: 11n,
+      author: "11",
     })
-    .set(["Author", 11n], {
-      id: 11n,
+    .set(["Author", "11"], {
+      id: "11",
       name: "Victoria Nightshade",
-      book: 1n,
+      book: "1",
     })
     .commit();
 

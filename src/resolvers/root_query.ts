@@ -5,7 +5,6 @@ import type {
   IMiddleware,
   IResolvers,
 } from "../../deps.ts";
-import { parseId } from "./utils.ts";
 import {
   validateQueryArguments,
   validateQueryReturn,
@@ -60,7 +59,7 @@ export function createRootQueryResolver(
       args,
       context,
     ): Promise<IFieldResolver<any, any>> => {
-      const id = parseId(args.id, tableName);
+      const id = args.id;
 
       const key = [tableName, id];
 
