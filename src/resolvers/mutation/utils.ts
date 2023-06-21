@@ -10,7 +10,6 @@ import type {
   GraphQLArgument,
   GraphQLFieldMap,
   GraphQLNamedType,
-  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLOutputType,
   GraphQLScalarType,
@@ -27,12 +26,12 @@ import { isSameWrapping, isType } from "../utils.ts";
  * @param mutationName mutation name
  */
 export function validateInsertMutationReturn(
-  returnValue: GraphQLOutputType,
+  type: GraphQLOutputType,
   mutationName: string,
-): asserts returnValue is GraphQLNonNull<GraphQLObjectType> {
+): asserts type is GraphQLObjectType {
   if (
-    !(isObjectType(returnValue) &&
-      returnValue.name == "Result")
+    !(isObjectType(type) &&
+      type.name == "Result")
   ) {
     throw new InvalidSchema(
       `Mutation '${mutationName}' must have nullable 'Result' type`,
@@ -49,11 +48,11 @@ export function validateInsertMutationReturn(
  * @param mutationName mutation name
  */
 export function validateDeleteMutationReturn(
-  returnValue: GraphQLOutputType,
+  type: GraphQLOutputType,
   mutationName: string,
-): asserts returnValue is GraphQLNonNull<GraphQLScalarType> {
+): asserts type is GraphQLScalarType {
   if (
-    !(isScalarType(returnValue) && returnValue.name == "Void")
+    !(isScalarType(type) && type.name == "Void")
   ) {
     throw new InvalidSchema(
       `Mutation '${mutationName}' must have nullable 'Void' type`,
