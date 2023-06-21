@@ -14,11 +14,9 @@ GraphQL is an ergonomic interface for reading and writing data. GraphQL provides
 
 ## Features
 
+- ergonomic GraphQL API for Deno KV
 - relational storage schema with tables and rows
-- query, insert and delete mutations
-- query "joins" tables automatically
-- strict schema enables input validation, database validation, error messages, introspection, etc.
-- atomically consistent
+- atomically consistent query, and insert, delete mutations
 
 
 
