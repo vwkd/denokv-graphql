@@ -34,8 +34,8 @@ Deno.test("minimal working example", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
+    .set(["Book", "1"], {
+      id: "1",
       title: "Shadows of Eternity",
     })
     .commit();
@@ -95,8 +95,8 @@ Deno.test("null row", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
+    .set(["Book", "1"], {
+      id: "1",
       title: "Shadows of Eternity",
     })
     .commit();
@@ -114,126 +114,6 @@ Deno.test("null row", async () => {
   db.close();
 
   assertEquals(res, exp);
-});
-
-Deno.test("bad input id other", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): BookResult
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
-    }
-  `;
-
-  const source = `
-    query {
-      bookById(id: "XXX") {
-        id,
-        versionstamp
-        value {
-          id,
-          title,
-        }
-      }
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-  await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
-      title: "Shadows of Eternity",
-    })
-    .commit();
-
-  const schema = buildSchema(db, schemaSource);
-
-  const res = await graphql({ schema, source, contextValue: {} });
-
-  const exp = {
-    data: {
-      bookById: null,
-    },
-    errors: [{
-      message:
-        "Expected table 'Book' argument 'id' to contain bigint as string",
-      locations: [{ line: 3, column: 7 }],
-      path: ["bookById"],
-    }],
-  };
-
-  db.close();
-
-  assertObjectMatch(res, exp);
-});
-
-Deno.test("bad input id negative bigint", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): BookResult
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
-    }
-  `;
-
-  const source = `
-    query {
-      bookById(id: "-999") {
-        id,
-        versionstamp
-        value {
-          id,
-          title,
-        }
-      }
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-  await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
-      title: "Shadows of Eternity",
-    })
-    .commit();
-
-  const schema = buildSchema(db, schemaSource);
-
-  const res = await graphql({ schema, source, contextValue: {} });
-
-  const exp = {
-    data: {
-      bookById: null,
-    },
-    errors: [{
-      message:
-        "Expected table 'Book' argument 'id' to contain positive bigint as string",
-      locations: [{ line: 3, column: 7 }],
-      path: ["bookById"],
-    }],
-  };
-
-  db.close();
-
-  assertObjectMatch(res, exp);
 });
 
 Deno.test("null column", async () => {
@@ -269,8 +149,8 @@ Deno.test("null column", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
+    .set(["Book", "1"], {
+      id: "1",
     })
     .commit();
 
@@ -329,8 +209,8 @@ Deno.test("bad id", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", 1n], {
-      id: 999n,
+    .set(["Book", "1"], {
+      id: "999",
       title: "Shadows of Eternity",
     })
     .commit();
@@ -389,7 +269,7 @@ Deno.test("bad row", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", 1n], "XXX")
+    .set(["Book", "1"], "XXX")
     .commit();
 
   const schema = buildSchema(db, schemaSource);

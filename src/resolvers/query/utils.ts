@@ -152,7 +152,7 @@ export function validateColumn(
 export function validateRow(
   row: unknown,
   tableName: string,
-  id: bigint,
+  id: string,
 ): asserts row is object {
   if (!isObject(row)) {
     throw new DatabaseCorruption(
@@ -176,7 +176,7 @@ export function validateRow(
 export function validateReferencedRow(
   row: unknown,
   referencedTableName: string,
-  id: bigint,
+  id: string,
 ): asserts row is object {
   if (row === null) {
     throw new DatabaseCorruption(

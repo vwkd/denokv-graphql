@@ -48,10 +48,10 @@ export function createResolverObjectMany(
 
     if (
       !Array.isArray(ids) ||
-      ids.some((id) => !(typeof id == "bigint" && id > 0))
+      ids.some((id) => !(typeof id == "string"))
     ) {
       throw new DatabaseCorruption(
-        `Expected table '${tableName}' column '${columnName}' to contain array of positive bigints`,
+        `Expected table '${tableName}' column '${columnName}' to contain array of strings`,
       );
     }
 
@@ -83,7 +83,7 @@ export function createResolverObjectMany(
 
     const values = entries.map(({ key, value, versionstamp }) => {
       // note: throw on first invalid entry instead of continuing to find all
-      const id = key.at(-1)! as bigint;
+      const id = key.at(-1)!;
 
       validateReferencedRow(value, referencedTableName, id);
 

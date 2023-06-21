@@ -98,8 +98,8 @@ Deno.test("existing id", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", 1n], {
-      id: 1n,
+    .set(["Book", "1"], {
+      id: "1",
       title: "Shadows of Eternity",
     })
     .commit();

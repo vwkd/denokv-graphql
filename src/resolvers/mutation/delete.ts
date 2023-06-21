@@ -3,7 +3,6 @@ import type {
   IFieldResolver,
   IResolvers,
 } from "../../../deps.ts";
-import { parseId } from "./../utils.ts";
 import { validateDeleteMutationArguments } from "./utils.ts";
 
 /**
@@ -32,7 +31,7 @@ export function createResolverDelete(
     _root,
     args,
   ): Promise<IFieldResolver<any, any>> => {
-    const id = parseId(args.id, tableName);
+    const id = args.id;
 
     const key = [tableName, id];
 
