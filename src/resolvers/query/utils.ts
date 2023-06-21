@@ -17,7 +17,9 @@ import { isIdField, isType } from "../utils.ts";
  * Validate query return value
  *
  * - nullable object type
- * - has fields of `Result` and additional `value` field of non-null object type
+ * - field 'id' of non-null 'ID' type
+ * - field 'versionstamp' of non-null 'String' type
+ * - field `value` of non-null object type
  * @param type return value
  * @param queryName query name
  */

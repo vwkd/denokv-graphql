@@ -19,15 +19,6 @@ export function buildSchema(
   source: string | Source,
 ): GraphQLSchema {
   const source_extension = `
-    type Result {
-      versionstamp: String!
-    }
-
-    type DeleteInput {
-      id: ID!,
-      versionstamp: String!
-    }
-
     directive @insert(
       table: String!
     ) on INPUT_FIELD_DEFINITION

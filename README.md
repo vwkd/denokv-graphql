@@ -156,7 +156,7 @@ db.close();
 - a column with multiple references to another table is a field with a possibly non-null list of an object type
 - a table must have a non-null `id: ID!` column and at least one other column
 - a query must have a non-null `id: ID!` argument and return a nullable table
-- a mutation must have a single `data` argument of a non-null input object type and return a nullable `Result`
+- a mutation must have a single `data` argument of a non-null input object type and return a nullable object type with single non-null `versionstamp: String!` field
 - the input object type must have fields with
   - a directive with a single `table` argument as the table name as string
   - a non-null list non-null input object as return type, which has matching fields to the table type, except reference fields `ID`s in place of the referenced table's type
@@ -168,5 +168,5 @@ db.close();
 - a row is an object with a string as id, stored at the key of the table name and id
 - a reference to another row is stored as an id or array of ids
 - a query can then resolve those referenced ids consecutively and put together the resulting aggregate object
-- the schema is extended with the `Result` type, the `DeleteInput` type, and the mutation directives
+- the schema is extended with the mutation directives
 - it checks the data is valid when it accepts it and before it returns it, and throws `InvalidSchema`, `InvalidInput`, `DatabaseCorruption` errors otherwise
