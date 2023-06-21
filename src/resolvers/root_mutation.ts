@@ -1,16 +1,10 @@
 import { GraphQLSchema } from "../../deps.ts";
-import type { IResolvers, StringValueNode } from "../../deps.ts";
-import { createResolverDelete } from "./mutation/delete.ts";
-import { createResolverInsert } from "./mutation/insert.ts";
+import type { IResolvers } from "../../deps.ts";
+import { createResolverTransaction } from "./mutation/transaction.ts";
 import {
-  validateDeleteMutationReturn,
-  validateInsertMutationReturn,
-  validateMutationDirective,
-  validateMutationTable,
+  validateTransactionArguments,
+  validateTransactionReturn,
 } from "./mutation/utils.ts";
-import { validateTable } from "./query/utils.ts";
-
-const directiveNames = ["insert", "delete"];
 
 /**
  * Create resolvers for mutations
@@ -37,58 +31,27 @@ export function createRootMutationResolver(
 
   resolvers[rootMutationName] = {};
 
-  const mutations = mutationType.getFields();
+  const transactions = mutationType.getFields();
 
-  for (const mutation of Object.values(mutations)) {
-    const mutationName = mutation.name;
+  for (const [transactionName, transaction] of Object.entries(transactions)) {
+    const type = transaction.type;
 
-    const astNode = mutation.astNode!;
+    validateTransactionReturn(type, transactionName);
 
-    validateMutationDirective(astNode, mutationName, directiveNames);
+    const args = transaction.args;
 
-    // note: assert in `validateMutationDirectiveInsert`
-    const directives = astNode.directives!;
-    const directive = directives.filter(({ name }) =>
-      directiveNames.includes(name.value)
-    )[0];
+    validateTransactionArguments(args, transactionName);
 
-    // note: assumes valid schema
-    // beware: currently bug in graphql-js that doesn't validate custom schema directive argument types, see [#3912](https://github.com/graphql/graphql-js/issues/3912)
-    const args = directive.arguments!;
-    const argument = args.find((arg) => arg.name.value == "table")!;
-    const value = argument.value as StringValueNode;
-    const tableName = value.value;
+    // note: asserted in `validateTransactionArguments`
+    const data = args.find((arg) => arg.name == "data")!;
+    const transactionInput = data.type.ofType;
 
-    const table = schema.getType(tableName);
-    validateMutationTable(table, tableName, mutationName);
-
-    const columnsMap = table.getFields();
-    const columns = Object.values(columnsMap);
-    validateTable(columns, tableName);
-
-    const type = mutation.type;
-
-    if (directive.name.value == "insert") {
-      validateInsertMutationReturn(type, mutationName);
-
-      createResolverInsert(
-        db,
-        mutation.args,
-        columnsMap,
-        tableName,
-        mutationName,
-        resolvers[rootMutationName],
-      );
-    } else if (directive.name.value == "delete") {
-      validateDeleteMutationReturn(type, mutationName);
-
-      createResolverDelete(
-        db,
-        mutation.args,
-        tableName,
-        mutationName,
-        resolvers[rootMutationName],
-      );
-    }
+    createResolverTransaction(
+      db,
+      schema,
+      transactionInput,
+      transactionName,
+      resolvers[rootMutationName],
+    );
   }
 }

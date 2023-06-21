@@ -36,10 +36,18 @@ const schemaSource = `
   }
 
   type Mutation {
-    createBook(data: [BookInput]!): Result @insert(table: "Book")
-    createAuthor(data: [AuthorInput]!): Result @insert(table: "Author")
-    deleteBookById(id: ID!): Void @delete(table: "Book")
-    deleteAuthorById(id: ID!): Void @delete(table: "Book")
+    createTransaction(data: CreateInput!): Result
+    deleteTransaction(data: DeleteInput!): Result
+  }
+
+  input CreateInput {
+    createBook: [BookInput!]! @insert(table: "Book")
+    createAuthor: [AuthorInput!]! @insert(table: "Author")
+  }
+
+  input DeleteInput {
+    deleteBook: [DeleteInput!]! @insert(table: "Book")
+    deleteAuthor: [DeleteInput!]! @insert(table: "Author")
   }
   
   type Book {
@@ -150,9 +158,10 @@ db.close();
 - a column with multiple references to another table is a field with a possibly non-null list of an object type
 - a table must have a non-null `id: ID!` column and at least one other column
 - a query must have a non-null `id: ID!` argument and return a nullable table
-- a mutation must have a directive with a single `table` argument as the table name as string
-- an insert mutation must take a single `data` argument of a non-null input object type and return a nullable `Result`
-- the input data type must have matching fields to the table type, except no `id` field and in reference fields `ID`s in place of the referenced table's type
+- a mutation must have a single `data` argument of a non-null input object type and return a nullable `Result`
+- the input object type must have fields with
+  - a directive with a single `table` argument as the table name as string
+  - a non-null list non-null input object as return type, which has matching fields to the table type, except reference fields `ID`s in place of the referenced table's type
 
 
 
@@ -161,5 +170,5 @@ db.close();
 - a row is an object with a string as id, stored at the key of the table name and id
 - a reference to another row is stored as an id or array of ids
 - a query can then resolve those referenced ids consecutively and put together the resulting aggregate object
-- the schema is extended with the `Result` type, the mutation directives, and the `Void` scalar
+- the schema is extended with the `Result` type, the `DeleteInput` type, and the mutation directives
 - it checks the data is valid when it accepts it and before it returns it, and throws `InvalidSchema`, `InvalidInput`, `DatabaseCorruption` errors otherwise
