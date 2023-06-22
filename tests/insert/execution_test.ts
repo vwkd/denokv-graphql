@@ -1,14 +1,14 @@
-import { assertEquals, assertObjectMatch, graphql } from "../../deps.ts";
+import { assertEquals, graphql } from "../../deps.ts";
 import { buildSchema } from "../../src/main.ts";
 
 Deno.test("minimal working example", async () => {
   const schemaSource = `
-    type Query {
+   type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      createBook(data: [BookInput!]!): Result @insert(table: "Book")
+      createTransaction(data: CreateInput!): Result
     }
 
     type Book {
@@ -22,6 +22,14 @@ Deno.test("minimal working example", async () => {
       value: Book!
     }
 
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+
     input BookInput {
       id: ID!,
       title: String,
@@ -30,7 +38,9 @@ Deno.test("minimal working example", async () => {
 
   const source = `
     mutation {
-      createBook(data: [{ id: "1", title: "Shadows of Eternity" }]) {
+      createTransaction(data: {
+        createBook: [{ id: "1", title: "Shadows of Eternity" }]
+      }) {
         versionstamp,
       }
     }
@@ -44,7 +54,7 @@ Deno.test("minimal working example", async () => {
 
   const exp = {
     data: {
-      createBook: {
+      createTransaction: {
         versionstamp: "00000000000000010000",
       },
     },
@@ -73,7 +83,7 @@ Deno.test("existing id", async () => {
     }
 
     type Mutation {
-      createBook(data: [BookInput!]!): Result @insert(table: "Book")
+      createTransaction(data: CreateInput!): Result
     }
 
     type Book {
@@ -87,6 +97,14 @@ Deno.test("existing id", async () => {
       value: Book!
     }
 
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+
     input BookInput {
       id: ID!,
       title: String,
@@ -95,7 +113,9 @@ Deno.test("existing id", async () => {
 
   const source = `
     mutation {
-      createBook(data: [{ id: "1", title: "Whispers of the Forgotten" }]) {
+      createTransaction(data: {
+        createBook: [{ id: "1", title: "Whispers of the Forgotten" }]
+      }) {
         versionstamp,
       }
     }
@@ -116,17 +136,11 @@ Deno.test("existing id", async () => {
 
   const exp = {
     data: {
-      createBook: null,
+      createTransaction: null,
     },
-    errors: [{
-      message:
-        "Mutation 'createBook' failed to insert rows into table 'Book' because some ids already exist",
-      locations: [{ line: 3, column: 7 }],
-      path: ["createBook"],
-    }],
   };
 
-  assertObjectMatch(res, exp);
+  assertEquals(res, exp);
 
   const resDb = await db.get(key);
 
