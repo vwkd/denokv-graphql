@@ -25,13 +25,6 @@ export function createQueryResolver(
 ): void {
   const tableName = table.name;
 
-  if (resolvers[tableName]) {
-    // console.debug(`Skipping resolvers for table '${tableName}' because already exist`);
-    return;
-  } else {
-    // console.debug(`Creating resolvers for table '${tableName}'`);
-  }
-
   resolvers[tableName] = {};
 
   middleware[tableName] = {};
@@ -43,8 +36,6 @@ export function createQueryResolver(
   for (const column of columns) {
     const columnName = column.name;
     const type = column.type;
-
-    // console.debug(`Creating resolvers for column '${columnName}'`);
 
     validateColumn(type, tableName, columnName);
 
