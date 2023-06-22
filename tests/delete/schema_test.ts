@@ -9,7 +9,7 @@ Deno.test("minimal working example", async () => {
     }
 
     type Mutation {
-      deleteBookById(id: ID!): Void @delete(table: "Book")
+      deleteTransaction(data: DeleteInput!): Result
     }
 
     type Book {
@@ -21,6 +21,19 @@ Deno.test("minimal working example", async () => {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
     }
   `;
 
@@ -33,14 +46,14 @@ Deno.test("minimal working example", async () => {
   db.close();
 });
 
-Deno.test("no argument", async () => {
+Deno.test("argument - nullable", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      deleteBookById: Void @delete(table: "Book")
+      deleteTransaction(data: DeleteInput): Result
     }
 
     type Book {
@@ -52,6 +65,19 @@ Deno.test("no argument", async () => {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
     }
   `;
 
@@ -60,20 +86,20 @@ Deno.test("no argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'deleteBookById' must have single 'id: ID!' argument",
+    "Transaction 'deleteTransaction' must return single 'data' argument with non-null input object type",
   );
 
   db.close();
 });
 
-Deno.test("other argument", async () => {
+Deno.test("argument - none", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      deleteBookById(XXX: String): Void @delete(table: "Book")
+      deleteTransaction: Result
     }
 
     type Book {
@@ -85,6 +111,19 @@ Deno.test("other argument", async () => {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
     }
   `;
 
@@ -93,20 +132,20 @@ Deno.test("other argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'deleteBookById' must have single 'id: ID!' argument",
+    "Transaction 'deleteTransaction' must return single 'data' argument with non-null input object type",
   );
 
   db.close();
 });
 
-Deno.test("extra argument", async () => {
+Deno.test("argument - other", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      deleteBookById(id: ID!, XXX: String): Void @delete(table: "Book")
+      deleteTransaction(XXX: String): Result
     }
 
     type Book {
@@ -118,6 +157,19 @@ Deno.test("extra argument", async () => {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
     }
   `;
 
@@ -126,20 +178,20 @@ Deno.test("extra argument", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'deleteBookById' must have single 'id: ID!' argument",
+    "Transaction 'deleteTransaction' must return single 'data' argument with non-null input object type",
   );
 
   db.close();
 });
 
-Deno.test("non-null type", async () => {
+Deno.test("argument - extra", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      deleteBookById(id: ID!): Void! @delete(table: "Book")
+      deleteTransaction(data: DeleteInput!, XXX: String): Result
     }
 
     type Book {
@@ -151,6 +203,19 @@ Deno.test("non-null type", async () => {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
     }
   `;
 
@@ -159,20 +224,20 @@ Deno.test("non-null type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'deleteBookById' must have nullable 'Void' type",
+    "Transaction 'deleteTransaction' must return single 'data' argument with non-null input object type",
   );
 
   db.close();
 });
 
-Deno.test("list type", async () => {
+Deno.test("return type - non-null", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      deleteBookById(id: ID!): [Void] @delete(table: "Book")
+      deleteTransaction(data: DeleteInput!): Result!
     }
 
     type Book {
@@ -184,6 +249,19 @@ Deno.test("list type", async () => {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
     }
   `;
 
@@ -192,20 +270,20 @@ Deno.test("list type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'deleteBookById' must have nullable 'Void' type",
+    "Transaction 'deleteTransaction' must return nullable 'object' type",
   );
 
   db.close();
 });
 
-Deno.test("other type", async () => {
+Deno.test("return type - list", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      deleteBookById(id: ID!): String! @delete(table: "Book")
+      deleteTransaction(data: DeleteInput!): [Result]
     }
 
     type Book {
@@ -217,6 +295,19 @@ Deno.test("other type", async () => {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
     }
   `;
 
@@ -225,20 +316,20 @@ Deno.test("other type", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'deleteBookById' must have nullable 'Void' type",
+    "Transaction 'deleteTransaction' must return nullable 'object' type",
   );
 
   db.close();
 });
 
-Deno.test("no directive", async () => {
+Deno.test("return type - other", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      deleteBookById(id: ID!): Void
+      deleteTransaction(data: DeleteInput!): String
     }
 
     type Book {
@@ -250,6 +341,873 @@ Deno.test("no directive", async () => {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Transaction 'deleteTransaction' must return nullable 'object' type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - nullable", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: Identifier @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - non-null", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: Identifier! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - nullable list non-null", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!] @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - non-null list nullable", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - nullable other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: String @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - non-null other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: String! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - nullable list non-null other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [String!] @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - non-null list nullable other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [String]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data table - insufficient columns", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' input table 'Identifier' must have two fields",
+  );
+
+  db.close();
+});
+
+Deno.test("input data table - excess columns", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
+      XXX: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' input table 'Identifier' must have two fields",
+  );
+
+  db.close();
+});
+
+Deno.test("input data table - missing 'id' column", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      XXX: ID!
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' input table 'Identifier' must have field 'id' with non-null 'ID' type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data table - missing 'versionstamp' column", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!
+      XXX: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' input table 'Identifier' must have field 'versionstamp' with non-null 'String' type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data table - 'id' column nullable", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' input table 'Identifier' must have field 'id' with non-null 'ID' type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data table - 'id' column list", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: [ID]
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' input table 'Identifier' must have field 'id' with non-null 'ID' type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data table - 'id' column other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: String!
+      versionstamp: String!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' input table 'Identifier' must have field 'id' with non-null 'ID' type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data table - 'versionstamp' column nullable", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!
+      versionstamp: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' input table 'Identifier' must have field 'versionstamp' with non-null 'String' type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data table - 'versionstamp' column list", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!
+      versionstamp: [String]
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' input table 'Identifier' must have field 'versionstamp' with non-null 'String' type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data table - 'versionstamp' column other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "Book")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!
+      versionstamp: Boolean!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'deleteBookById' input table 'Identifier' must have field 'versionstamp' with non-null 'String' type",
+  );
+
+  db.close();
+});
+
+Deno.test("directive - none", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      deleteTransaction(data: DeleteInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]!
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
     }
   `;
 
@@ -265,14 +1223,14 @@ Deno.test("no directive", async () => {
 });
 
 // todo: delete when [#3912](https://github.com/graphql/graphql-js/issues/3912) is fixed
-Deno.test("other type to 'table' argument of 'delete' directive", async () => {
+Deno.test("directive argument - other type", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      deleteBookById(id: ID!): Void @delete(table: 999)
+      deleteTransaction(data: DeleteInput!): Result
     }
 
     type Book {
@@ -284,6 +1242,19 @@ Deno.test("other type to 'table' argument of 'delete' directive", async () => {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: 999)
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
     }
   `;
 
@@ -298,14 +1269,14 @@ Deno.test("other type to 'table' argument of 'delete' directive", async () => {
   db.close();
 });
 
-Deno.test("no table", async () => {
+Deno.test("directive argument - no table", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      deleteBookById(id: ID!): Void @delete(table: "XXX")
+      deleteTransaction(data: DeleteInput!): Result
     }
 
     type Book {
@@ -317,6 +1288,19 @@ Deno.test("no table", async () => {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "XXX")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
     }
   `;
 
@@ -331,14 +1315,14 @@ Deno.test("no table", async () => {
   db.close();
 });
 
-Deno.test("no object type", async () => {
+Deno.test("directive argument - no object type", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      deleteBookById(id: ID!): Void @delete(table: "XXX")
+      deleteTransaction(data: DeleteInput!): Result
     }
 
     type Book {
@@ -355,6 +1339,19 @@ Deno.test("no object type", async () => {
     enum XXX {
       YYY
     }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "XXX")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
+    }
   `;
 
   const db = await Deno.openKv(":memory:");
@@ -368,14 +1365,14 @@ Deno.test("no object type", async () => {
   db.close();
 });
 
-Deno.test("missing id column", async () => {
+Deno.test("directive table - missing id column", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      deleteBookById(id: ID!): Void @delete(table: "XXX")
+      deleteTransaction(data: DeleteInput!): Result
     }
 
     type Book {
@@ -393,6 +1390,19 @@ Deno.test("missing id column", async () => {
       YYY: ID!,
       title: String,
     }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "XXX")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
+    }
   `;
 
   const db = await Deno.openKv(":memory:");
@@ -406,14 +1416,14 @@ Deno.test("missing id column", async () => {
   db.close();
 });
 
-Deno.test("missing second column", async () => {
+Deno.test("directive table - missing second column", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      deleteBookById(id: ID!): Void @delete(table: "XXX")
+      deleteTransaction(data: DeleteInput!): Result
     }
 
     type Book {
@@ -429,6 +1439,19 @@ Deno.test("missing second column", async () => {
 
     type XXX {
       id: ID!,
+    }
+
+    input DeleteInput {
+      deleteBookById: [Identifier!]! @delete(table: "XXX")
+    }
+    
+    type Result {
+      versionstamp: String!
+    }
+    
+    input Identifier {
+      id: ID!,
+      versionstamp: String!
     }
   `;
 
