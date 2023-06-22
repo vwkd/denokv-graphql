@@ -9,7 +9,7 @@ Deno.test("minimal working example", async () => {
     }
 
     type Mutation {
-      createBook(data: [BookInput!]!): Result @insert(table: "Book")
+      createTransaction(data: CreateInput!): Result
     }
 
     type Book {
@@ -23,9 +23,17 @@ Deno.test("minimal working example", async () => {
       value: Book!
     }
 
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
     input BookInput {
       id: ID!,
-      title: String,
+      title: String
     }
   `;
 
@@ -38,14 +46,14 @@ Deno.test("minimal working example", async () => {
   db.close();
 });
 
-Deno.test("missing input", async () => {
+Deno.test("argument - nullable", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      createBook(data: [BookInput!]!): Result @insert(table: "Book")
+      createTransaction(data: CreateInput): Result
     }
 
     type Book {
@@ -59,8 +67,686 @@ Deno.test("missing input", async () => {
       value: Book!
     }
 
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
     input BookInput {
+      id: ID!,
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Transaction 'createTransaction' must return single 'data' argument with non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("argument - none", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction: Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
       id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
+    input BookInput {
+      id: ID!,
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Transaction 'createTransaction' must return single 'data' argument with non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("argument - other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(XXX: String): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
+    input BookInput {
+      id: ID!,
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Transaction 'createTransaction' must return single 'data' argument with non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("argument - extra", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!, XXX: String): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
+    input BookInput {
+      id: ID!,
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Transaction 'createTransaction' must return single 'data' argument with non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("return type - non-null", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): Result!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
+    input BookInput {
+      id: ID!,
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Transaction 'createTransaction' must return nullable 'object' type",
+  );
+
+  db.close();
+});
+
+Deno.test("return type - list", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): [Result]
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
+    input BookInput {
+      id: ID!,
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Transaction 'createTransaction' must return nullable 'object' type",
+  );
+
+  db.close();
+});
+
+Deno.test("return type - other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): String
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
+    input BookInput {
+      id: ID!,
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Transaction 'createTransaction' must return nullable 'object' type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - nullable", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: BookInput @insert(table: "Book")
+    }
+    
+    input BookInput {
+      id: ID!,
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'createBook' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - non-null", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: BookInput! @insert(table: "Book")
+    }
+    
+    input BookInput {
+      id: ID!,
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'createBook' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - nullable list non-null", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!] @insert(table: "Book")
+    }
+    
+    input BookInput {
+      id: ID!,
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'createBook' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - non-null list nullable", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput]! @insert(table: "Book")
+    }
+    
+    input BookInput {
+      id: ID!,
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'createBook' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - nullable other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+  
+    input CreateInput {
+      createBook: String @insert(table: "Book")
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'createBook' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - non-null other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+  
+    input CreateInput {
+      createBook: String! @insert(table: "Book")
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'createBook' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - nullable list non-null other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+
+    input CreateInput {
+      createBook: [String!] @insert(table: "Book")
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'createBook' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data - non-null list nullable other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+
+    input CreateInput {
+      createBook: [String]! @insert(table: "Book")
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'createBook' must have non-null list non-null input object type",
+  );
+
+  db.close();
+});
+
+Deno.test("input data table - insufficient columns", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
+    input BookInput {
+      title: String!
     }
   `;
 
@@ -75,14 +761,14 @@ Deno.test("missing input", async () => {
   db.close();
 });
 
-Deno.test("extra input", async () => {
+Deno.test("input data table - excess columns", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      createBook(data: [BookInput!]!): Result @insert(table: "Book")
+      createTransaction(data: CreateInput!): Result
     }
 
     type Book {
@@ -96,10 +782,18 @@ Deno.test("extra input", async () => {
       value: Book!
     }
 
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
     input BookInput {
-      id: ID!
-      title: String,
-      read: Boolean,
+      id: ID!,
+      title: String
+      XXX: String!
     }
   `;
 
@@ -114,20 +808,19 @@ Deno.test("extra input", async () => {
   db.close();
 });
 
-Deno.test("other input", async () => {
+Deno.test("input data table - missing column", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      createBook(data: [BookInput!]!): Result @insert(table: "Book")
+      createTransaction(data: CreateInput!): Result
     }
 
     type Book {
       id: ID!,
       title: String,
-      year: Int,
     }
 
     type BookResult {
@@ -136,10 +829,17 @@ Deno.test("other input", async () => {
       value: Book!
     }
 
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
     input BookInput {
       id: ID!,
-      title: String,
-      read: Boolean,
+      XXX: String
     }
   `;
 
@@ -148,20 +848,20 @@ Deno.test("other input", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' must have a column 'year'",
+    "Mutation 'createBook' input table 'BookInput' must have a column 'title'",
   );
 
   db.close();
 });
 
-Deno.test("different scalar input", async () => {
+Deno.test("input data table - column type nullable", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      createBook(data: [BookInput!]!): Result @insert(table: "Book")
+      createTransaction(data: CreateInput!): Result
     }
 
     type Book {
@@ -175,265 +875,155 @@ Deno.test("different scalar input", async () => {
       value: Book!
     }
 
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
+    input BookInput {
+      id: ID
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'createBook' input table 'BookInput' column 'id' must have same type as column in table 'Book'",
+  );
+
+  db.close();
+});
+
+Deno.test("input data table - column type list", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
+    input BookInput {
+      id: [ID]
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'createBook' input table 'BookInput' column 'id' must have same type as column in table 'Book'",
+  );
+
+  db.close();
+});
+
+Deno.test("input data table - column type other", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "Book")
+    }
+    
+    input BookInput {
+      id: String!
+      title: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Mutation 'createBook' input table 'BookInput' column 'id' must have same type as column in table 'Book'",
+  );
+
+  db.close();
+});
+
+Deno.test("directive - none", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type Mutation {
+      createTransaction(data: CreateInput!): Result
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]!
+    }
+    
     input BookInput {
       id: ID!,
-      title: Int,
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Mutation 'createBook' input table 'BookInput' column 'title' must have same type as column in table 'Book'",
-  );
-
-  db.close();
-});
-
-Deno.test("no argument", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): BookResult
-    }
-
-    type Mutation {
-      createBook: Result @insert(table: "Book")
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Mutation 'createBook' must have single 'data' argument with non-null list non-null input object type",
-  );
-
-  db.close();
-});
-
-Deno.test("other argument", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): BookResult
-    }
-
-    type Mutation {
-      createBook(XXX: String): Result @insert(table: "Book")
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Mutation 'createBook' must have single 'data' argument with non-null list non-null input object type",
-  );
-
-  db.close();
-});
-
-Deno.test("extra argument", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): BookResult
-    }
-
-    type Mutation {
-      createBook(data: [BookInput!]!, XXX: String): Result @insert(table: "Book")
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
-    }
-
-    input BookInput {
-      id: ID!,
-      title: String,
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Mutation 'createBook' must have single 'data' argument with non-null list non-null input object type",
-  );
-
-  db.close();
-});
-
-Deno.test("non-null type", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): BookResult
-    }
-
-    type Mutation {
-      createBook(data: [BookInput!]!): Result! @insert(table: "Book")
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
-    }
-
-    input BookInput {
-      id: ID!,
-      title: String,
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Mutation 'createBook' must have nullable 'Result' type",
-  );
-
-  db.close();
-});
-
-Deno.test("list type", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): BookResult
-    }
-
-    type Mutation {
-      createBook(data: [BookInput!]!): [Result] @insert(table: "Book")
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
-    }
-
-    input BookInput {
-      id: ID!,
-      title: String,
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Mutation 'createBook' must have nullable 'Result' type",
-  );
-
-  db.close();
-});
-
-Deno.test("other type", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): BookResult
-    }
-
-    type Mutation {
-      createBook(data: [BookInput!]!): String @insert(table: "Book")
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
-    }
-
-    input BookInput {
-      id: ID!,
-      title: String,
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Mutation 'createBook' must have nullable 'Result' type",
-  );
-
-  db.close();
-});
-
-Deno.test("no directive", async () => {
-  const schemaSource = `
-    type Query {
-      bookById(id: ID!): BookResult
-    }
-
-    type Mutation {
-      createBook(data: [BookInput!]!): Result
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
-    }
-
-    input BookInput {
-      id: ID!,
-      title: String,
+      title: String
     }
   `;
 
@@ -449,14 +1039,14 @@ Deno.test("no directive", async () => {
 });
 
 // todo: delete when [#3912](https://github.com/graphql/graphql-js/issues/3912) is fixed
-Deno.test("other type to 'table' argument of 'insert' directive", async () => {
+Deno.test("directive argument - other type", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      createBook(data: [BookInput!]!): Result @insert(table: 999)
+      createTransaction(data: CreateInput!): Result
     }
 
     type Book {
@@ -470,9 +1060,17 @@ Deno.test("other type to 'table' argument of 'insert' directive", async () => {
       value: Book!
     }
 
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: 999)
+    }
+    
     input BookInput {
       id: ID!,
-      title: String,
+      title: String
     }
   `;
 
@@ -487,14 +1085,14 @@ Deno.test("other type to 'table' argument of 'insert' directive", async () => {
   db.close();
 });
 
-Deno.test("no table", async () => {
+Deno.test("directive argument - no table", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      createBook(data: [BookInput!]!): Result @insert(table: "XXX")
+      createTransaction(data: CreateInput!): Result
     }
 
     type Book {
@@ -508,9 +1106,17 @@ Deno.test("no table", async () => {
       value: Book!
     }
 
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "XXX")
+    }
+    
     input BookInput {
       id: ID!,
-      title: String,
+      title: String
     }
   `;
 
@@ -525,14 +1131,14 @@ Deno.test("no table", async () => {
   db.close();
 });
 
-Deno.test("no object type", async () => {
+Deno.test("directive argument - no object type", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      createBook(data: [BookInput!]!): Result @insert(table: "XXX")
+      createTransaction(data: CreateInput!): Result
     }
 
     type Book {
@@ -546,13 +1152,21 @@ Deno.test("no object type", async () => {
       value: Book!
     }
 
-    input BookInput {
-      id: ID!,
-      title: String,
-    }
-
     enum XXX {
       YYY
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "XXX")
+    }
+    
+    input BookInput {
+      id: ID!,
+      title: String
     }
   `;
 
@@ -567,14 +1181,14 @@ Deno.test("no object type", async () => {
   db.close();
 });
 
-Deno.test("missing id column", async () => {
+Deno.test("directive table - missing id column", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      createBook(data: [BookInput!]!): Result @insert(table: "XXX")
+      createTransaction(data: CreateInput!): Result
     }
 
     type Book {
@@ -588,14 +1202,22 @@ Deno.test("missing id column", async () => {
       value: Book!
     }
 
-    input BookInput {
-      id: ID!,
-      title: String,
-    }
-
     type XXX {
       YYY: ID!,
       title: String,
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "XXX")
+    }
+    
+    input BookInput {
+      id: ID!,
+      title: String
     }
   `;
 
@@ -610,14 +1232,14 @@ Deno.test("missing id column", async () => {
   db.close();
 });
 
-Deno.test("missing second column", async () => {
+Deno.test("directive table - missing second column", async () => {
   const schemaSource = `
     type Query {
       bookById(id: ID!): BookResult
     }
 
     type Mutation {
-      createBook(data: [BookInput!]!): Result @insert(table: "XXX")
+      createTransaction(data: CreateInput!): Result
     }
 
     type Book {
@@ -631,13 +1253,21 @@ Deno.test("missing second column", async () => {
       value: Book!
     }
 
-    input BookInput {
-      id: ID!,
-      title: String,
-    }
-
     type XXX {
       id: ID!,
+    }
+
+    type Result {
+      versionstamp: String!
+    }
+    
+    input CreateInput {
+      createBook: [BookInput!]! @insert(table: "XXX")
+    }
+    
+    input BookInput {
+      id: ID!,
+      title: String
     }
   `;
 
