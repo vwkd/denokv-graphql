@@ -66,12 +66,13 @@ export function createRootQueryListResolver(
     if (first) {
       const keyTable = [tableName];
 
+      // note: get one more element to see if has next
       const entries = db.list({ prefix: keyTable }, {
-        limit: first,
+        limit: first + 1,
         cursor: after,
       });
 
-      const edges = [];
+      let edges = [];
 
       for await (const entry of entries) {
         const key = entry.key;
@@ -101,19 +102,18 @@ export function createRootQueryListResolver(
         });
       }
 
-      // note: next cursor after `after`, `undefined` if edges is empty
-      const startCursor = edges.at(0)?.cursor;
+      // remove extra element if it exists
+      if (edges.length == first + 1) {
+        edges = edges.slice(0, -1);
+      }
 
-      // note: previous cursor before `startCursorNext`, `undefined` if edges is empty
-      const endCursor = edges.at(-1)?.cursor;
-
-      // note: empty string if no further items, not `undefined`!
+      // note: cursor of next item if it exists, otherwise empty string if no further items, never `undefined`!
       const startCursorNext = entries.cursor;
 
-      // note: add `startCursor` or `endCursor` only when non-empty string
       const pageInfo = {
-        ...(startCursor && { startCursor }),
-        ...(endCursor && { endCursor }),
+        startCursor: edges.at(0)?.cursor,
+        endCursor: edges.at(-1)?.cursor,
+        // note: currently mistakenly set to `true` if passes bogus cursor that passes validation in `db.list`
         hasPreviousPage: !!after,
         hasNextPage: !!startCursorNext,
       };
@@ -126,16 +126,16 @@ export function createRootQueryListResolver(
       return connection;
     } else if (last) {
       const keyTable = [tableName];
-      const key = [tableName, after];
 
-      // note: `end` is excluding, can't change here since doesn't know what next id is
-      // note: needs `reverse` to start from end instead of start, then reverse array to end up with same order
-      const entries = db.list({ prefix: keyTable, end: key }, {
-        limit: last,
+      // note: get one more element to see if has next
+      // note: `reverse` to go backwards instead of forwards, then reverse `edges` to end up with forward order
+      const entries = db.list({ prefix: keyTable }, {
+        limit: last + 1,
+        cursor: before,
         reverse: true,
       });
 
-      const res = [];
+      let edges = [];
 
       for await (const entry of entries) {
         const key = entry.key;
@@ -154,11 +154,39 @@ export function createRootQueryListResolver(
 
         context.checks.push({ key, versionstamp });
 
-        res.unshift({ id, value, versionstamp });
+        const node = { id, value, versionstamp };
+
+        // note: always non-empty string
+        const cursor = entries.cursor;
+
+        edges.unshift({
+          node,
+          cursor,
+        });
       }
 
-      // todo: return like above
-      return res;
+      // remove extra element if it exists
+      if (edges.length == last + 1) {
+        edges = edges.slice(1);
+      }
+
+      // note: cursor of next item if it exists, otherwise empty string if no further items, never `undefined`!
+      const endCursorNext = entries.cursor;
+
+      const pageInfo = {
+        startCursor: edges.at(0)?.cursor,
+        endCursor: edges.at(-1)?.cursor,
+        hasPreviousPage: !!endCursorNext,
+        // note: currently mistakenly set to `true` if passes bogus cursor that passes validation in `db.list`
+        hasNextPage: !!before,
+      };
+
+      const connection = {
+        edges,
+        pageInfo,
+      };
+
+      return connection;
     } else {
       throw new Error(`should be unreachable`);
     }
