@@ -55,20 +55,20 @@ export function createRootQueryListResolver(
     args,
     context,
   ): Promise<IFieldResolver<any, any>> => {
-    const first = args.first;
-    const after = args.after;
+    const first = args.first as number | undefined;
+    const after = args.after as string | undefined;
 
-    const last = args.last;
-    const before = args.before;
+    const last = args.last as number | undefined;
+    const before = args.before as string | undefined;
 
     context.checks = [];
 
-    if (first && after) {
+    if (first) {
       const keyTable = [tableName];
-      const key = [tableName, after];
 
-      const entries = db.list({ prefix: keyTable, start: key }, {
+      const entries = db.list({ prefix: keyTable }, {
         limit: first,
+        cursor: after,
       });
 
       const edges = [];
@@ -92,30 +92,39 @@ export function createRootQueryListResolver(
 
         const node = { id, value, versionstamp };
 
+        // note: always non-empty string
+        const cursor = entries.cursor;
+
         edges.push({
           node,
-          // todo: correct?
-          cursor: id,
+          cursor,
         });
       }
 
+      // note: next cursor after `after`, `undefined` if edges is empty
+      const startCursor = edges.at(0)?.cursor;
+
+      // note: previous cursor before `startCursorNext`, `undefined` if edges is empty
+      const endCursor = edges.at(-1)?.cursor;
+
+      // note: empty string if no further items, not `undefined`!
+      const startCursorNext = entries.cursor;
+
+      // note: add `startCursor` or `endCursor` only when non-empty string
       const pageInfo = {
-        // todo: correct?
-        startCursor: after,
-        // todo: what if length is zero?
-        endCursor: edges.at(-1)?.cursor,
-        // todo: how to determine these?
-        hasPreviousPage: false,
-        hasNextPage: false,
+        ...(startCursor && { startCursor }),
+        ...(endCursor && { endCursor }),
+        hasPreviousPage: !!after,
+        hasNextPage: !!startCursorNext,
       };
 
       const connection = {
         edges,
         pageInfo,
-      }
+      };
 
       return connection;
-    } else if (last && before) {
+    } else if (last) {
       const keyTable = [tableName];
       const key = [tableName, after];
 

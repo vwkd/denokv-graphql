@@ -204,8 +204,8 @@ export function validateReferencedRow(
 /**
  * Validate list query arguments
  *
- * - either argument 'first' of non-null 'Int' and 'after' non-null 'ID'
- * - or argument 'last' of non-null 'Int' and 'before' non-null 'ID'
+ * - either argument 'first' of non-null 'Int' and 'after' nullable 'ID'
+ * - or argument 'last' of non-null 'Int' and 'before' nullable 'ID'
  * @param args arguments
  * @param queryName query name
  */
@@ -232,19 +232,17 @@ export function validateListQueryArguments(
         isNonNullType(first.type) &&
         isScalarType(first.type.ofType) &&
         first.type.ofType.name == "Int" && after &&
-        isNonNullType(after.type) &&
-        isScalarType(after.type.ofType) &&
-        after.type.ofType.name == "ID") || (last &&
+        isScalarType(after.type) &&
+        after.type.name == "ID") || (last &&
           isNonNullType(last.type) &&
           isScalarType(last.type.ofType) &&
           last.type.ofType.name == "Int" && before &&
-          isNonNullType(before.type) &&
-          isScalarType(before.type.ofType) &&
-          before.type.ofType.name == "ID")
+          isScalarType(before.type) &&
+          before.type.name == "ID")
     )
   ) {
     throw new InvalidSchema(
-      `Query '${queryName}' must have a 'first' / 'last' argument of non-null 'Int' type and an 'after' / 'before' argument of non-null 'ID' type`,
+      `Query '${queryName}' must have a 'first' / 'last' argument of non-null 'Int' type and an 'after' / 'before' argument of nullable 'ID' type`,
     );
   }
 }
