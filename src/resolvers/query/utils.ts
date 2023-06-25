@@ -12,7 +12,12 @@ import type {
   GraphQLObjectType,
   GraphQLOutputType,
 } from "../../../deps.ts";
-import { DatabaseCorruption, InvalidSchema, isObject } from "../../utils.ts";
+import {
+  DatabaseCorruption,
+  InvalidInput,
+  InvalidSchema,
+  isObject,
+} from "../../utils.ts";
 import { isIdField, isType } from "../utils.ts";
 
 /**
@@ -204,8 +209,9 @@ export function validateReferencedRow(
 /**
  * Validate list query arguments
  *
- * - either argument 'first' of non-null 'Int' and 'after' nullable 'ID'
- * - or argument 'last' of non-null 'Int' and 'before' nullable 'ID'
+ * - argument 'first' of nullable 'Int' and 'after' nullable 'ID'
+ * - argument 'last' of nullable 'Int' and 'before' nullable 'ID'
+ * - note: validates at runtime that exactly one option is used
  * @param args arguments
  * @param queryName query name
  */
@@ -214,35 +220,66 @@ export function validateListQueryArguments(
   queryName: string,
 ) {
   if (
-    !(args.length == 2)
+    !(args.length == 4)
   ) {
     throw new InvalidSchema(
-      `Query '${queryName}' must have two arguments`,
+      `Query '${queryName}' must have four arguments`,
     );
   }
 
   const first = args.find((arg) => arg.name == "first");
-  const last = args.find((arg) => arg.name == "last");
+
+  if (
+    !(
+      first &&
+      isScalarType(first.type) &&
+      first.type.name == "Int"
+    )
+  ) {
+    throw new InvalidSchema(
+      `Query '${queryName}' must have 'first' argument of nullable 'Int' type`,
+    );
+  }
+
   const after = args.find((arg) => arg.name == "after");
+
+  if (
+    !(
+      after &&
+      isScalarType(after.type) &&
+      after.type.name == "ID"
+    )
+  ) {
+    throw new InvalidSchema(
+      `Query '${queryName}' must have 'after' argument of nullable 'ID' type`,
+    );
+  }
+
+  const last = args.find((arg) => arg.name == "last");
+
+  if (
+    !(
+      last &&
+      isScalarType(last.type) &&
+      last.type.name == "Int"
+    )
+  ) {
+    throw new InvalidSchema(
+      `Query '${queryName}' must have 'last' argument of nullable 'Int' type`,
+    );
+  }
+
   const before = args.find((arg) => arg.name == "before");
 
   if (
     !(
-      (first &&
-        isNonNullType(first.type) &&
-        isScalarType(first.type.ofType) &&
-        first.type.ofType.name == "Int" && after &&
-        isScalarType(after.type) &&
-        after.type.name == "ID") || (last &&
-          isNonNullType(last.type) &&
-          isScalarType(last.type.ofType) &&
-          last.type.ofType.name == "Int" && before &&
-          isScalarType(before.type) &&
-          before.type.name == "ID")
+      before &&
+      isScalarType(before.type) &&
+      before.type.name == "ID"
     )
   ) {
     throw new InvalidSchema(
-      `Query '${queryName}' must have a 'first' / 'last' argument of non-null 'Int' type and an 'after' / 'before' argument of nullable 'ID' type`,
+      `Query '${queryName}' must have 'before' argument of nullable 'ID' type`,
     );
   }
 }
@@ -426,6 +463,33 @@ export function validateResult(
   ) {
     throw new InvalidSchema(
       `Result '${name}' must have field 'value' with non-null object type`,
+    );
+  }
+}
+
+/**
+ * Validate list query argument inputs
+ *
+ * - either argument 'first' and optionally 'after'
+ * - or argument 'last' and optionally 'before'
+ * @param first argument 'first'
+ * @param after argument 'after'
+ * @param last argument 'last'
+ * @param before argument 'before'
+ */
+export function validateListArgumentInputs(
+  first?: number,
+  after?: string,
+  last?: number,
+  before?: string,
+) {
+  if (first && !last && !before) {
+    // ok, noop
+  } else if (last && !first && !after) {
+    // ok, noop
+  } else {
+    throw new InvalidInput(
+      `Expected either 'first' with optional 'after' or 'last' with optional 'before'`,
     );
   }
 }

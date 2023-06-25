@@ -7,6 +7,7 @@ import type {
 } from "../../../deps.ts";
 import {
   validateConnection,
+  validateListArgumentInputs,
   validateListQueryArguments,
   validateRow,
 } from "./utils.ts";
@@ -59,6 +60,8 @@ export function createRootQueryListResolver(
 
     const last = args.last as number | undefined;
     const before = args.before as string | undefined;
+
+    validateListArgumentInputs(first, after, last, before);
 
     context.checks = [];
 
