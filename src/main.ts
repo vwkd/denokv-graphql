@@ -26,6 +26,13 @@ export function buildSchema(
     directive @delete(
       table: String!
     ) on INPUT_FIELD_DEFINITION
+
+    type PageInfo {
+      startCursor: ID
+      endCursor: ID
+      hasPreviousPage: Boolean!
+      hasNextPage: Boolean!
+    }
   `;
 
   const schemaAst = parse(source + source_extension);

@@ -7,7 +7,7 @@ import type {
   IResolvers,
 } from "../../../deps.ts";
 import {
-  validateConnection,
+  validateQueryConnection,
   validateReferencesArgumentInputs,
   validateReferencesArguments,
   validateRow,
@@ -37,9 +37,9 @@ export function createRootReferencesResolver(
   resolvers: IResolvers,
   middleware: IMiddleware,
 ): void {
-  validateConnection(type);
+  validateQueryConnection(type);
 
-  // note: asserted in `validateConnection`
+  // note: asserted in `validateQueryConnection`
   const fieldsConnection = type.getFields();
   let edge = fieldsConnection["edges"].type.ofType.ofType;
 

@@ -8,7 +8,7 @@ isNonNullType,
 } from "../../../deps.ts";
 import { ConcurrentChange, DatabaseCorruption } from "../../utils.ts";
 import { createResolver } from "./main.ts";
-import { validateConnection, validateReferencedRow, validateReferencesArgumentInputs, validateReferencesArguments } from "./utils.ts";
+import { validateQueryConnection, validateReferencedRow, validateReferencesArgumentInputs, validateReferencesArguments } from "./utils.ts";
 
 /**
  * Create resolver for references field
@@ -32,7 +32,8 @@ export function createReferencesResolver(
   resolvers: IResolvers,
   middleware: IMiddleware,
 ): void {
-  validateConnection(type);
+  // todo: replace with `validateConnection` with table type instead of result type of table type in 'node'
+  validateQueryConnection(type);
 
   // note: asserted in `validateConnection`
   const fieldsConnection = type.getFields();
