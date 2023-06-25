@@ -36,11 +36,13 @@ export function createRootQueryResolver(
 
   for (const query of Object.values(queries)) {
     const queryName = query.name;
+    const type = query.type;
 
-    if (isListQuery(query.type)) {
+    if (isListQuery(type)) {
+      const innerType = type.ofType;
       createRootQueryListResolver(
         db,
-        query.type.ofType,
+        innerType,
         query.args,
         queryName,
         rootQueryName,
@@ -50,7 +52,7 @@ export function createRootQueryResolver(
     } else {
       createRootQueryOneResolver(
         db,
-        query.type,
+        type,
         query.args,
         queryName,
         rootQueryName,
