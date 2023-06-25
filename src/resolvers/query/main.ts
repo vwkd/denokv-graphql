@@ -10,7 +10,8 @@ import { createResolverListObjectScalar } from "./list_object_scalar.ts";
 /**
  * Create resolvers for a table
  *
- * - walk recursively to next queriable table
+ * - walks recursively to child tables to attach resolvers
+ * - note: allows schema to have orphan types not in tree since never reaches
  * - note: mutates resolvers and middleware object
  * @param db Deno KV database
  * @param table table object

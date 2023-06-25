@@ -17,7 +17,6 @@ import { addQueryVersionstamp } from "./root_query_middleware.ts";
 /**
  * Create resolver for single query
  *
- * - walk recursively to next queriable tables
  * - note: mutates resolvers and middleware object
  * @param db Deno KV database
  * @param queryType query type

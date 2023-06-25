@@ -7,7 +7,6 @@ import { createRootQueryListResolver } from "./root_query_list.ts";
 /**
  * Create resolvers for queries
  *
- * - walk recursively to next queriable tables
  * - note: mutates resolvers and middleware object
  * @param db Deno KV database
  * @param schema schema object

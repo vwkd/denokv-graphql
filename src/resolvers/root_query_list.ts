@@ -17,7 +17,6 @@ import { DatabaseCorruption } from "../utils.ts";
 /**
  * Create resolver for list query
  *
- * - walk recursively to next queriable tables
  * - note: mutates resolvers and middleware object
  * @param db Deno KV database
  * @param queryType query type

@@ -9,7 +9,6 @@ import {
 /**
  * Create resolvers for mutations
  *
- * - don't walk recursively to next queriable table since always returns result
  * - validate table since not necessarily included in query tree
  * - note: mutates resolvers object
  * @param db Deno KV database
