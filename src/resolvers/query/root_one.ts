@@ -5,14 +5,14 @@ import type {
   IFieldResolver,
   IMiddleware,
   IResolvers,
-} from "../../deps.ts";
+} from "../../../deps.ts";
 import {
   validateQueryArguments,
   validateQueryReturn,
   validateRow,
-} from "./query/utils.ts";
-import { createQueryResolver } from "./query/main.ts";
-import { addQueryVersionstamp } from "./root_query_middleware.ts";
+} from "./utils.ts";
+import { createQueryResolver } from "./main.ts";
+import { addQueryVersionstamp } from "./root_middleware.ts";
 
 /**
  * Create resolver for single query

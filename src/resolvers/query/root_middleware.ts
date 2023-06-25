@@ -1,5 +1,5 @@
-import type { IMiddlewareFunction } from "../../deps.ts";
-import { ConcurrentChange } from "../utils.ts";
+import type { IMiddlewareFunction } from "../../../deps.ts";
+import { ConcurrentChange } from "../../utils.ts";
 
 /**
  * Add versionstamp to query

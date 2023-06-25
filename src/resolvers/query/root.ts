@@ -1,8 +1,12 @@
-import { GraphQLSchema } from "../../deps.ts";
-import type { GraphQLObjectType, IMiddleware, IResolvers } from "../../deps.ts";
-import { isListQuery } from "./query/utils.ts";
-import { createRootQueryOneResolver } from "./root_query_one.ts";
-import { createRootQueryListResolver } from "./root_query_list.ts";
+import { GraphQLSchema } from "../../../deps.ts";
+import type {
+  GraphQLObjectType,
+  IMiddleware,
+  IResolvers,
+} from "../../../deps.ts";
+import { isListQuery } from "./utils.ts";
+import { createRootQueryOneResolver } from "./root_one.ts";
+import { createRootQueryListResolver } from "./root_list.ts";
 
 /**
  * Create resolvers for queries

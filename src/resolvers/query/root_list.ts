@@ -4,15 +4,15 @@ import type {
   IFieldResolver,
   IMiddleware,
   IResolvers,
-} from "../../deps.ts";
+} from "../../../deps.ts";
 import {
   validateConnection,
   validateListQueryArguments,
   validateRow,
-} from "./query/utils.ts";
-import { createQueryResolver } from "./query/main.ts";
-import { addQueryVersionstamp } from "./root_query_middleware.ts";
-import { DatabaseCorruption } from "../utils.ts";
+} from "./utils.ts";
+import { createQueryResolver } from "./main.ts";
+import { addQueryVersionstamp } from "./root_middleware.ts";
+import { DatabaseCorruption } from "../../utils.ts";
 
 /**
  * Create resolver for list query

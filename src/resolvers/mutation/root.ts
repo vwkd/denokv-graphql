@@ -1,10 +1,10 @@
-import { GraphQLSchema } from "../../deps.ts";
-import type { IResolvers } from "../../deps.ts";
-import { createResolverTransaction } from "./mutation/transaction.ts";
+import { GraphQLSchema } from "../../../deps.ts";
+import type { IResolvers } from "../../../deps.ts";
+import { createResolverTransaction } from "./transaction.ts";
 import {
   validateTransactionArguments,
   validateTransactionReturn,
-} from "./mutation/utils.ts";
+} from "./utils.ts";
 
 /**
  * Create resolvers for mutations
