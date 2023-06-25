@@ -45,7 +45,7 @@ export function createRootReferenceResolver(
   const tableName = tableType.name;
 
   validateQueryArguments(args, name);
-  
+
   const resolver: IFieldResolver<any, any> = async (
     _root,
     args,

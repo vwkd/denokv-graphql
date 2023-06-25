@@ -1,14 +1,20 @@
 import {
-GraphQLArgument,
+  GraphQLArgument,
   GraphQLObjectType,
   IFieldResolver,
   IMiddleware,
   IResolvers,
-isNonNullType,
+  isNonNullType,
 } from "../../../deps.ts";
 import { ConcurrentChange, DatabaseCorruption } from "../../utils.ts";
 import { createResolver } from "./main.ts";
-import { validateQueryConnection, validateReferencedRow, validateReferencesArgumentInputs, validateReferencesArguments } from "./utils.ts";
+import {
+  validateConnection,
+  validateReferencedRow,
+  validateReferencesArgumentInputs,
+  validateReferencesArguments,
+  validateTable,
+} from "./utils.ts";
 
 /**
  * Create resolver for references field
@@ -33,7 +39,7 @@ export function createReferencesResolver(
   middleware: IMiddleware,
 ): void {
   // todo: replace with `validateConnection` with table type instead of result type of table type in 'node'
-  validateQueryConnection(type);
+  validateConnection(type);
 
   // note: asserted in `validateConnection`
   const fieldsConnection = type.getFields();
@@ -46,18 +52,18 @@ export function createReferencesResolver(
   }
 
   const fieldsEdge = edge.getFields();
-  const node = fieldsEdge["node"].type.ofType;
-  const fields = node.getFields();
-  const tableType = fields["value"].type.ofType;
-
+  const tableType = fieldsEdge["node"].type.ofType;
   const referencedTableName = tableType.name;
+
+  // todo: should validate table here, also in root_references.ts ??
+  // validateTable(tableType, referencedTableName);
 
   validateReferencesArguments(args, name);
 
   // overwrites array of ids in field value to array of objects
   const resolver: IFieldResolver<any, any> = async (
     root,
-    _args,
+    args,
     context,
   ) => {
     const first = args.first as number | undefined;
@@ -88,12 +94,12 @@ export function createReferencesResolver(
       const pageInfo = {
         hasPreviousPage: false,
         hasNextPage: false,
-      }
+      };
 
       const connection = {
         edges,
-        pageInfo
-      }
+        pageInfo,
+      };
 
       return connection;
     }
@@ -132,7 +138,10 @@ export function createReferencesResolver(
 
         checks.push({ key, versionstamp });
 
-        return value;
+        return {
+          node: value,
+          cursor: "foo",
+        };
       });
 
       const pageInfo = {
@@ -140,12 +149,12 @@ export function createReferencesResolver(
         endCursor: "foo",
         hasPreviousPage: false,
         hasNextPage: false,
-      }
+      };
 
       const connection = {
         edges,
-        pageInfo
-      }
+        pageInfo,
+      };
 
       return connection;
     } else if (last) {
@@ -169,12 +178,12 @@ export function createReferencesResolver(
         endCursor: "foo",
         hasPreviousPage: false,
         hasNextPage: false,
-      }
+      };
 
       const connection = {
         edges,
-        pageInfo
-      }
+        pageInfo,
+      };
 
       return connection;
     } else {

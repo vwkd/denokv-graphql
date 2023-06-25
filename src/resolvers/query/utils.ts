@@ -144,7 +144,7 @@ export function validateColumn(
   if (isLeafType(type) || (isNonNullType(type) && isLeafType(type.ofType))) {
     // ok
   } else if (
-    isObjectType(type) || (isNonNullType(type) && isObjectType(type))
+    isObjectType(type) || (isNonNullType(type) && isObjectType(type.ofType))
   ) {
     // ok
   } else {
@@ -307,14 +307,14 @@ export function isReferences(
 }
 
 /**
- * Validate fields of connection in query
+ * Validate fields of connection
  *
  * - field 'edges' of non-null? list of object type
  * - field 'pageInfo' of non-null object type with name 'PageInfo'
  * @param type connection
  */
 // todo: more fields like `totalCount`, `totalPageCount`?
-export function validateQueryConnection(type: GraphQLObjectType) {
+export function validateConnection(type: GraphQLObjectType) {
   const name = type.name;
   const fields = type.getFields();
 
@@ -354,17 +354,17 @@ export function validateQueryConnection(type: GraphQLObjectType) {
 
   const edge = edges.type.ofType.ofType;
 
-  validateQueryEdge(edge);
+  validateEdge(edge);
 }
 
 /**
- * Validate fields of edge in query
+ * Validate fields of edge
  *
  * - field 'node' of non-null? object type ??spec also allows nullable, and leaf types, interface, union, but not list type
  * - field 'cursor' of non-null? 'ID' ??spec also allows nullable and any scalar type that serializes as a string
  * @param type edge
  */
-export function validateQueryEdge(type: GraphQLObjectType) {
+export function validateEdge(type: GraphQLObjectType) {
   const name = type.name;
   const fields = type.getFields();
 
@@ -400,10 +400,6 @@ export function validateQueryEdge(type: GraphQLObjectType) {
       `Edge '${name}' must have field 'node' with non-null object type`,
     );
   }
-
-  const result = node.type.ofType;
-
-  validateQueryResult(result);
 }
 
 // todo: deduplicate with `validateQueryReturn`

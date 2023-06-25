@@ -31,12 +31,12 @@ export function createReferenceResolver(
 ): void {
   const referencedTableName = type.name;
 
-  // overwrites id in field value to object  
+  // overwrites id in field value to object
   const resolver: IFieldResolver<any, any> = async (
     root,
     _args,
     context,
-   ) => {
+  ) => {
     const id = root[name] as string | undefined;
 
     if (optional && id === undefined) {
