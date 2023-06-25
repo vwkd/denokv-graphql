@@ -18,7 +18,7 @@ import {
   InvalidSchema,
   isObject,
 } from "../../utils.ts";
-import { isIdField, isType } from "../utils.ts";
+import { isIdField } from "../utils.ts";
 
 /**
  * Validate query return value
@@ -130,8 +130,8 @@ export function validateTable(
 /**
  * Validate type of column
  *
- * - scalar type, possibly non-null
- * - reference object type
+ * - leaf type, possibly non-null
+ * - object type, possibly non-null
  * @param type column type
  * @param tableName table name
  * @param columnName column name
@@ -143,7 +143,9 @@ export function validateColumn(
 ): void {
   if (isLeafType(type) || (isNonNullType(type) && isLeafType(type.ofType))) {
     // ok
-  } else if (isType(type, isObjectType)) {
+  } else if (
+    isObjectType(type) || (isNonNullType(type) && isObjectType(type))
+  ) {
     // ok
   } else {
     throw new InvalidSchema(
@@ -207,23 +209,23 @@ export function validateReferencedRow(
 }
 
 /**
- * Validate list query arguments
+ * Validate references arguments
  *
  * - argument 'first' of nullable 'Int' and 'after' nullable 'ID'
  * - argument 'last' of nullable 'Int' and 'before' nullable 'ID'
  * - note: validates at runtime that exactly one option is used
- * @param args arguments
- * @param queryName query name
+ * @param args field arguments
+ * @param name field name
  */
-export function validateListQueryArguments(
+export function validateReferencesArguments(
   args: readonly GraphQLArgument[],
-  queryName: string,
+  name: string,
 ) {
   if (
     !(args.length == 4)
   ) {
     throw new InvalidSchema(
-      `Query '${queryName}' must have four arguments`,
+      `Field '${name}' must have four arguments`,
     );
   }
 
@@ -237,7 +239,7 @@ export function validateListQueryArguments(
     )
   ) {
     throw new InvalidSchema(
-      `Query '${queryName}' must have 'first' argument of nullable 'Int' type`,
+      `Field '${name}' must have 'first' argument of nullable 'Int' type`,
     );
   }
 
@@ -251,7 +253,7 @@ export function validateListQueryArguments(
     )
   ) {
     throw new InvalidSchema(
-      `Query '${queryName}' must have 'after' argument of nullable 'ID' type`,
+      `Field '${name}' must have 'after' argument of nullable 'ID' type`,
     );
   }
 
@@ -265,7 +267,7 @@ export function validateListQueryArguments(
     )
   ) {
     throw new InvalidSchema(
-      `Query '${queryName}' must have 'last' argument of nullable 'Int' type`,
+      `Field '${name}' must have 'last' argument of nullable 'Int' type`,
     );
   }
 
@@ -279,19 +281,19 @@ export function validateListQueryArguments(
     )
   ) {
     throw new InvalidSchema(
-      `Query '${queryName}' must have 'before' argument of nullable 'ID' type`,
+      `Field '${name}' must have 'before' argument of nullable 'ID' type`,
     );
   }
 }
 
 /**
- * Test if is list query
+ * Test if references
  *
- * - non-null? object type with name ending in "Connection"
+ * - non-null object type with name ending in "Connection"
  * @param type type
  * @returns
  */
-export function isListQuery(
+export function isReferences(
   type: GraphQLOutputType,
 ): type is GraphQLNonNull<GraphQLObjectType> {
   if (
@@ -468,7 +470,7 @@ export function validateResult(
 }
 
 /**
- * Validate list query argument inputs
+ * Validate references argument inputs
  *
  * - either argument 'first' and optionally 'after'
  * - or argument 'last' and optionally 'before'
@@ -477,7 +479,7 @@ export function validateResult(
  * @param last argument 'last'
  * @param before argument 'before'
  */
-export function validateListArgumentInputs(
+export function validateReferencesArgumentInputs(
   first?: number,
   after?: string,
   last?: number,

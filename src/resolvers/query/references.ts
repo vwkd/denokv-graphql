@@ -1,72 +1,111 @@
-import type {
+import {
+GraphQLArgument,
   GraphQLObjectType,
   IFieldResolver,
   IMiddleware,
   IResolvers,
+isNonNullType,
 } from "../../../deps.ts";
 import { ConcurrentChange, DatabaseCorruption } from "../../utils.ts";
-import { createQueryResolver } from "./main.ts";
-import { validateReferencedRow } from "./utils.ts";
+import { createResolver } from "./main.ts";
+import { validateConnection, validateReferencedRow, validateReferencesArgumentInputs, validateReferencesArguments } from "./utils.ts";
 
 /**
- * Create resolver for object column
+ * Create resolver for references field
  *
- * - many values, multiple references
  * - note: mutates resolvers and middleware object
  * @param db Deno KV database
- * @param type object type
+ * @param type field type
+ * @param args field arguments
+ * @param name field name
  * @param tableName table name
- * @param columnName column name
  * @param resolvers resolvers
  * @param middleware middleware
- * @param optionalList if result list can be null
- * @param optional if result can be null
  */
-export function createResolverObjectMany(
+// todo: allow non-null edge `[BookEdge!]!` in addition to nullable and handle accordingly if optional or not
+export function createReferencesResolver(
   db: Deno.Kv,
   type: GraphQLObjectType,
+  args: readonly GraphQLArgument[],
+  name: string,
   tableName: string,
-  columnName: string,
   resolvers: IResolvers,
   middleware: IMiddleware,
-  optionalList: boolean,
-  optional: boolean,
 ): void {
-  const referencedTableName = type.name;
+  validateConnection(type);
+
+  // note: asserted in `validateConnection`
+  const fieldsConnection = type.getFields();
+  let edge = fieldsConnection["edges"].type.ofType.ofType;
+
+  let optional = true;
+  if (isNonNullType(edge)) {
+    edge = edge.ofType;
+    optional = false;
+  }
+
+  const fieldsEdge = edge.getFields();
+  const node = fieldsEdge["node"].type.ofType;
+  const fields = node.getFields();
+  const tableType = fields["value"].type.ofType;
+
+  const referencedTableName = tableType.name;
+
+  validateReferencesArguments(args, name);
 
   // overwrites array of ids in field value to array of objects
-  resolvers[tableName][columnName] = async (
+  const resolver: IFieldResolver<any, any> = async (
     root,
     _args,
     context,
-  ): Promise<IFieldResolver<any, any>> => {
-    const ids = root[columnName];
+  ) => {
+    const first = args.first as number | undefined;
+    const after = args.after as string | undefined;
 
-    if (optionalList && ids === undefined) {
-      return null;
+    const last = args.last as number | undefined;
+    const before = args.before as string | undefined;
+
+    validateReferencesArgumentInputs(first, after, last, before);
+
+    const ids = root[name];
+
+    if (!Array.isArray(ids)) {
+      throw new DatabaseCorruption(
+        `Expected table '${tableName}' column '${name}' to contain array`,
+      );
     }
 
-    if (
-      !Array.isArray(ids) ||
-      ids.some((id) => !(typeof id == "string"))
-    ) {
+    if (ids.some((id) => !(typeof id == "string"))) {
       throw new DatabaseCorruption(
-        `Expected table '${tableName}' column '${columnName}' to contain array of strings`,
+        `Expected table '${tableName}' column '${name}' to contain array of strings`,
       );
     }
 
     if (optional && ids.length == 0) {
-      return [];
+      const edges = [];
+
+      const pageInfo = {
+        hasPreviousPage: false,
+        hasNextPage: false,
+      }
+
+      const connection = {
+        edges,
+        pageInfo
+      }
+
+      return connection;
     }
 
     if (ids.length == 0) {
       throw new DatabaseCorruption(
-        `Expected table '${tableName}' column '${columnName}' to contain at least one reference`,
+        `Expected table '${tableName}' column '${name}' to contain at least one reference`,
       );
     }
 
     const checks = context.checks;
 
+    // todo: should delete this intermediate check and instead just do final one in root_middleware?
     let res = await db.atomic()
       .check(...checks)
       .commit();
@@ -77,23 +116,72 @@ export function createResolverObjectMany(
       );
     }
 
-    const keys = ids.map((id) => [referencedTableName, id]);
+    // todo: actually do pagination
+    // todo: what is cursor?
+    if (first) {
+      const keys = ids.map((id) => [referencedTableName, id]);
 
-    const entries = await db.getMany(keys);
+      const entries = await db.getMany(keys);
 
-    const values = entries.map(({ key, value, versionstamp }) => {
-      // note: throw on first invalid entry instead of continuing to find all
-      const id = key.at(-1)!;
+      const edges = entries.map(({ key, value, versionstamp }) => {
+        // note: throw on first invalid entry instead of continuing to find all
+        const id = key.at(-1)!;
 
-      validateReferencedRow(value, referencedTableName, id);
+        validateReferencedRow(value, referencedTableName, id);
 
-      checks.push({ key, versionstamp });
+        checks.push({ key, versionstamp });
 
-      return value;
-    });
+        return value;
+      });
 
-    return values;
+      const pageInfo = {
+        startCursor: "foo",
+        endCursor: "foo",
+        hasPreviousPage: false,
+        hasNextPage: false,
+      }
+
+      const connection = {
+        edges,
+        pageInfo
+      }
+
+      return connection;
+    } else if (last) {
+      const keys = ids.map((id) => [referencedTableName, id]);
+
+      const entries = await db.getMany(keys);
+
+      const edges = entries.map(({ key, value, versionstamp }) => {
+        // note: throw on first invalid entry instead of continuing to find all
+        const id = key.at(-1)!;
+
+        validateReferencedRow(value, referencedTableName, id);
+
+        checks.push({ key, versionstamp });
+
+        return value;
+      });
+
+      const pageInfo = {
+        startCursor: "foo",
+        endCursor: "foo",
+        hasPreviousPage: false,
+        hasNextPage: false,
+      }
+
+      const connection = {
+        edges,
+        pageInfo
+      }
+
+      return connection;
+    } else {
+      throw new Error(`should be unreachable`);
+    }
   };
 
-  createQueryResolver(db, type, resolvers, middleware);
+  resolvers[tableName][name] = resolver;
+
+  createResolver(db, tableType, resolvers, middleware);
 }

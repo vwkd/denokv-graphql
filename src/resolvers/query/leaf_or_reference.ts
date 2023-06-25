@@ -1,71 +1,54 @@
-import { isLeafType, isListType, isObjectType } from "../../../deps.ts";
+import { isLeafType, isObjectType } from "../../../deps.ts";
 import type {
-  GraphQLEnumType,
-  GraphQLInterfaceType,
-  GraphQLList,
-  GraphQLObjectType,
   GraphQLOutputType,
-  GraphQLScalarType,
-  GraphQLUnionType,
   IMiddleware,
   IResolvers,
 } from "../../../deps.ts";
-import { createResolverList } from "./list.ts";
-import { createResolverObjectOne } from "./reference.ts";
-import { createResolverScalar } from "./leaf.ts";
-
-type NullableTypes =
-  | GraphQLScalarType
-  | GraphQLObjectType
-  | GraphQLInterfaceType
-  | GraphQLUnionType
-  | GraphQLEnumType
-  | GraphQLList<GraphQLOutputType>;
+import { createLeafResolver } from "./leaf.ts";
+import { createReferenceResolver } from "./reference.ts";
 
 /**
- * Create resolver for a list, object or scalar column
+ * Create resolver for leaf or reference
  *
- * - one or many values, no or single or multiple references
  * - note: mutates resolvers and middleware object
  * @param db Deno KV database
- * @param type nullable type
+ * @param type field type
+ * @param name field name
  * @param tableName table name
- * @param columnName column name
  * @param resolvers resolvers
  * @param middleware middleware
  * @param optional if result can be null
  */
-export function createResolverListObjectScalar(
+export function createLeafOrReferenceResolver(
   db: Deno.Kv,
-  type: NullableTypes,
+  // todo: correct?
+  type: GraphQLOutputType,
+  name: string,
   tableName: string,
-  columnName: string,
   resolvers: IResolvers,
   middleware: IMiddleware,
   optional: boolean,
 ): void {
   if (isLeafType(type)) {
-    createResolverScalar(db, type, tableName, resolvers, middleware, optional);
-  } else if (isObjectType(type)) {
-    createResolverObjectOne(
+    createLeafResolver(
       db,
       type,
       tableName,
-      columnName,
       resolvers,
       middleware,
       optional,
     );
-  } else if (isListType(type)) {
-    const innerType = type.ofType;
-    createResolverList(
+  } else if (isObjectType(type)) {
+    createReferenceResolver(
       db,
-      innerType,
+      type,
+      name,
       tableName,
-      columnName,
       resolvers,
       middleware,
       optional,
     );
+  } else {
+    throw new Error(`should be unreachable`);
   }
 }

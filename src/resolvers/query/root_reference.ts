@@ -11,7 +11,7 @@ import {
   validateQueryReturn,
   validateRow,
 } from "./utils.ts";
-import { createQueryResolver } from "./main.ts";
+import { createResolver } from "./main.ts";
 import { addQueryVersionstamp } from "./root_middleware.ts";
 
 /**
@@ -19,38 +19,38 @@ import { addQueryVersionstamp } from "./root_middleware.ts";
  *
  * - note: mutates resolvers and middleware object
  * @param db Deno KV database
- * @param queryType query type
- * @param queryArgs query arguments
- * @param queryName query name
- * @param rootQueryName root query name
+ * @param type query type
+ * @param args query arguments
+ * @param name query name
+ * @param rootName root query name
  * @param resolvers resolvers
  * @param middleware middleware
  */
-export function createRootQueryOneResolver(
+export function createRootReferenceResolver(
   db: Deno.Kv,
-  queryType: GraphQLOutputType,
-  queryArgs: readonly GraphQLArgument[],
-  queryName: string,
-  rootQueryName: string,
+  type: GraphQLOutputType,
+  args: readonly GraphQLArgument[],
+  name: string,
+  rootName: string,
   resolvers: IResolvers,
   middleware: IMiddleware,
 ): void {
-  validateQueryReturn(queryType, queryName);
+  validateQueryReturn(type, name);
 
-  const fields = queryType.getFields();
+  const fields = type.getFields();
 
   // note: asserted in `validateQueryReturn`
-  const type = fields["value"].type.ofType as GraphQLObjectType;
+  const tableType = fields["value"].type.ofType as GraphQLObjectType;
 
-  const tableName = type.name;
+  const tableName = tableType.name;
 
-  validateQueryArguments(queryArgs, queryName);
-
-  resolvers[rootQueryName][queryName] = async (
+  validateQueryArguments(args, name);
+  
+  const resolver: IFieldResolver<any, any> = async (
     _root,
     args,
     context,
-  ): Promise<IFieldResolver<any, any>> => {
+  ) => {
     const id = args.id;
 
     const key = [tableName, id];
@@ -72,7 +72,8 @@ export function createRootQueryOneResolver(
     return { id, value, versionstamp };
   };
 
-  createQueryResolver(db, type, resolvers, middleware);
+  resolvers[rootName][name] = resolver;
+  middleware[rootName][name] = addQueryVersionstamp(db);
 
-  middleware[rootQueryName][queryName] = addQueryVersionstamp(db);
+  createResolver(db, tableType, resolvers, middleware);
 }

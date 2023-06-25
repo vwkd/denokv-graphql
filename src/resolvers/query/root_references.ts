@@ -1,3 +1,4 @@
+import { isNonNullType } from "../../../deps.ts";
 import type {
   GraphQLArgument,
   GraphQLObjectType,
@@ -7,61 +8,68 @@ import type {
 } from "../../../deps.ts";
 import {
   validateConnection,
-  validateListArgumentInputs,
-  validateListQueryArguments,
+  validateReferencesArgumentInputs,
+  validateReferencesArguments,
   validateRow,
 } from "./utils.ts";
-import { createQueryResolver } from "./main.ts";
+import { createResolver } from "./main.ts";
 import { addQueryVersionstamp } from "./root_middleware.ts";
 import { DatabaseCorruption } from "../../utils.ts";
 
 /**
- * Create resolver for list query
+ * Create resolver for references
  *
  * - note: mutates resolvers and middleware object
  * @param db Deno KV database
- * @param queryType query type
- * @param queryArgs query arguments
- * @param queryName query name
+ * @param type field type
+ * @param args field arguments
+ * @param name field name
  * @param rootQueryName root query name
  * @param resolvers resolvers
  * @param middleware middleware
  */
-export function createRootQueryListResolver(
+export function createRootReferencesResolver(
   db: Deno.Kv,
-  queryType: GraphQLObjectType,
-  queryArgs: readonly GraphQLArgument[],
-  queryName: string,
+  type: GraphQLObjectType,
+  args: readonly GraphQLArgument[],
+  name: string,
   rootQueryName: string,
   resolvers: IResolvers,
   middleware: IMiddleware,
 ): void {
-  validateConnection(queryType);
+  validateConnection(type);
 
   // note: asserted in `validateConnection`
-  const fieldsConnection = queryType.getFields();
-  const edge = fieldsConnection["edges"].type.ofType.ofType;
+  const fieldsConnection = type.getFields();
+  let edge = fieldsConnection["edges"].type.ofType.ofType;
+
+  let optional = true;
+  if (isNonNullType(edge)) {
+    edge = edge.ofType;
+    optional = false;
+  }
+
   const fieldsEdge = edge.getFields();
   const node = fieldsEdge["node"].type.ofType;
   const fields = node.getFields();
-  const type = fields["value"].type.ofType;
+  const tableType = fields["value"].type.ofType;
 
-  const tableName = type.name;
+  const tableName = tableType.name;
 
-  validateListQueryArguments(queryArgs, queryName);
+  validateReferencesArguments(args, name);
 
-  resolvers[rootQueryName][queryName] = async (
+  const resolver: IFieldResolver<any, any> = async (
     _root,
     args,
     context,
-  ): Promise<IFieldResolver<any, any>> => {
+  ) => {
     const first = args.first as number | undefined;
     const after = args.after as string | undefined;
 
     const last = args.last as number | undefined;
     const before = args.before as string | undefined;
 
-    validateListArgumentInputs(first, after, last, before);
+    validateReferencesArgumentInputs(first, after, last, before);
 
     context.checks = [];
 
@@ -103,6 +111,8 @@ export function createRootQueryListResolver(
           cursor,
         });
       }
+
+      // todo: handle optional, return null if optional, else throw?
 
       // remove extra element if it exists
       if (edges.length == first + 1) {
@@ -194,8 +204,8 @@ export function createRootQueryListResolver(
     }
   };
 
-  // todo: adapt for new array in `root`!
-  // createQueryResolver(db, type, resolvers, middleware);
+  resolvers[rootQueryName][name] = resolver;
+  middleware[rootQueryName][name] = addQueryVersionstamp(db);
 
-  middleware[rootQueryName][queryName] = addQueryVersionstamp(db);
+  createResolver(db, tableType, resolvers, middleware);
 }

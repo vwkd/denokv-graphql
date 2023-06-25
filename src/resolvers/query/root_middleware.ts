@@ -16,6 +16,7 @@ export const addQueryVersionstamp: (db: Deno.Kv) => IMiddlewareFunction =
     const checks = context.checks;
 
     // note: null if root resolver returns null
+    // todo: can return null?
     if (checks) {
       let resCheck = await db.atomic()
         .check(...checks)

@@ -4,9 +4,9 @@ import type {
   IMiddleware,
   IResolvers,
 } from "../../../deps.ts";
-import { isListQuery } from "./utils.ts";
-import { createRootQueryOneResolver } from "./root_reference.ts";
-import { createRootQueryListResolver } from "./root_references.ts";
+import { isReferences } from "./utils.ts";
+import { createRootReferenceResolver } from "./root_reference.ts";
+import { createRootReferencesResolver } from "./root_references.ts";
 
 /**
  * Create resolvers for queries
@@ -37,23 +37,24 @@ export function createRootQueryResolver(
   for (const query of Object.values(queries)) {
     const queryName = query.name;
     const type = query.type;
+    const args = query.args;
 
-    if (isListQuery(type)) {
+    if (isReferences(type)) {
       const innerType = type.ofType;
-      createRootQueryListResolver(
+      createRootReferencesResolver(
         db,
         innerType,
-        query.args,
+        args,
         queryName,
         rootQueryName,
         resolvers,
         middleware,
       );
     } else {
-      createRootQueryOneResolver(
+      createRootReferenceResolver(
         db,
         type,
-        query.args,
+        args,
         queryName,
         rootQueryName,
         resolvers,
