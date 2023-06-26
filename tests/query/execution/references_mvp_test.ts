@@ -43,7 +43,7 @@ Deno.test("minimal working example", async () => {
         value {
           id,
           title,
-          authors(first: 20) {
+          authors(last: 1) {
             edges {
               node {
                 id,
@@ -99,19 +99,19 @@ Deno.test("minimal working example", async () => {
                   id: "11",
                   name: "Victoria Nightshade",
                 },
-                cursor: "foo",
+                cursor: "11",
               },
               {
                 node: {
                   id: "12",
                   name: "Sebastian Duskwood",
                 },
-                cursor: "foo",
+                cursor: "12",
               },
             ],
             pageInfo: {
-              startCursor: "foo",
-              endCursor: "foo",
+              startCursor: "11",
+              endCursor: "12",
               hasNextPage: false,
               hasPreviousPage: false,
             },

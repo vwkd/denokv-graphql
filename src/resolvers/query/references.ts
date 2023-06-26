@@ -123,10 +123,35 @@ export function createReferencesResolver(
       );
     }
 
-    // todo: actually do pagination
-    // todo: what is cursor?
     if (first) {
-      const keys = ids.map((id) => [referencedTableName, id]);
+      // note: bad `after` cursor that doesn't exist
+      if (after && ids.indexOf(after) == -1) {
+        const edges = [];
+
+        const pageInfo = {
+          hasPreviousPage: false,
+          hasNextPage: false,
+        };
+
+        const connection = {
+          edges,
+          pageInfo,
+        };
+
+        return connection;
+      }
+
+      // note: `after` could still be `undefined` if not provided
+      const startIndex = ids.indexOf(after) >= 0
+        ? ids.indexOf(after) + 1
+        : undefined;
+      const endIndex = startIndex !== undefined
+        ? (ids.length > startIndex + first ? startIndex + first : undefined)
+        : (ids.length > first ? first : undefined);
+
+      const keys = ids.slice(startIndex, endIndex).map((
+        id,
+      ) => [referencedTableName, id]);
 
       const entries = await db.getMany(keys);
 
@@ -140,15 +165,17 @@ export function createReferencesResolver(
 
         return {
           node: value,
-          cursor: "foo",
+          cursor: id,
         };
       });
 
       const pageInfo = {
-        startCursor: "foo",
-        endCursor: "foo",
-        hasPreviousPage: false,
-        hasNextPage: false,
+        startCursor: edges.at(0)?.cursor,
+        endCursor: edges.at(-1)?.cursor,
+        // `false` if `undefined`
+        hasPreviousPage: !!startIndex,
+        // `false` if `undefined`
+        hasNextPage: !!endIndex,
       };
 
       const connection = {
@@ -158,7 +185,34 @@ export function createReferencesResolver(
 
       return connection;
     } else if (last) {
-      const keys = ids.map((id) => [referencedTableName, id]);
+      // note: bad `before` cursor that doesn't exist
+      if (before && ids.indexOf(before) == -1) {
+        const edges = [];
+
+        const pageInfo = {
+          hasPreviousPage: false,
+          hasNextPage: false,
+        };
+
+        const connection = {
+          edges,
+          pageInfo,
+        };
+
+        return connection;
+      }
+
+      // note: `before` could still be `undefined` if not provided
+      const endIndex = ids.indexOf(before) >= 0
+        ? ids.indexOf(before)
+        : undefined;
+      const startIndex = endIndex !== undefined
+        ? (0 <= endIndex - last ? endIndex - last : undefined)
+        : (0 <= ids.length - last ? ids.length - last : undefined);
+
+      const keys = ids.slice(startIndex, endIndex).map((
+        id,
+      ) => [referencedTableName, id]);
 
       const entries = await db.getMany(keys);
 
@@ -170,14 +224,19 @@ export function createReferencesResolver(
 
         checks.push({ key, versionstamp });
 
-        return value;
+        return {
+          node: value,
+          cursor: id,
+        };
       });
 
       const pageInfo = {
-        startCursor: "foo",
-        endCursor: "foo",
-        hasPreviousPage: false,
-        hasNextPage: false,
+        startCursor: edges.at(0)?.cursor,
+        endCursor: edges.at(-1)?.cursor,
+        // `false` if `0` or `undefined`
+        hasPreviousPage: !!startIndex,
+        // `false` if `undefined`
+        hasNextPage: endIndex !== undefined,
       };
 
       const connection = {
