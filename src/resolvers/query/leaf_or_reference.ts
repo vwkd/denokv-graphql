@@ -11,8 +11,8 @@ import type {
   IResolvers,
 } from "../../../deps.ts";
 import { createResolverList } from "./list.ts";
-import { createResolverObjectOne } from "./object_one.ts";
-import { createResolverScalar } from "./scalar.ts";
+import { createResolverObjectOne } from "./reference.ts";
+import { createResolverScalar } from "./leaf.ts";
 
 type NullableTypes =
   | GraphQLScalarType

@@ -5,7 +5,7 @@ import type {
   IResolvers,
 } from "../../../deps.ts";
 import { validateColumn, validateTable } from "./utils.ts";
-import { createResolverListObjectScalar } from "./list_object_scalar.ts";
+import { createResolverListObjectScalar } from "./leaf_or_reference.ts";
 
 /**
  * Create resolvers for a table

@@ -4,7 +4,7 @@ import type {
   IMiddleware,
   IResolvers,
 } from "../../../deps.ts";
-import { createResolverObjectMany } from "./object_many.ts";
+import { createResolverObjectMany } from "./references.ts";
 
 /**
  * Create resolver for list column

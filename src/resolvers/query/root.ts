@@ -5,8 +5,8 @@ import type {
   IResolvers,
 } from "../../../deps.ts";
 import { isListQuery } from "./utils.ts";
-import { createRootQueryOneResolver } from "./root_one.ts";
-import { createRootQueryListResolver } from "./root_list.ts";
+import { createRootQueryOneResolver } from "./root_reference.ts";
+import { createRootQueryListResolver } from "./root_references.ts";
 
 /**
  * Create resolvers for queries
