@@ -74,41 +74,14 @@ export function createReferencesResolver(
 
     validateReferencesArgumentInputs(first, after, last, before);
 
-    const ids = root[name];
-
-    if (!Array.isArray(ids)) {
+    if (root[name] !== undefined) {
       throw new DatabaseCorruption(
-        `Expected table '${tableName}' column '${name}' to contain array`,
+        `Expected table '${tableName}' column '${name}' to be undefined`,
       );
     }
 
-    if (ids.some((id) => !(typeof id == "string"))) {
-      throw new DatabaseCorruption(
-        `Expected table '${tableName}' column '${name}' to contain array of strings`,
-      );
-    }
-
-    if (optional && ids.length == 0) {
-      const edges = [];
-
-      const pageInfo = {
-        hasPreviousPage: false,
-        hasNextPage: false,
-      };
-
-      const connection = {
-        edges,
-        pageInfo,
-      };
-
-      return connection;
-    }
-
-    if (ids.length == 0) {
-      throw new DatabaseCorruption(
-        `Expected table '${tableName}' column '${name}' to contain at least one reference`,
-      );
-    }
+    const rowId = root.id;
+    const referenceKeys = [tableName, rowId, name];
 
     const checks = context.checks;
 
@@ -124,34 +97,62 @@ export function createReferencesResolver(
     }
 
     if (first) {
-      // note: bad `after` cursor that doesn't exist
-      if (after && ids.indexOf(after) == -1) {
-        const edges = [];
+      // note: get one more element to see if has next
+      const referenceEntries = db.list({ prefix: referenceKeys }, {
+        limit: first + 1,
+        cursor: after,
+      });
 
-        const pageInfo = {
-          hasPreviousPage: false,
-          hasNextPage: false,
-        };
+      let references: { id: string; cursor: string }[] = [];
 
-        const connection = {
-          edges,
-          pageInfo,
-        };
+      for await (const { key, value, versionstamp } of referenceEntries) {
+        if (value) {
+          throw new DatabaseCorruption(
+            `Expected table '${tableName}' column '${name}' to have no value`,
+          );
+        }
 
-        return connection;
+        if (!(key.length == 4 && typeof key.at(-1) == "string")) {
+          throw new DatabaseCorruption(
+            `Expected table '${tableName}' column '${name}' to have single-level keys of strings`,
+          );
+        }
+
+        const id = key.at(-1) as string;
+
+        context.checks.push({ key, versionstamp });
+
+        // note: always non-empty string
+        const cursor = referenceEntries.cursor;
+
+        references.push({ id, cursor });
       }
 
-      // note: `after` could still be `undefined` if not provided
-      const startIndex = ids.indexOf(after) >= 0
-        ? ids.indexOf(after) + 1
-        : undefined;
-      const endIndex = startIndex !== undefined
-        ? (ids.length > startIndex + first ? startIndex + first : undefined)
-        : (ids.length > first ? first : undefined);
+      if (!optional && references.length == 0) {
+        throw new DatabaseCorruption(
+          `Expected table '${tableName}' column '${name}' to contain at least one reference`,
+        );
+      }
 
-      const keys = ids.slice(startIndex, endIndex).map((
-        id,
-      ) => [referencedTableName, id]);
+      // remove extra element if it exists
+      if (references.length == first + 1) {
+        references = references.slice(0, -1);
+      }
+
+      // note: cursor of next item if it exists, otherwise empty string if no further items, never `undefined`!
+      const startCursorNext = referenceEntries.cursor;
+
+      const pageInfo = {
+        startCursor: references.at(0)?.cursor,
+        endCursor: references.at(-1)?.cursor,
+        // note: currently mistakenly set to `true` if passes bogus cursor that passes validation in `db.list`
+        hasPreviousPage: !!after,
+        hasNextPage: !!startCursorNext,
+      };
+
+      const keys = references.map(
+        (reference) => [referencedTableName, reference.id],
+      );
 
       const entries = await db.getMany(keys);
 
@@ -165,18 +166,10 @@ export function createReferencesResolver(
 
         return {
           node: value,
-          cursor: id,
+          // note: uniquely exists since is key
+          cursor: references.find((reference) => reference.id == id)!.cursor,
         };
       });
-
-      const pageInfo = {
-        startCursor: edges.at(0)?.cursor,
-        endCursor: edges.at(-1)?.cursor,
-        // `false` if `undefined`
-        hasPreviousPage: !!startIndex,
-        // `false` if `undefined`
-        hasNextPage: !!endIndex,
-      };
 
       const connection = {
         edges,
@@ -185,34 +178,64 @@ export function createReferencesResolver(
 
       return connection;
     } else if (last) {
-      // note: bad `before` cursor that doesn't exist
-      if (before && ids.indexOf(before) == -1) {
-        const edges = [];
+      // note: get one more element to see if has next
+      // note: `reverse` to go backwards instead of forwards, then reverse array to end up with forward order
+      const referenceEntries = db.list({ prefix: referenceKeys }, {
+        limit: last + 1,
+        cursor: before,
+        reverse: true,
+      });
 
-        const pageInfo = {
-          hasPreviousPage: false,
-          hasNextPage: false,
-        };
+      let references: { id: string; cursor: string }[] = [];
 
-        const connection = {
-          edges,
-          pageInfo,
-        };
+      for await (const { key, value, versionstamp } of referenceEntries) {
+        if (value) {
+          throw new DatabaseCorruption(
+            `Expected table '${tableName}' column '${name}' to have no value`,
+          );
+        }
 
-        return connection;
+        if (!(key.length == 4 && typeof key.at(-1) == "string")) {
+          throw new DatabaseCorruption(
+            `Expected table '${tableName}' column '${name}' to have single-level keys of strings`,
+          );
+        }
+
+        const id = key.at(-1) as string;
+
+        context.checks.push({ key, versionstamp });
+
+        // note: always non-empty string
+        const cursor = referenceEntries.cursor;
+
+        references.unshift({ id, cursor });
       }
 
-      // note: `before` could still be `undefined` if not provided
-      const endIndex = ids.indexOf(before) >= 0
-        ? ids.indexOf(before)
-        : undefined;
-      const startIndex = endIndex !== undefined
-        ? (0 <= endIndex - last ? endIndex - last : undefined)
-        : (0 <= ids.length - last ? ids.length - last : undefined);
+      if (!optional && references.length == 0) {
+        throw new DatabaseCorruption(
+          `Expected table '${tableName}' column '${name}' to contain at least one reference`,
+        );
+      }
 
-      const keys = ids.slice(startIndex, endIndex).map((
-        id,
-      ) => [referencedTableName, id]);
+      // remove extra element if it exists
+      if (references.length == last + 1) {
+        references = references.slice(1);
+      }
+
+      // note: cursor of next item if it exists, otherwise empty string if no further items, never `undefined`!
+      const endCursorNext = referenceEntries.cursor;
+
+      const pageInfo = {
+        startCursor: references.at(0)?.cursor,
+        endCursor: references.at(-1)?.cursor,
+        hasPreviousPage: !!endCursorNext,
+        // note: currently mistakenly set to `true` if passes bogus cursor that passes validation in `db.list`
+        hasNextPage: !!before,
+      };
+
+      const keys = references.map(
+        (reference) => [referencedTableName, reference.id],
+      );
 
       const entries = await db.getMany(keys);
 
@@ -226,18 +249,10 @@ export function createReferencesResolver(
 
         return {
           node: value,
-          cursor: id,
+          // note: uniquely exists since is key
+          cursor: references.find((reference) => reference.id == id)!.cursor,
         };
       });
-
-      const pageInfo = {
-        startCursor: edges.at(0)?.cursor,
-        endCursor: edges.at(-1)?.cursor,
-        // `false` if `0` or `undefined`
-        hasPreviousPage: !!startIndex,
-        // `false` if `undefined`
-        hasNextPage: endIndex !== undefined,
-      };
 
       const connection = {
         edges,
