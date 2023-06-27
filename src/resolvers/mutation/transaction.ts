@@ -18,6 +18,7 @@ const directiveNames = ["insert", "delete"];
 /**
  * Create resolver for transaction
  *
+ * - note: doesn't walk recursively child tables to attach resolvers since resolver returns result
  * - note: mutates resolvers object
  * @param db Deno KV database
  * @param schema schema

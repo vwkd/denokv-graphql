@@ -5,40 +5,42 @@ import type {
   IResolvers,
 } from "../../../deps.ts";
 import { ConcurrentChange, DatabaseCorruption } from "../../utils.ts";
-import { createQueryResolver } from "./main.ts";
-import { validateReferencedRow } from "./utils.ts";
+import { createResolver } from "./main.ts";
+import { validateReferencedRow, validateTable } from "./utils.ts";
 
 /**
- * Create resolver for object column
+ * Create resolver for reference field
  *
- * - one value, single reference
  * - note: mutates resolvers and middleware object
  * @param db Deno KV database
- * @param type object type
+ * @param type field type
+ * @param name field name
  * @param tableName table name
- * @param columnName column name
  * @param resolvers resolvers
  * @param middleware middleware
  * @param optional if result can be null
  */
-export function createResolverObjectOne(
+export function createReferenceResolver(
   db: Deno.Kv,
   type: GraphQLObjectType,
+  name: string,
   tableName: string,
-  columnName: string,
   resolvers: IResolvers,
   middleware: IMiddleware,
   optional: boolean,
 ): void {
   const referencedTableName = type.name;
 
+  const columns = Object.values(type.getFields());
+  validateTable(columns, tableName);
+
   // overwrites id in field value to object
-  resolvers[tableName][columnName] = async (
+  const resolver: IFieldResolver<any, any> = async (
     root,
     _args,
     context,
-  ): Promise<IFieldResolver<any, any>> => {
-    const id = root[columnName] as string | undefined;
+  ) => {
+    const id = root[name] as string | undefined;
 
     if (optional && id === undefined) {
       return null;
@@ -46,7 +48,7 @@ export function createResolverObjectOne(
 
     if (id === undefined) {
       throw new DatabaseCorruption(
-        `Expected column '${columnName}' to contain id`,
+        `Expected column '${name}' to contain id`,
       );
     }
 
@@ -76,5 +78,7 @@ export function createResolverObjectOne(
     return value;
   };
 
-  createQueryResolver(db, type, resolvers, middleware);
+  resolvers[tableName][name] = resolver;
+
+  createResolver(db, type, resolvers, middleware);
 }

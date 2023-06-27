@@ -1,15 +1,14 @@
-import { GraphQLSchema } from "../../deps.ts";
-import type { IResolvers } from "../../deps.ts";
-import { createResolverTransaction } from "./mutation/transaction.ts";
+import { GraphQLSchema } from "../../../deps.ts";
+import type { IResolvers } from "../../../deps.ts";
+import { createResolverTransaction } from "./transaction.ts";
 import {
   validateTransactionArguments,
   validateTransactionReturn,
-} from "./mutation/utils.ts";
+} from "./utils.ts";
 
 /**
  * Create resolvers for mutations
  *
- * - don't walk recursively to next queriable table since always returns result
  * - validate table since not necessarily included in query tree
  * - note: mutates resolvers object
  * @param db Deno KV database

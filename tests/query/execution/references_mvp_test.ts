@@ -16,7 +16,17 @@ Deno.test("minimal working example", async () => {
     type Book {
       id: ID!,
       title: String,
-      authors: [Author],
+      authors(first: Int, after: ID, last: Int, before: ID): AuthorConnection!,
+    }
+
+    type AuthorConnection {
+      edges: [AuthorEdge]!
+      pageInfo: PageInfo!
+    }
+
+    type AuthorEdge {
+      node: Author!
+      cursor: ID!
     }
 
     type Author {
@@ -33,9 +43,20 @@ Deno.test("minimal working example", async () => {
         value {
           id,
           title,
-          authors {
-            id,
-            name,
+          authors(last: 1) {
+            edges {
+              node {
+                id,
+                name,
+              }
+              cursor
+            }
+            pageInfo {
+              startCursor
+              endCursor
+              hasNextPage
+              hasPreviousPage
+            }
           }
         }
       }
@@ -71,16 +92,30 @@ Deno.test("minimal working example", async () => {
         value: {
           id: "1",
           title: "Shadows of Eternity",
-          authors: [
-            {
-              id: "11",
-              name: "Victoria Nightshade",
+          authors: {
+            edges: [
+              {
+                node: {
+                  id: "11",
+                  name: "Victoria Nightshade",
+                },
+                cursor: "11",
+              },
+              {
+                node: {
+                  id: "12",
+                  name: "Sebastian Duskwood",
+                },
+                cursor: "12",
+              },
+            ],
+            pageInfo: {
+              startCursor: "11",
+              endCursor: "12",
+              hasNextPage: false,
+              hasPreviousPage: false,
             },
-            {
-              id: "12",
-              name: "Sebastian Duskwood",
-            },
-          ],
+          },
         },
       },
     },

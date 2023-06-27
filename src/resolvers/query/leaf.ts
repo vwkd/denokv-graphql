@@ -5,18 +5,17 @@ import type {
 } from "../../../deps.ts";
 
 /**
- * Create resolver for scalar column
+ * Create resolver for leaf
  *
- * - one value, no reference
  * - note: mutates resolvers and middleware object
  * @param db Deno KV database
- * @param type leaf type
+ * @param type field type
  * @param tableName table name
  * @param resolvers resolvers
  * @param middleware middleware
  * @param optional if result can be null
  */
-export function createResolverScalar(
+export function createLeafResolver(
   _db: Deno.Kv,
   _type: GraphQLLeafType,
   _tableName: string,

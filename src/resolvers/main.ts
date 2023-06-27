@@ -1,7 +1,7 @@
 import { GraphQLSchema } from "../../deps.ts";
 import type { IMiddleware, IResolvers } from "../../deps.ts";
-import { createRootMutationResolver } from "./root_mutation.ts";
-import { createRootQueryResolver } from "./root_query.ts";
+import { createRootMutationResolver } from "./mutation/root.ts";
+import { createRootQueryResolver } from "./query/root.ts";
 
 /**
  * Generate the resolvers for Deno KV
