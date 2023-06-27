@@ -12,19 +12,15 @@ Deno.test("none", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
-    type Result {
-      versionstamp: String!
+    type Book {
+      id: ID!,
+      title: String,
     }
     
     input CreateInput {
@@ -34,6 +30,10 @@ Deno.test("none", async () => {
     input BookInput {
       id: ID!,
       title: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 

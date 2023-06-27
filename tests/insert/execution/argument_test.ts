@@ -11,28 +11,28 @@ Deno.test("existing id", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
-    }
-    
-    type Result {
-      versionstamp: String!
     }
 
     input BookInput {
       id: ID!,
       title: String,
+    }
+    
+    type Result {
+      versionstamp: String!
     }
   `;
 

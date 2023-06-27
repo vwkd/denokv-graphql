@@ -7,6 +7,12 @@ Deno.test("minimal working example", async () => {
       bookById(id: ID!): BookResult
     }
 
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
     type Book {
       id: ID!,
       title: String,
@@ -16,12 +22,6 @@ Deno.test("minimal working example", async () => {
     type Author {
       id: ID!,
       name: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
     }
   `;
 

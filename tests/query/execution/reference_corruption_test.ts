@@ -7,6 +7,12 @@ Deno.test("bad id", async () => {
       bookById(id: ID!): BookResult
     }
 
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
     type Book {
       id: ID!,
       title: String,
@@ -16,12 +22,6 @@ Deno.test("bad id", async () => {
     type Author {
       id: ID!,
       name: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
     }
   `;
 
@@ -85,6 +85,12 @@ Deno.test("other reference", async () => {
       bookById(id: ID!): BookResult
     }
 
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
     type Book {
       id: ID!,
       title: String,
@@ -94,12 +100,6 @@ Deno.test("other reference", async () => {
     type Author {
       id: ID!,
       name: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
     }
   `;
 
@@ -164,6 +164,12 @@ Deno.test("bad id in reference", async () => {
       bookById(id: ID!): BookResult
     }
 
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
     type Book {
       id: ID!,
       title: String,
@@ -173,12 +179,6 @@ Deno.test("bad id in reference", async () => {
     type Author {
       id: ID!,
       name: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
     }
   `;
 
@@ -247,6 +247,12 @@ Deno.test("non null", async () => {
       bookById(id: ID!): BookResult
     }
 
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
     type Book {
       id: ID!,
       title: String,
@@ -256,12 +262,6 @@ Deno.test("non null", async () => {
     type Author {
       id: ID!,
       name: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
     }
   `;
 

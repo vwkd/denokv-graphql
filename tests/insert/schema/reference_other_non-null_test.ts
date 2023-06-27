@@ -12,6 +12,12 @@ Deno.test("non-null vs naked", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
     type Book {
       id: ID!,
       title: String,
@@ -22,16 +28,6 @@ Deno.test("non-null vs naked", async () => {
       id: ID!,
       name: String,
     }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
-    }
-
-    type Result {
-      versionstamp: String!
-    }
     
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
@@ -41,6 +37,10 @@ Deno.test("non-null vs naked", async () => {
       id: ID!,
       title: String,
       author: String!,
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 

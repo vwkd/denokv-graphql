@@ -8,15 +8,15 @@ Deno.test("none", async () => {
       bookById: BookResult
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
   `;
 
@@ -37,15 +37,15 @@ Deno.test("other", async () => {
       bookById(XXX: ID!): BookResult
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
   `;
 
@@ -66,15 +66,15 @@ Deno.test("extra", async () => {
       bookById(id: ID!, XXX: String): BookResult
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
   `;
 

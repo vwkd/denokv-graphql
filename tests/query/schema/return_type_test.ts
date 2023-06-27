@@ -8,15 +8,15 @@ Deno.test("non-null", async () => {
       bookById(id: ID!): BookResult!
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+    
+    type Book {
+      id: ID!,
+      title: String,
     }
   `;
 
@@ -37,15 +37,15 @@ Deno.test("list", async () => {
       bookById(id: ID!): [BookResult]
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
   `;
 

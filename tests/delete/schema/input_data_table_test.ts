@@ -12,26 +12,26 @@ Deno.test("insufficient columns", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
     }
     
-    type Result {
+    input Identifier {
       versionstamp: String!
     }
-    
-    input Identifier {
+
+    type Result {
       versionstamp: String!
     }
   `;
@@ -57,29 +57,29 @@ Deno.test("excess columns", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
-    }
-    
-    type Result {
-      versionstamp: String!
     }
     
     input Identifier {
       id: ID!,
       versionstamp: String!
       XXX: String!
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -104,27 +104,27 @@ Deno.test("missing 'id' column", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
     }
     
-    type Result {
-      versionstamp: String!
-    }
-    
     input Identifier {
       XXX: ID!
+      versionstamp: String!
+    }
+
+    type Result {
       versionstamp: String!
     }
   `;
@@ -150,28 +150,28 @@ Deno.test("missing 'versionstamp' column", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
-    }
-    
-    type Result {
-      versionstamp: String!
     }
     
     input Identifier {
       id: ID!
       XXX: String!
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -196,27 +196,27 @@ Deno.test("'id' column nullable", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
     }
     
-    type Result {
-      versionstamp: String!
-    }
-    
     input Identifier {
       id: ID
+      versionstamp: String!
+    }
+
+    type Result {
       versionstamp: String!
     }
   `;
@@ -242,27 +242,27 @@ Deno.test("'id' column list", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
     }
     
-    type Result {
-      versionstamp: String!
-    }
-    
     input Identifier {
       id: [ID]
+      versionstamp: String!
+    }
+
+    type Result {
       versionstamp: String!
     }
   `;
@@ -288,27 +288,27 @@ Deno.test("'id' column other", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
     }
     
-    type Result {
-      versionstamp: String!
-    }
-    
     input Identifier {
       id: String!
+      versionstamp: String!
+    }
+
+    type Result {
       versionstamp: String!
     }
   `;
@@ -334,28 +334,28 @@ Deno.test("'versionstamp' column nullable", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
-    }
-    
-    type Result {
-      versionstamp: String!
     }
     
     input Identifier {
       id: ID!
       versionstamp: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -380,28 +380,28 @@ Deno.test("'versionstamp' column list", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
-    }
-    
-    type Result {
-      versionstamp: String!
     }
     
     input Identifier {
       id: ID!
       versionstamp: [String]
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -426,28 +426,28 @@ Deno.test("'versionstamp' column other", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
-    }
-    
-    type Result {
-      versionstamp: String!
     }
     
     input Identifier {
       id: ID!
       versionstamp: Boolean!
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 

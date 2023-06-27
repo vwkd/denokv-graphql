@@ -11,27 +11,27 @@ Deno.test("minimal working example", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
     }
     
-    type Result {
-      versionstamp: String!
-    }
-    
     input Identifier {
       id: ID!,
+      versionstamp: String!
+    }
+
+    type Result {
       versionstamp: String!
     }
   `;
