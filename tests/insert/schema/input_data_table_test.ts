@@ -12,27 +12,27 @@ Deno.test("insufficient columns", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
-    type Result {
-      versionstamp: String!
+    type Book {
+      id: ID!,
+      title: String,
     }
-    
+
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
     }
     
     input BookInput {
       title: String!
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -57,21 +57,17 @@ Deno.test("excess columns", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
-    type Result {
-      versionstamp: String!
+    type Book {
+      id: ID!,
+      title: String,
     }
-    
+
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
     }
@@ -80,6 +76,10 @@ Deno.test("excess columns", async () => {
       id: ID!,
       title: String
       XXX: String!
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -104,21 +104,17 @@ Deno.test("missing column", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
-    type Result {
-      versionstamp: String!
+    type Book {
+      id: ID!,
+      title: String,
     }
-    
+
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
     }
@@ -126,6 +122,10 @@ Deno.test("missing column", async () => {
     input BookInput {
       id: ID!,
       XXX: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -150,21 +150,17 @@ Deno.test("column type nullable", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
-    type Result {
-      versionstamp: String!
+    type Book {
+      id: ID!,
+      title: String,
     }
-    
+
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
     }
@@ -172,6 +168,10 @@ Deno.test("column type nullable", async () => {
     input BookInput {
       id: ID
       title: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -196,21 +196,17 @@ Deno.test("column type list", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
-    type Result {
-      versionstamp: String!
+    type Book {
+      id: ID!,
+      title: String,
     }
-    
+
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
     }
@@ -218,6 +214,10 @@ Deno.test("column type list", async () => {
     input BookInput {
       id: [ID]
       title: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -242,21 +242,17 @@ Deno.test("column type other", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
-    type Result {
-      versionstamp: String!
+    type Book {
+      id: ID!,
+      title: String,
     }
-    
+
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
     }
@@ -264,6 +260,10 @@ Deno.test("column type other", async () => {
     input BookInput {
       id: String!
       title: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 

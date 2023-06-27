@@ -8,13 +8,13 @@ Deno.test("missing fields", async () => {
       bookById(id: ID!): BookResult
     }
 
+    type BookResult {
+      value: Book!
+    }
+
     type Book {
       id: ID!,
       title: String,
-    }
-
-    type BookResult {
-      value: Book!
     }
   `;
 
@@ -35,16 +35,16 @@ Deno.test("extra fields", async () => {
       bookById(id: ID!): BookResult
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
       XXX: String
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
   `;
 
@@ -65,15 +65,15 @@ Deno.test("missing 'id'", async () => {
       bookById(id: ID!): BookResult
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       XXX: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
   `;
 
@@ -94,15 +94,15 @@ Deno.test("missing 'versionstamp'", async () => {
       bookById(id: ID!): BookResult
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       XXX: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
   `;
 
@@ -123,15 +123,15 @@ Deno.test("missing 'value'", async () => {
       bookById(id: ID!): BookResult
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       XXX: Book!
+    }
+    
+    type Book {
+      id: ID!,
+      title: String,
     }
   `;
 

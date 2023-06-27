@@ -12,19 +12,15 @@ Deno.test("nullable", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
-
-    type Result {
-      versionstamp: String!
+    
+    type Book {
+      id: ID!,
+      title: String,
     }
     
     input CreateInput {
@@ -34,6 +30,10 @@ Deno.test("nullable", async () => {
     input BookInput {
       id: ID!,
       title: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -58,19 +58,15 @@ Deno.test("non-null", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
-
-    type Result {
-      versionstamp: String!
+    
+    type Book {
+      id: ID!,
+      title: String,
     }
     
     input CreateInput {
@@ -80,6 +76,10 @@ Deno.test("non-null", async () => {
     input BookInput {
       id: ID!,
       title: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -104,19 +104,15 @@ Deno.test("nullable list non-null", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
-
-    type Result {
-      versionstamp: String!
+    
+    type Book {
+      id: ID!,
+      title: String,
     }
     
     input CreateInput {
@@ -126,6 +122,10 @@ Deno.test("nullable list non-null", async () => {
     input BookInput {
       id: ID!,
       title: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -150,19 +150,15 @@ Deno.test("non-null list nullable", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
-
-    type Result {
-      versionstamp: String!
+    
+    type Book {
+      id: ID!,
+      title: String,
     }
     
     input CreateInput {
@@ -172,6 +168,10 @@ Deno.test("non-null list nullable", async () => {
     input BookInput {
       id: ID!,
       title: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -196,23 +196,23 @@ Deno.test("nullable other", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
-
-    type Result {
-      versionstamp: String!
+    
+    type Book {
+      id: ID!,
+      title: String,
     }
   
     input CreateInput {
       createBook: String @insert(table: "Book")
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -237,23 +237,23 @@ Deno.test("non-null other", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
-
-    type Result {
-      versionstamp: String!
+    
+    type Book {
+      id: ID!,
+      title: String,
     }
   
     input CreateInput {
       createBook: String! @insert(table: "Book")
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -278,23 +278,23 @@ Deno.test("nullable list non-null other", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
-
-    type Result {
-      versionstamp: String!
+    
+    type Book {
+      id: ID!,
+      title: String,
     }
 
     input CreateInput {
       createBook: [String!] @insert(table: "Book")
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -319,23 +319,23 @@ Deno.test("non-null list nullable other", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
-
-    type Result {
-      versionstamp: String!
+    
+    type Book {
+      id: ID!,
+      title: String,
     }
 
     input CreateInput {
       createBook: [String]! @insert(table: "Book")
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 

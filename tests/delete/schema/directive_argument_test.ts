@@ -13,27 +13,27 @@ Deno.test("other type", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: 999)
     }
     
-    type Result {
-      versionstamp: String!
-    }
-    
     input Identifier {
       id: ID!,
+      versionstamp: String!
+    }
+
+    type Result {
       versionstamp: String!
     }
   `;
@@ -59,27 +59,27 @@ Deno.test("no table", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "XXX")
     }
     
-    type Result {
-      versionstamp: String!
-    }
-    
     input Identifier {
       id: ID!,
+      versionstamp: String!
+    }
+
+    type Result {
       versionstamp: String!
     }
   `;
@@ -105,15 +105,15 @@ Deno.test("no object type", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
 
     enum XXX {
@@ -124,12 +124,12 @@ Deno.test("no object type", async () => {
       deleteBookById: [Identifier!]! @delete(table: "XXX")
     }
     
-    type Result {
-      versionstamp: String!
-    }
-    
     input Identifier {
       id: ID!,
+      versionstamp: String!
+    }
+
+    type Result {
       versionstamp: String!
     }
   `;

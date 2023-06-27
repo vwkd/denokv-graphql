@@ -12,15 +12,15 @@ Deno.test("missing id column", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
 
     type XXX {
@@ -28,10 +28,6 @@ Deno.test("missing id column", async () => {
       title: String,
     }
 
-    type Result {
-      versionstamp: String!
-    }
-    
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "XXX")
     }
@@ -39,6 +35,10 @@ Deno.test("missing id column", async () => {
     input BookInput {
       id: ID!,
       title: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -63,25 +63,21 @@ Deno.test("missing second column", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     type XXX {
       id: ID!,
     }
 
-    type Result {
-      versionstamp: String!
-    }
-    
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "XXX")
     }
@@ -89,6 +85,10 @@ Deno.test("missing second column", async () => {
     input BookInput {
       id: ID!,
       title: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 

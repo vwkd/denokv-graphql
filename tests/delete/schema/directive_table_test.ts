@@ -12,15 +12,15 @@ Deno.test("missing id column", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
 
     type XXX {
@@ -32,12 +32,12 @@ Deno.test("missing id column", async () => {
       deleteBookById: [Identifier!]! @delete(table: "XXX")
     }
     
-    type Result {
-      versionstamp: String!
-    }
-    
     input Identifier {
       id: ID!,
+      versionstamp: String!
+    }
+
+    type Result {
       versionstamp: String!
     }
   `;
@@ -63,15 +63,15 @@ Deno.test("missing second column", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
 
     type XXX {
@@ -82,12 +82,12 @@ Deno.test("missing second column", async () => {
       deleteBookById: [Identifier!]! @delete(table: "XXX")
     }
     
-    type Result {
-      versionstamp: String!
-    }
-    
     input Identifier {
       id: ID!,
+      versionstamp: String!
+    }
+
+    type Result {
       versionstamp: String!
     }
   `;
