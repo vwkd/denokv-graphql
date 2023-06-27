@@ -12,12 +12,7 @@ import type {
   GraphQLObjectType,
   GraphQLOutputType,
 } from "../../../deps.ts";
-import {
-  DatabaseCorruption,
-  InvalidInput,
-  InvalidSchema,
-  isObject,
-} from "../../utils.ts";
+import { InvalidInput, InvalidSchema } from "../../utils.ts";
 import { isIdField } from "../utils.ts";
 
 /**
@@ -155,60 +150,6 @@ export function validateColumn(
 }
 
 /**
- * Validate row of table
- * @param row row of table
- * @param tableName name of table
- * @param id row id in table
- */
-export function validateRow(
-  row: unknown,
-  tableName: string,
-  id: string,
-): asserts row is object {
-  if (!isObject(row)) {
-    throw new DatabaseCorruption(
-      `Expected table '${tableName}' row '${id}' to be an object`,
-    );
-  }
-
-  if (row.id !== id) {
-    throw new DatabaseCorruption(
-      `Expected table '${tableName}' row '${id}' column 'id' to be equal to row id`,
-    );
-  }
-}
-
-/**
- * Validate row of referenced table
- * @param row row of referenced table
- * @param referencedTableName name of referenced table
- * @param id row id in referenced table
- */
-export function validateReferencedRow(
-  row: unknown,
-  referencedTableName: string,
-  id: string,
-): asserts row is object {
-  if (row === null) {
-    throw new DatabaseCorruption(
-      `Expected referenced table '${referencedTableName}' to have row with id '${id}'`,
-    );
-  }
-
-  if (!isObject(row)) {
-    throw new DatabaseCorruption(
-      `Expected referenced table '${referencedTableName}' row '${id}' to be an object`,
-    );
-  }
-
-  if (row.id !== id) {
-    throw new DatabaseCorruption(
-      `Expected referenced table '${referencedTableName}' row '${id}' column 'id' to be equal to row id`,
-    );
-  }
-}
-
-/**
  * Validate references arguments
  *
  * - argument 'first' of nullable 'Int' and 'after' nullable 'ID'
@@ -304,6 +245,29 @@ export function isReferences(
   } else {
     return false;
   }
+}
+
+/**
+ * Test if is leaf
+ *
+ * - non-null or nullable leaf type
+ * @param type type
+ * @returns
+ */
+export function isLeaf(
+  type: GraphQLOutputType,
+): boolean {
+  let innerType = type;
+
+  if (isNonNullType(innerType)) {
+    innerType = innerType.ofType;
+  }
+
+  if (isLeafType(innerType)) {
+    return true;
+  }
+
+  return false;
 }
 
 /**

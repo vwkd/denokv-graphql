@@ -6,7 +6,7 @@ import type {
 } from "../../../deps.ts";
 import { ConcurrentChange, DatabaseCorruption } from "../../utils.ts";
 import { createResolver } from "./main.ts";
-import { validateReferencedRow, validateTable } from "./utils.ts";
+import { isLeaf, validateTable } from "./utils.ts";
 
 /**
  * Create resolver for reference field
@@ -34,26 +34,17 @@ export function createReferenceResolver(
   const columns = Object.values(type.getFields());
   validateTable(columns, tableName);
 
-  // overwrites id in field value to object
   const resolver: IFieldResolver<any, any> = async (
     root,
     _args,
     context,
   ) => {
-    const id = root[name] as string | undefined;
-
-    if (optional && id === undefined) {
-      return null;
-    }
-
-    if (id === undefined) {
-      throw new DatabaseCorruption(
-        `Expected column '${name}' to contain id`,
-      );
-    }
+    const rowId = root.id;
+    const referenceKey = [tableName, rowId, name];
 
     const checks = context.checks;
 
+    // todo: should delete this intermediate check and instead just do final one in root_middleware?
     let res = await db.atomic()
       .check(...checks)
       .commit();
@@ -64,18 +55,73 @@ export function createReferenceResolver(
       );
     }
 
-    const key = [referencedTableName, id];
+    // expects 1 entry, but tries to get 2 (or 0) for error checking
+    const referenceEntry = db.list({ prefix: referenceKey }, { limit: 2 });
 
-    const entry = await db.get(key);
+    let referenceIdArr: string[] = [];
 
-    const value = entry.value;
-    const versionstamp = entry.versionstamp;
+    for await (const { key, value, versionstamp } of referenceEntry) {
+      if (!(key.length == 4 && typeof key.at(-1) == "string")) {
+        throw new DatabaseCorruption(
+          `Expected table '${tableName}' column '${name}' to have single-level key of string`,
+        );
+      }
 
-    validateReferencedRow(value, referencedTableName, id);
+      if (value !== undefined) {
+        throw new DatabaseCorruption(
+          `Expected table '${tableName}' column '${name}' to have empty value`,
+        );
+      }
 
-    checks.push({ key, versionstamp });
+      referenceIdArr.push(key.at(-1));
 
-    return value;
+      context.checks.push({ key, versionstamp });
+    }
+
+    if (referenceIdArr.length == 2) {
+      throw new DatabaseCorruption(
+        `Expected table '${tableName}' column '${name}' to have single key`,
+      );
+    }
+
+    if (!optional && referenceIdArr.length == 0) {
+      throw new DatabaseCorruption(
+        `Expected table '${tableName}' column '${name}' to contain id`,
+      );
+    }
+
+    // string or undefined if empty optional column
+    let referenceId = referenceIdArr[0];
+
+    if (optional && referenceId === undefined) {
+      return null;
+    }
+
+    const keys = columns
+      .filter((column) => isLeaf(column.type))
+      .map((column) => [referencedTableName, referenceId, column.name]);
+
+    const entries = await db.getMany(keys);
+
+    const node = {};
+
+    for (const { key, value, versionstamp } of entries) {
+      const columnName = key.at(-1)! as string;
+
+      if (columnName == "id" && value !== id) {
+        throw new DatabaseCorruption(
+          `Expected table '${tableName}' row '${id}' column 'id' to be equal to row id`,
+        );
+      }
+
+      if (value !== null) {
+        node[columnName] = value;
+      }
+
+      context.checks.push({ key, versionstamp });
+    }
+
+    return node;
   };
 
   resolvers[tableName][name] = resolver;

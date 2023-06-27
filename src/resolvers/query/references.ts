@@ -6,11 +6,14 @@ import {
   IResolvers,
   isNonNullType,
 } from "../../../deps.ts";
-import { ConcurrentChange, DatabaseCorruption } from "../../utils.ts";
+import {
+  ConcurrentChange,
+  DatabaseCorruption,
+  listMultiple,
+} from "../../utils.ts";
 import { createResolver } from "./main.ts";
 import {
   validateConnection,
-  validateReferencedRow,
   validateReferencesArgumentInputs,
   validateReferencesArguments,
   validateTable,
@@ -25,6 +28,7 @@ import {
  * @param args field arguments
  * @param name field name
  * @param tableName table name
+ * @param id row id
  * @param resolvers resolvers
  * @param middleware middleware
  */
@@ -35,6 +39,7 @@ export function createReferencesResolver(
   args: readonly GraphQLArgument[],
   name: string,
   tableName: string,
+  id: string,
   resolvers: IResolvers,
   middleware: IMiddleware,
 ): void {
@@ -58,9 +63,11 @@ export function createReferencesResolver(
   const columns = Object.values(tableType.getFields());
   validateTable(columns, referencedTableName);
 
+  const columnNumber = columns.length;
+  const columnNames = columns.map((column) => column.name);
+
   validateReferencesArguments(args, name);
 
-  // overwrites array of ids in field value to array of objects
   const resolver: IFieldResolver<any, any> = async (
     root,
     args,
@@ -73,12 +80,6 @@ export function createReferencesResolver(
     const before = args.before as string | undefined;
 
     validateReferencesArgumentInputs(first, after, last, before);
-
-    if (root[name] !== undefined) {
-      throw new DatabaseCorruption(
-        `Expected table '${tableName}' column '${name}' to be undefined`,
-      );
-    }
 
     const rowId = root.id;
     const referenceKeys = [tableName, rowId, name];
@@ -118,6 +119,12 @@ export function createReferencesResolver(
           );
         }
 
+        if (key.at(-1).length == 0) {
+          throw new DatabaseCorruption(
+            `Expected table '${tableName}' column '${name}' to have key of non-empty string`,
+          );
+        }
+
         const id = key.at(-1) as string;
 
         context.checks.push({ key, versionstamp });
@@ -150,26 +157,80 @@ export function createReferencesResolver(
         hasNextPage: !!startCursorNext,
       };
 
-      const keys = references.map(
+      // todo: what if empty?
+
+      const prefixes = references.map(
         (reference) => [referencedTableName, reference.id],
       );
 
-      const entries = await db.getMany(keys);
+      const edges = [];
 
-      const edges = entries.map(({ key, value, versionstamp }) => {
-        // note: throw on first invalid entry instead of continuing to find all
-        const id = key.at(-1)!;
+      for (const prefix of prefixes) {
+        const id = prefix.at(-1) as string;
 
-        validateReferencedRow(value, referencedTableName, id);
+        const entries = db.list({ prefix });
 
-        checks.push({ key, versionstamp });
+        const node = {};
 
-        return {
-          node: value,
-          // note: uniquely exists since is key
-          cursor: references.find((reference) => reference.id == id)!.cursor,
-        };
-      });
+        for await (const { key, value, versionstamp } of entries) {
+          // note: throw on first invalid entry instead of continuing to find all
+
+          // todo: should allow deeper keys, if they are again references???
+
+          if (!(key.length == 3 && typeof key.at(-1) == "string")) {
+            throw new DatabaseCorruption(
+              `Expected table '${referencedTableName}' row '${id}' to have single-level keys of strings`,
+            );
+          }
+
+          if (key.at(-1).length == 0) {
+            throw new DatabaseCorruption(
+              `Expected table '${referencedTableName}' row '${id}' to have keys of non-empty strings`,
+            );
+          }
+
+          const columnName = key.at(-1) as string;
+
+          if (!columnNames.includes(columnName)) {
+            throw new DatabaseCorruption(
+              `Expected table '${referencedTableName}' row '${id}' second-level key to be column name`,
+            );
+          }
+
+          if (columnName == "id" && value !== id) {
+            throw new DatabaseCorruption(
+              `Expected table '${referencedTableName}' row '${id}' column 'id' to be equal to row id`,
+            );
+          }
+
+          checks.push({ key, versionstamp });
+
+          node[columnName] = value;
+        }
+
+        if (!node.id) {
+          throw new DatabaseCorruption(
+            `Expected table '${referencedTableName}' row '${id}' to have column 'id'`,
+          );
+        }
+
+        // todo: correctly allows less than since some columns might be optional?
+        if (Object.keys(node).length > columnNumber) {
+          throw new DatabaseCorruption(
+            `Expected table '${referencedTableName}' row '${id}' to have at most '${columnNumber}' columns`,
+          );
+        }
+
+        // note: uniquely exists since is key
+        const cursor = references.find((reference) =>
+          reference.id == id
+        )!.cursor;
+
+        edges.push({
+          node,
+          cursor,
+        });
+      }
 
       const connection = {
         edges,
@@ -201,6 +262,12 @@ export function createReferencesResolver(
           );
         }
 
+        if (key.at(-1).length == 0) {
+          throw new DatabaseCorruption(
+            `Expected table '${tableName}' column '${name}' to have key of non-empty string`,
+          );
+        }
+
         const id = key.at(-1) as string;
 
         context.checks.push({ key, versionstamp });
@@ -222,6 +289,8 @@ export function createReferencesResolver(
         references = references.slice(1);
       }
 
+      // todo: what if now empty? only element was extra element...? also in other
+
       // note: cursor of next item if it exists, otherwise empty string if no further items, never `undefined`!
       const endCursorNext = referenceEntries.cursor;
 
@@ -233,26 +302,77 @@ export function createReferencesResolver(
         hasNextPage: !!before,
       };
 
-      const keys = references.map(
+      // todo: what if empty?
+
+      const prefixes = references.map(
         (reference) => [referencedTableName, reference.id],
       );
 
-      const entries = await db.getMany(keys);
+      const edges = [];
 
-      const edges = entries.map(({ key, value, versionstamp }) => {
-        // note: throw on first invalid entry instead of continuing to find all
-        const id = key.at(-1)!;
+      for (const prefix of prefixes) {
+        const id = prefix.at(-1) as string;
 
-        validateReferencedRow(value, referencedTableName, id);
+        const entries = db.list({ prefix });
 
-        checks.push({ key, versionstamp });
+        const node = {};
 
-        return {
-          node: value,
-          // note: uniquely exists since is key
-          cursor: references.find((reference) => reference.id == id)!.cursor,
-        };
-      });
+        for await (const { key, value, versionstamp } of entries) {
+          // note: throw on first invalid entry instead of continuing to find all
+          if (!(key.length == 3 && typeof key.at(-1) == "string")) {
+            throw new DatabaseCorruption(
+              `Expected table '${referencedTableName}' row '${id}' to have single-level keys of strings`,
+            );
+          }
+
+          if (key.at(-1).length == 0) {
+            throw new DatabaseCorruption(
+              `Expected table '${referencedTableName}' row '${id}' to have keys of non-empty strings`,
+            );
+          }
+
+          const columnName = key.at(-1) as string;
+
+          if (!columnNames.includes(columnName)) {
+            throw new DatabaseCorruption(
+              `Expected table '${referencedTableName}' row '${id}' second-level key to be column name`,
+            );
+          }
+
+          if (columnName == "id" && value !== id) {
+            throw new DatabaseCorruption(
+              `Expected table '${referencedTableName}' row '${id}' column 'id' to be equal to row id`,
+            );
+          }
+
+          checks.push({ key, versionstamp });
+
+          node[columnName] = value;
+        }
+
+        if (!node.id) {
+          throw new DatabaseCorruption(
+            `Expected table '${referencedTableName}' row '${id}' to have column 'id'`,
+          );
+        }
+
+        // todo: correctly allows less than since some columns might be optional?
+        if (Object.keys(node).length > columnNumber) {
+          throw new DatabaseCorruption(
+            `Expected table '${referencedTableName}' row '${id}' to have at most '${columnNumber}' columns`,
+          );
+        }
+
+        // note: uniquely exists since is key
+        const cursor = references.find((reference) =>
+          reference.id == id
+        )!.cursor;
+
+        edges.push({
+          node,
+          cursor,
+        });
+      }
 
       const connection = {
         edges,

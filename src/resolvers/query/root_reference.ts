@@ -7,9 +7,9 @@ import type {
   IResolvers,
 } from "../../../deps.ts";
 import {
+  isLeaf,
   validateQueryArguments,
   validateQueryReturn,
-  validateRow,
   validateTable,
 } from "./utils.ts";
 import { createResolver } from "./main.ts";
@@ -56,23 +56,41 @@ export function createRootReferenceResolver(
   ) => {
     const id = args.id;
 
-    const key = [tableName, id];
+    context.checks = [];
 
-    const entry = await db.get(key);
+    const keys = columns
+      .filter((column) => isLeaf(column.type))
+      .map((column) => [tableName, id, column.name]);
 
-    const versionstamp = entry.versionstamp;
-    const value = entry.value;
+    const entries = await db.getMany(keys);
 
-    if (value === null) {
+    const node = {};
+
+    for (const { key, value, versionstamp } of entries) {
+      const columnName = key.at(-1)! as string;
+
+      if (value !== null) {
+        node[columnName] = value;
+      }
+
+      if (columnName == "id" && value !== id) {
+        throw new DatabaseCorruption(
+          `Expected table '${tableName}' row '${id}' column 'id' to be equal to row id`,
+        );
+      }
+
+      context.checks.push({ key, versionstamp });
+    }
+
+    // note: row doesn't exist
+    if (!node.id) {
       return null;
     }
 
-    validateRow(value, tableName, id);
+    // todo: what to use as versionstamp for whole row? there is no one since can update each column independently, might update leaf or reference table...
+    const versionstamp = "foo";
 
-    context.checks = [];
-    context.checks.push({ key, versionstamp });
-
-    return { id, value, versionstamp };
+    return { id, value: node, versionstamp };
   };
 
   resolvers[rootName][name] = resolver;
