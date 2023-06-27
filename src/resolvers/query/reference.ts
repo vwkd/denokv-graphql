@@ -6,7 +6,7 @@ import type {
 } from "../../../deps.ts";
 import { ConcurrentChange, DatabaseCorruption } from "../../utils.ts";
 import { createResolver } from "./main.ts";
-import { validateReferencedRow } from "./utils.ts";
+import { validateReferencedRow, validateTable } from "./utils.ts";
 
 /**
  * Create resolver for reference field
@@ -30,6 +30,9 @@ export function createReferenceResolver(
   optional: boolean,
 ): void {
   const referencedTableName = type.name;
+
+  const columns = Object.values(type.getFields());
+  validateTable(columns, tableName);
 
   // overwrites id in field value to object
   const resolver: IFieldResolver<any, any> = async (

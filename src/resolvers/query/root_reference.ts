@@ -10,6 +10,7 @@ import {
   validateQueryArguments,
   validateQueryReturn,
   validateRow,
+  validateTable,
 } from "./utils.ts";
 import { createResolver } from "./main.ts";
 import { addQueryVersionstamp } from "./root_middleware.ts";
@@ -41,8 +42,10 @@ export function createRootReferenceResolver(
 
   // note: asserted in `validateQueryReturn`
   const tableType = fields["value"].type.ofType as GraphQLObjectType;
-
   const tableName = tableType.name;
+
+  const columns = Object.values(tableType.getFields());
+  validateTable(columns, tableName);
 
   validateQueryArguments(args, name);
 

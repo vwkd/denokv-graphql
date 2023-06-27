@@ -12,6 +12,7 @@ import {
   validateReferencesArgumentInputs,
   validateReferencesArguments,
   validateRow,
+  validateTable,
 } from "./utils.ts";
 import { createResolver } from "./main.ts";
 import { addQueryVersionstamp } from "./root_middleware.ts";
@@ -57,8 +58,10 @@ export function createRootReferencesResolver(
 
   const fields = node.getFields();
   const tableType = fields["value"].type.ofType;
-
   const tableName = tableType.name;
+
+  const columns = Object.values(tableType.getFields());
+  validateTable(columns, tableName);
 
   validateReferencesArguments(args, name);
 

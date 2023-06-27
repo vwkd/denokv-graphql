@@ -55,8 +55,8 @@ export function createReferencesResolver(
   const tableType = fieldsEdge["node"].type.ofType;
   const referencedTableName = tableType.name;
 
-  // todo: should validate table here, also in root_references.ts ??
-  // validateTable(tableType, referencedTableName);
+  const columns = Object.values(tableType.getFields());
+  validateTable(columns, referencedTableName);
 
   validateReferencesArguments(args, name);
 
