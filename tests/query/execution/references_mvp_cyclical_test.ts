@@ -7,6 +7,12 @@ Deno.test("minimal cyclical reference", async () => {
       bookById(id: ID!): BookResult
     }
 
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
     type Book {
       id: ID!,
       title: String,
@@ -17,12 +23,6 @@ Deno.test("minimal cyclical reference", async () => {
       id: ID!,
       name: String,
       books: [Book],
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
     }
   `;
 

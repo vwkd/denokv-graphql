@@ -12,27 +12,27 @@ Deno.test("non-null", async () => {
       deleteTransaction(data: DeleteInput!): Result!
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
     }
-    
-    type Result {
+
+    input Identifier {
+      id: ID!,
       versionstamp: String!
     }
     
-    input Identifier {
-      id: ID!,
+    type Result {
       versionstamp: String!
     }
   `;
@@ -58,27 +58,27 @@ Deno.test("list", async () => {
       deleteTransaction(data: DeleteInput!): [Result]
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
     }
-    
-    type Result {
+
+    input Identifier {
+      id: ID!,
       versionstamp: String!
     }
     
-    input Identifier {
-      id: ID!,
+    type Result {
       versionstamp: String!
     }
   `;
@@ -104,27 +104,27 @@ Deno.test("other", async () => {
       deleteTransaction(data: DeleteInput!): String
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!]! @delete(table: "Book")
     }
-    
-    type Result {
+
+    input Identifier {
+      id: ID!,
       versionstamp: String!
     }
     
-    input Identifier {
-      id: ID!,
+    type Result {
       versionstamp: String!
     }
   `;

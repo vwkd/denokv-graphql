@@ -13,21 +13,17 @@ Deno.test("other type", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
-    type Result {
-      versionstamp: String!
+    type Book {
+      id: ID!,
+      title: String,
     }
-    
+
     input CreateInput {
       createBook: [BookInput!]! @insert(table: 999)
     }
@@ -35,6 +31,10 @@ Deno.test("other type", async () => {
     input BookInput {
       id: ID!,
       title: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -59,21 +59,17 @@ Deno.test("no table", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
-    type Result {
-      versionstamp: String!
+    type Book {
+      id: ID!,
+      title: String,
     }
-    
+
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "XXX")
     }
@@ -81,6 +77,10 @@ Deno.test("no table", async () => {
     input BookInput {
       id: ID!,
       title: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -105,25 +105,21 @@ Deno.test("no object type", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     enum XXX {
       YYY
     }
 
-    type Result {
-      versionstamp: String!
-    }
-    
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "XXX")
     }
@@ -131,6 +127,10 @@ Deno.test("no object type", async () => {
     input BookInput {
       id: ID!,
       title: String
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 

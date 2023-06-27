@@ -8,15 +8,15 @@ Deno.test("missing id column", async () => {
       bookById(id: ID!): BookResult
     }
 
-    type Book {
-      XXX: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      XXX: ID!,
+      title: String,
     }
   `;
 
@@ -37,14 +37,14 @@ Deno.test("missing second column", async () => {
       bookById(id: ID!): BookResult
     }
 
-    type Book {
-      id: ID!,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
     }
   `;
 

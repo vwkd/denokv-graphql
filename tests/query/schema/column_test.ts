@@ -8,15 +8,15 @@ Deno.test("scalar list", async () => {
       bookById(id: ID!): BookResult
     }
 
-    type Book {
-      id: ID!,
-      title: [String],
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: [String],
     }
   `;
 
@@ -37,15 +37,15 @@ Deno.test("scalar non-null list", async () => {
       bookById(id: ID!): BookResult
     }
 
-    type Book {
-      id: ID!,
-      title: [String]!,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: [String]!,
     }
   `;
 
@@ -66,15 +66,15 @@ Deno.test("non-null scalar list", async () => {
       bookById(id: ID!): BookResult
     }
 
-    type Book {
-      id: ID!,
-      title: [String!],
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: [String!],
     }
   `;
 
@@ -95,15 +95,15 @@ Deno.test("non-null scalar non-null list", async () => {
       bookById(id: ID!): BookResult
     }
 
-    type Book {
-      id: ID!,
-      title: [String!]!,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: [String!]!,
     }
   `;
 
@@ -124,6 +124,12 @@ Deno.test("interface", async () => {
       bookById(id: ID!): BookResult
     }
 
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
     type Book {
       id: ID!,
       title: Foo,
@@ -131,12 +137,6 @@ Deno.test("interface", async () => {
 
     interface Foo {
       baz: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
     }
   `;
 
@@ -157,6 +157,12 @@ Deno.test("non-null interface", async () => {
       bookById(id: ID!): BookResult
     }
 
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
     type Book {
       id: ID!,
       title: Foo!,
@@ -164,12 +170,6 @@ Deno.test("non-null interface", async () => {
 
     interface Foo {
       baz: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
     }
   `;
 
@@ -190,6 +190,12 @@ Deno.test("union", async () => {
       bookById(id: ID!): BookResult
     }
 
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
     type Book {
       id: ID!,
       title: Foo,
@@ -203,12 +209,6 @@ Deno.test("union", async () => {
 
     type Baz {
       baz: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
     }
   `;
 
@@ -229,6 +229,12 @@ Deno.test("non-null union", async () => {
       bookById(id: ID!): BookResult
     }
 
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+    
     type Book {
       id: ID!,
       title: Foo!,
@@ -242,12 +248,6 @@ Deno.test("non-null union", async () => {
 
     type Baz {
       baz: String,
-    }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
     }
   `;
 

@@ -12,6 +12,12 @@ Deno.test("non-null list vs naked", async () => {
       createTransaction(data: CreateInput!): Result
     }
 
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
     type Book {
       id: ID!,
       title: String,
@@ -22,16 +28,6 @@ Deno.test("non-null list vs naked", async () => {
       id: ID!,
       name: String,
     }
-
-    type BookResult {
-      id: ID!
-      versionstamp: String!
-      value: Book!
-    }
-
-    type Result {
-      versionstamp: String!
-    }
     
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
@@ -41,6 +37,10 @@ Deno.test("non-null list vs naked", async () => {
       id: ID!,
       title: String,
       author: [String!],
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -81,10 +81,6 @@ Deno.test("non-null list vs non-null", async () => {
       versionstamp: String!
       value: Book!
     }
-
-    type Result {
-      versionstamp: String!
-    }
     
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
@@ -94,6 +90,10 @@ Deno.test("non-null list vs non-null", async () => {
       id: ID!,
       title: String,
       author: [String!],
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -134,10 +134,6 @@ Deno.test("non-null list vs list", async () => {
       versionstamp: String!
       value: Book!
     }
-
-    type Result {
-      versionstamp: String!
-    }
     
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
@@ -147,6 +143,10 @@ Deno.test("non-null list vs list", async () => {
       id: ID!,
       title: String,
       author: [String!],
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -187,10 +187,6 @@ Deno.test("non-null list vs list non-null", async () => {
       versionstamp: String!
       value: Book!
     }
-
-    type Result {
-      versionstamp: String!
-    }
     
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
@@ -200,6 +196,10 @@ Deno.test("non-null list vs list non-null", async () => {
       id: ID!,
       title: String,
       author: [String!],
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -240,10 +240,6 @@ Deno.test("non-null list vs non-null list", async () => {
       versionstamp: String!
       value: Book!
     }
-
-    type Result {
-      versionstamp: String!
-    }
     
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
@@ -253,6 +249,10 @@ Deno.test("non-null list vs non-null list", async () => {
       id: ID!,
       title: String,
       author: [String!],
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 
@@ -293,10 +293,6 @@ Deno.test("non-null list vs non-null list non-null", async () => {
       versionstamp: String!
       value: Book!
     }
-
-    type Result {
-      versionstamp: String!
-    }
     
     input CreateInput {
       createBook: [BookInput!]! @insert(table: "Book")
@@ -306,6 +302,10 @@ Deno.test("non-null list vs non-null list non-null", async () => {
       id: ID!,
       title: String,
       author: [String!],
+    }
+
+    type Result {
+      versionstamp: String!
     }
   `;
 

@@ -12,27 +12,27 @@ Deno.test("nullable", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: Identifier @delete(table: "Book")
     }
     
-    type Result {
+    input Identifier {
+      id: ID!,
       versionstamp: String!
     }
     
-    input Identifier {
-      id: ID!,
+    type Result {
       versionstamp: String!
     }
   `;
@@ -58,27 +58,27 @@ Deno.test("non-null", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: Identifier! @delete(table: "Book")
     }
     
-    type Result {
+    input Identifier {
+      id: ID!,
       versionstamp: String!
     }
     
-    input Identifier {
-      id: ID!,
+    type Result {
       versionstamp: String!
     }
   `;
@@ -104,27 +104,27 @@ Deno.test("nullable list non-null", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier!] @delete(table: "Book")
     }
     
-    type Result {
+    input Identifier {
+      id: ID!,
       versionstamp: String!
     }
     
-    input Identifier {
-      id: ID!,
+    type Result {
       versionstamp: String!
     }
   `;
@@ -150,27 +150,27 @@ Deno.test("non-null list nullable", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
     }
 
+    type Book {
+      id: ID!,
+      title: String,
+    }
+
     input DeleteInput {
       deleteBookById: [Identifier]! @delete(table: "Book")
     }
     
-    type Result {
+    input Identifier {
+      id: ID!,
       versionstamp: String!
     }
     
-    input Identifier {
-      id: ID!,
+    type Result {
       versionstamp: String!
     }
   `;
@@ -196,15 +196,15 @@ Deno.test("nullable other", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
 
     input DeleteInput {
@@ -237,15 +237,15 @@ Deno.test("non-null other", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
 
     input DeleteInput {
@@ -278,15 +278,15 @@ Deno.test("nullable list non-null other", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
 
     input DeleteInput {
@@ -319,15 +319,15 @@ Deno.test("non-null list nullable other", async () => {
       deleteTransaction(data: DeleteInput!): Result
     }
 
-    type Book {
-      id: ID!,
-      title: String,
-    }
-
     type BookResult {
       id: ID!
       versionstamp: String!
       value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
     }
 
     input DeleteInput {
