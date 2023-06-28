@@ -32,6 +32,7 @@ export function createLeafOrReferenceResolver(
     createLeafResolver(
       db,
       type,
+      name,
       tableName,
       resolvers,
       middleware,

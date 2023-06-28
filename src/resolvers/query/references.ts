@@ -28,7 +28,6 @@ import {
  * @param args field arguments
  * @param name field name
  * @param tableName table name
- * @param id row id
  * @param resolvers resolvers
  * @param middleware middleware
  */
@@ -39,7 +38,6 @@ export function createReferencesResolver(
   args: readonly GraphQLArgument[],
   name: string,
   tableName: string,
-  id: string,
   resolvers: IResolvers,
   middleware: IMiddleware,
 ): void {
