@@ -55,9 +55,22 @@ export function createLeafResolver(
 
     const { value, versionstamp } = await db.get(key);
 
+    // note: column 'id' is always non-optional
+    if (name == "id" && !value) {
+      throw new DatabaseCorruption(
+        `Expected table '${tableName}' to have row with id '${id}'`,
+      );
+    }
+
     if (!optional && !value) {
       throw new DatabaseCorruption(
         `Expected table '${tableName}' row '${id}' column '${name}' to be non-empty`,
+      );
+    }
+
+    if (name == "id" && value !== id) {
+      throw new DatabaseCorruption(
+        `Expected table '${tableName}' row '${id}' column 'id' to be equal to row id`,
       );
     }
 

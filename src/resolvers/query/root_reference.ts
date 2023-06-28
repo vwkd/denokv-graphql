@@ -7,13 +7,13 @@ import type {
   IResolvers,
 } from "../../../deps.ts";
 import {
-  isLeaf,
   validateQueryArguments,
   validateQueryReturn,
   validateTable,
 } from "./utils.ts";
 import { createResolver } from "./main.ts";
 import { addQueryVersionstamp } from "./root_middleware.ts";
+import { DatabaseCorruption } from "../../utils.ts";
 
 /**
  * Create resolver for single query
@@ -54,43 +54,32 @@ export function createRootReferenceResolver(
     args,
     context,
   ) => {
-    const id = args.id;
+    const rowId = args.id;
 
     context.checks = [];
 
-    const keys = columns
-      .filter((column) => isLeaf(column.type))
-      .map((column) => [tableName, id, column.name]);
+    const node = {
+      id: rowId,
+    };
 
-    const entries = await db.getMany(keys);
+    // row doesn't exist
+    // note: duplicated `get` once more in leaf resolver for field 'id', but needs for nested queries too, also validates that value is equal to rowId
+    {
+      const idKey = [tableName, rowId, "id"];
 
-    const node = {};
-
-    for (const { key, value, versionstamp } of entries) {
-      const columnName = key.at(-1)! as string;
-
-      if (value !== null) {
-        node[columnName] = value;
-      }
-
-      if (columnName == "id" && value !== id) {
-        throw new DatabaseCorruption(
-          `Expected table '${tableName}' row '${id}' column 'id' to be equal to row id`,
-        );
-      }
+      const { key, value, versionstamp } = await db.get(idKey);
 
       context.checks.push({ key, versionstamp });
-    }
 
-    // note: row doesn't exist
-    if (!node.id) {
-      return null;
+      if (value === null) {
+        return null;
+      }
     }
 
     // todo: what to use as versionstamp for whole row? there is no one since can update each column independently, might update leaf or reference table...
     const versionstamp = "foo";
 
-    return { id, value: node, versionstamp };
+    return { id: rowId, value: node, versionstamp };
   };
 
   resolvers[rootName][name] = resolver;

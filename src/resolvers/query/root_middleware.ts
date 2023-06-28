@@ -24,8 +24,8 @@ export const addQueryVersionstamp: (db: Deno.Kv) => IMiddlewareFunction =
 
       if (!resCheck.ok) {
         throw new ConcurrentChange(
-          `Detected concurrent change in some of the read rows. Try request again.`,
-        );
+          `Detected concurrent change of previously read keys. Try request again.`,
+          );
       }
     }
 

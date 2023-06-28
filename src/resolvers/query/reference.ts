@@ -6,7 +6,7 @@ import type {
 } from "../../../deps.ts";
 import { ConcurrentChange, DatabaseCorruption } from "../../utils.ts";
 import { createResolver } from "./main.ts";
-import { isLeaf, validateTable } from "./utils.ts";
+import { validateTable } from "./utils.ts";
 
 /**
  * Create resolver for reference field
@@ -29,8 +29,6 @@ export function createReferenceResolver(
   middleware: IMiddleware,
   optional: boolean,
 ): void {
-  const referencedTableName = type.name;
-
   const columns = Object.values(type.getFields());
   validateTable(columns, tableName);
 
@@ -40,6 +38,11 @@ export function createReferenceResolver(
     context,
   ) => {
     const rowId = root.id;
+
+    if (!rowId) {
+      throw new Error(`should be unreachable`);
+    }
+
     const referenceKey = [tableName, rowId, name];
 
     const checks = context.checks;
@@ -51,7 +54,7 @@ export function createReferenceResolver(
 
     if (!res.ok) {
       throw new ConcurrentChange(
-        `Detected concurrent change in some of the read rows. Try request again.`,
+        `Detected concurrent change of previously read keys. Try request again.`,
       );
     }
 
@@ -61,67 +64,61 @@ export function createReferenceResolver(
     let referenceIdArr: string[] = [];
 
     for await (const { key, value, versionstamp } of referenceEntry) {
-      if (!(key.length == 4 && typeof key.at(-1) == "string")) {
+      const idReference = key.at(-1);
+
+      if (key.length != 4) {
         throw new DatabaseCorruption(
-          `Expected table '${tableName}' column '${name}' to have single-level key of string`,
+          `Expected table '${tableName}' row '${rowId}' column '${name}' to have single-level key`,
+        );
+      }
+
+      if (typeof idReference != "string") {
+        throw new DatabaseCorruption(
+          `Expected table '${tableName}' row '${rowId}' column '${name}' to have key of string`,
+        );
+      }
+
+      if (idReference.length == 0) {
+        throw new DatabaseCorruption(
+          `Expected table '${tableName}' row '${rowId}' column '${name}' to have key of non-empty string`,
         );
       }
 
       if (value !== undefined) {
         throw new DatabaseCorruption(
-          `Expected table '${tableName}' column '${name}' to have empty value`,
+          `Expected table '${tableName}' row '${rowId}' column '${name}' to have empty value`,
         );
       }
 
-      referenceIdArr.push(key.at(-1));
-
+      // note: potentially pushes check for one bad item, but doesn't matter since will throw below
       context.checks.push({ key, versionstamp });
+
+      referenceIdArr.push(idReference);
     }
 
     if (referenceIdArr.length == 2) {
       throw new DatabaseCorruption(
-        `Expected table '${tableName}' column '${name}' to have single key`,
+        `Expected table '${tableName}' row '${rowId}' column '${name}' to have single key`,
       );
     }
 
     if (!optional && referenceIdArr.length == 0) {
       throw new DatabaseCorruption(
-        `Expected table '${tableName}' column '${name}' to contain id`,
+        `Expected table '${tableName}' row '${rowId}' column '${name}' to have one key`,
       );
     }
 
-    // string or undefined if empty optional column
+    // note: `undefined` if empty optional column
     let referenceId = referenceIdArr[0];
 
     if (optional && referenceId === undefined) {
       return null;
     }
 
-    const keys = columns
-      .filter((column) => isLeaf(column.type))
-      .map((column) => [referencedTableName, referenceId, column.name]);
-
-    const entries = await db.getMany(keys);
-
-    const node = {};
-
-    for (const { key, value, versionstamp } of entries) {
-      const columnName = key.at(-1)! as string;
-
-      if (columnName == "id" && value !== id) {
-        throw new DatabaseCorruption(
-          `Expected table '${tableName}' row '${id}' column 'id' to be equal to row id`,
-        );
-      }
-
-      if (value !== null) {
-        node[columnName] = value;
-      }
-
-      context.checks.push({ key, versionstamp });
-    }
-
-    return node;
+    // todo: how to validate that if referenceId is provided, row does exist, even if type is optional and 'id' field isn't queried?
+    return {
+      id: referenceId,
+    };
   };
 
   resolvers[tableName][name] = resolver;
