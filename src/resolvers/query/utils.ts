@@ -136,15 +136,18 @@ export function validateColumn(
   tableName: string,
   columnName: string,
 ): void {
-  if (isLeafType(type) || (isNonNullType(type) && isLeafType(type.ofType))) {
+  let innerType = type;
+  if (isNonNullType(innerType)) {
+    innerType = innerType.ofType;
+  }
+
+  if (isLeafType(innerType)) {
     // ok
-  } else if (
-    isObjectType(type) || (isNonNullType(type) && isObjectType(type.ofType))
-  ) {
+  } else if (isObjectType(innerType)) {
     // ok
   } else {
     throw new InvalidSchema(
-      `Column '${columnName}' of table '${tableName}' has unexpected type '${type}'`,
+      `Column '${columnName}' of table '${tableName}' must be leaf or object type`,
     );
   }
 }
