@@ -1,7 +1,6 @@
 import type {
   GraphQLObjectType,
   IFieldResolver,
-  IMiddleware,
   IResolvers,
 } from "../../../deps.ts";
 import { ConcurrentChange, DatabaseCorruption } from "../../utils.ts";
@@ -11,13 +10,12 @@ import { validateTable } from "./utils.ts";
 /**
  * Create resolver for reference field
  *
- * - note: mutates resolvers and middleware object
+ * - note: mutates resolvers
  * @param db Deno KV database
  * @param type field type
  * @param name field name
  * @param tableName table name
  * @param resolvers resolvers
- * @param middleware middleware
  * @param optional if result can be null
  */
 export function createReferenceResolver(
@@ -26,7 +24,6 @@ export function createReferenceResolver(
   name: string,
   tableName: string,
   resolvers: IResolvers,
-  middleware: IMiddleware,
   optional: boolean,
 ): void {
   const columns = Object.values(type.getFields());
@@ -123,5 +120,5 @@ export function createReferenceResolver(
 
   resolvers[tableName][name] = resolver;
 
-  createResolver(db, type, resolvers, middleware);
+  createResolver(db, type, resolvers);
 }

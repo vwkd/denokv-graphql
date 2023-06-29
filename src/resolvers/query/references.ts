@@ -2,7 +2,6 @@ import {
   GraphQLArgument,
   GraphQLObjectType,
   IFieldResolver,
-  IMiddleware,
   IResolvers,
   isNonNullType,
 } from "../../../deps.ts";
@@ -18,14 +17,13 @@ import {
 /**
  * Create resolver for references field
  *
- * - note: mutates resolvers and middleware object
+ * - note: mutates resolvers
  * @param db Deno KV database
  * @param type field type
  * @param args field arguments
  * @param name field name
  * @param tableName table name
  * @param resolvers resolvers
- * @param middleware middleware
  */
 // todo: allow non-null edge `[BookEdge!]!` in addition to nullable and handle accordingly if optional or not
 export function createReferencesResolver(
@@ -35,7 +33,6 @@ export function createReferencesResolver(
   name: string,
   tableName: string,
   resolvers: IResolvers,
-  middleware: IMiddleware,
 ): void {
   // todo: replace with `validateConnection` with table type instead of result type of table type in 'node'
   validateConnection(type);
@@ -270,5 +267,5 @@ export function createReferencesResolver(
 
   resolvers[tableName][name] = resolver;
 
-  createResolver(db, tableType, resolvers, middleware);
+  createResolver(db, tableType, resolvers);
 }

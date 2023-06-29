@@ -3,7 +3,6 @@ import type {
   GraphQLObjectType,
   GraphQLOutputType,
   IFieldResolver,
-  IMiddleware,
   IResolvers,
 } from "../../../deps.ts";
 import {
@@ -12,20 +11,18 @@ import {
   validateTable,
 } from "./utils.ts";
 import { createResolver } from "./main.ts";
-import { addQueryVersionstamp } from "./root_middleware.ts";
 import { DatabaseCorruption } from "../../utils.ts";
 
 /**
  * Create resolver for single query
  *
- * - note: mutates resolvers and middleware object
+ * - note: mutates resolvers
  * @param db Deno KV database
  * @param type query type
  * @param args query arguments
  * @param name query name
  * @param rootName root query name
  * @param resolvers resolvers
- * @param middleware middleware
  */
 export function createRootReferenceResolver(
   db: Deno.Kv,
@@ -34,7 +31,6 @@ export function createRootReferenceResolver(
   name: string,
   rootName: string,
   resolvers: IResolvers,
-  middleware: IMiddleware,
 ): void {
   validateQueryReturn(type, name);
 
@@ -83,7 +79,6 @@ export function createRootReferenceResolver(
   };
 
   resolvers[rootName][name] = resolver;
-  middleware[rootName][name] = addQueryVersionstamp(db);
 
-  createResolver(db, tableType, resolvers, middleware);
+  createResolver(db, tableType, resolvers);
 }

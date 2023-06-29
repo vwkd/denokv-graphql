@@ -1,9 +1,5 @@
 import { isNonNullType } from "../../../deps.ts";
-import type {
-  GraphQLObjectType,
-  IMiddleware,
-  IResolvers,
-} from "../../../deps.ts";
+import type { GraphQLObjectType, IResolvers } from "../../../deps.ts";
 import { isReferences, validateColumn, validateTable } from "./utils.ts";
 import { createReferencesResolver } from "./references.ts";
 import { createLeafOrReferenceResolver } from "./leaf_or_reference.ts";
@@ -13,23 +9,19 @@ import { createLeafOrReferenceResolver } from "./leaf_or_reference.ts";
  *
  * - walks recursively to child tables to attach resolvers
  * - note: allows schema to have orphan types not in tree since never reaches
- * - note: mutates resolvers and middleware object
+ * - note: mutates resolvers
  * @param db Deno KV database
  * @param table table object
  * @param resolvers resolvers
- * @param middleware middleware
  */
 export function createResolver(
   db: Deno.Kv,
   table: GraphQLObjectType,
   resolvers: IResolvers,
-  middleware: IMiddleware,
 ): void {
   const tableName = table.name;
 
   resolvers[tableName] = {};
-
-  middleware[tableName] = {};
 
   const columns = Object.values(table.getFields());
 
@@ -50,7 +42,6 @@ export function createResolver(
         name,
         tableName,
         resolvers,
-        middleware,
       );
     } else {
       let innerType = type;
@@ -67,7 +58,6 @@ export function createResolver(
         name,
         tableName,
         resolvers,
-        middleware,
         optional,
       );
     }

@@ -1,9 +1,5 @@
 import { GraphQLSchema } from "../../../deps.ts";
-import type {
-  GraphQLObjectType,
-  IMiddleware,
-  IResolvers,
-} from "../../../deps.ts";
+import type { GraphQLObjectType, IResolvers } from "../../../deps.ts";
 import { isReferences } from "./utils.ts";
 import { createRootReferenceResolver } from "./root_reference.ts";
 import { createRootReferencesResolver } from "./root_references.ts";
@@ -11,17 +7,15 @@ import { createRootReferencesResolver } from "./root_references.ts";
 /**
  * Create resolvers for queries
  *
- * - note: mutates resolvers and middleware object
+ * - note: mutates resolvers
  * @param db Deno KV database
  * @param schema schema object
  * @param resolvers resolvers
- * @param middleware middleware
  */
 export function createRootQueryResolver(
   db: Deno.Kv,
   schema: GraphQLSchema,
   resolvers: IResolvers,
-  middleware: IMiddleware,
 ): void {
   // note: non-empty because asserted schema is valid
   const queryType = schema.getQueryType() as GraphQLObjectType<any, any>;
@@ -29,8 +23,6 @@ export function createRootQueryResolver(
   const rootQueryName = queryType.name;
 
   resolvers[rootQueryName] = {};
-
-  middleware[rootQueryName] = {};
 
   const queries = queryType.getFields();
 
@@ -48,7 +40,6 @@ export function createRootQueryResolver(
         queryName,
         rootQueryName,
         resolvers,
-        middleware,
       );
     } else {
       createRootReferenceResolver(
@@ -58,7 +49,6 @@ export function createRootQueryResolver(
         queryName,
         rootQueryName,
         resolvers,
-        middleware,
       );
     }
   }
