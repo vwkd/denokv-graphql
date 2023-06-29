@@ -39,17 +39,6 @@ export function createLeafResolver(
 
     const checks = context.checks;
 
-    // todo: should delete this intermediate check and instead just do final one in root_middleware?
-    let resCheck = await db.atomic()
-      .check(...checks)
-      .commit();
-
-    if (!resCheck.ok) {
-      throw new ConcurrentChange(
-        `Detected concurrent change of previously read keys. Try request again.`,
-      );
-    }
-
     const { value, versionstamp } = await db.get(key);
 
     // note: column 'id' is always non-optional
@@ -71,7 +60,17 @@ export function createLeafResolver(
       );
     }
 
-    context.checks.push({ key, versionstamp });
+    checks.push({ key, versionstamp });
+
+    let resCheck = await db.atomic()
+      .check(...checks)
+      .commit();
+
+    if (!resCheck.ok) {
+      throw new ConcurrentChange(
+        `Detected concurrent change of previously read keys. Try request again.`,
+      );
+    }
 
     // note: `null` if `optional` is `true`
     return value;

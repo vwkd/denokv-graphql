@@ -79,17 +79,6 @@ export function createReferencesResolver(
 
     const checks = context.checks;
 
-    // todo: should delete this intermediate check and instead just do final one in root_middleware?
-    let res = await db.atomic()
-      .check(...checks)
-      .commit();
-
-    if (!res.ok) {
-      throw new ConcurrentChange(
-        `Detected concurrent change of previously read keys. Try request again.`,
-      );
-    }
-
     if (first) {
       // note: get one more element to see if has next
       const referenceEntries = db.list({ prefix: referenceKeysPrefix }, {
@@ -126,7 +115,7 @@ export function createReferencesResolver(
           );
         }
 
-        context.checks.push({ key, versionstamp });
+        checks.push({ key, versionstamp });
 
         // note: always non-empty string
         const cursor = referenceEntries.cursor;
@@ -137,6 +126,16 @@ export function createReferencesResolver(
       if (!optional && referencesIdArr.length == 0) {
         throw new DatabaseCorruption(
           `Expected table '${tableName}' row '${rowId}' column '${name}' to contain at least one key`,
+        );
+      }
+
+      let resCheck = await db.atomic()
+        .check(...checks)
+        .commit();
+
+      if (!resCheck.ok) {
+        throw new ConcurrentChange(
+          `Detected concurrent change of previously read keys. Try request again.`,
         );
       }
 
@@ -211,7 +210,7 @@ export function createReferencesResolver(
           );
         }
 
-        context.checks.push({ key, versionstamp });
+        checks.push({ key, versionstamp });
 
         // note: always non-empty string
         const cursor = referenceEntries.cursor;
@@ -222,6 +221,16 @@ export function createReferencesResolver(
       if (!optional && referencesIdArr.length == 0) {
         throw new DatabaseCorruption(
           `Expected table '${tableName}' row '${rowId}' column '${name}' to contain at least one key`,
+        );
+      }
+
+      let resCheck = await db.atomic()
+        .check(...checks)
+        .commit();
+
+      if (!resCheck.ok) {
+        throw new ConcurrentChange(
+          `Detected concurrent change of previously read keys. Try request again.`,
         );
       }
 

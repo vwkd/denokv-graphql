@@ -44,17 +44,6 @@ export function createReferenceResolver(
 
     const checks = context.checks;
 
-    // todo: should delete this intermediate check and instead just do final one in root_middleware?
-    let res = await db.atomic()
-      .check(...checks)
-      .commit();
-
-    if (!res.ok) {
-      throw new ConcurrentChange(
-        `Detected concurrent change of previously read keys. Try request again.`,
-      );
-    }
-
     // expects 1 entry, but tries to get 2 (or 0) for error checking
     const referenceEntry = db.list({ prefix: referenceKey }, { limit: 2 });
 
@@ -88,7 +77,7 @@ export function createReferenceResolver(
       }
 
       // note: potentially pushes check for one bad item, but doesn't matter since will throw below
-      context.checks.push({ key, versionstamp });
+      checks.push({ key, versionstamp });
 
       referenceIdArr.push(idReference);
     }
@@ -102,6 +91,16 @@ export function createReferenceResolver(
     if (!optional && referenceIdArr.length == 0) {
       throw new DatabaseCorruption(
         `Expected table '${tableName}' row '${rowId}' column '${name}' to have one key`,
+      );
+    }
+
+    let resCheck = await db.atomic()
+      .check(...checks)
+      .commit();
+
+    if (!resCheck.ok) {
+      throw new ConcurrentChange(
+        `Detected concurrent change of previously read keys. Try request again.`,
       );
     }
 
