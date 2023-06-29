@@ -81,7 +81,7 @@ export function createRootReferencesResolver(
     if (first) {
       const keysPrefix = [tableName];
 
-      // todo: can't paginate only over `[tableName, "*", "id"]`, limit assuming database is correct, error check if corrupt database with more or less keys, see https://github.com/denoland/deploy_feedback/issues/415
+      // todo: paginate only over `[tableName, "*", "id"]` if https://github.com/denoland/deploy_feedback/issues/415 is fixed, currently `limit` assumes correct keys and error checks if instead more or less
       // note: get one more element to see if has next
       const entries = db.list({ prefix: keysPrefix }, {
         // note: since paginates over column keyspace
@@ -150,7 +150,13 @@ export function createRootReferencesResolver(
         // note: always non-empty string
         const cursor = entries.cursor;
 
-        rows.push({ id: rowId, cursor });
+        rows.push({ id: rowId, cursor, versionstamp });
+      }
+
+      if (!optional && rows.length == 0) {
+        throw new DatabaseCorruption(
+          `Expected table '${tableName}' to contain at least one row`,
+        );
       }
 
       // note: cursor of next item if it exists, otherwise empty string if no further items, never `undefined`!
@@ -158,11 +164,8 @@ export function createRootReferencesResolver(
 
       let edges = [];
 
-      // todo: what if no entries?
-
-      for (const { id, cursor } of rows) {
-        // todo: what to use as versionstamp for whole row? there is no one since can update each column independently, might update leaf or reference table...
-        const versionstamp = "foo";
+      for (const { id, cursor, versionstamp } of rows) {
+        // todo: use versionstamp of whole row instead of only `id` key, but no single one exists since each column has own, can be updated independently, esp. in referenced row of another table
 
         const row = {
           id,
@@ -175,8 +178,6 @@ export function createRootReferencesResolver(
           cursor,
         });
       }
-
-      // todo: handle optional, return null if optional, else throw?
 
       const pageInfo = {
         startCursor: edges.at(0)?.cursor,
@@ -195,7 +196,7 @@ export function createRootReferencesResolver(
     } else if (last) {
       const keysPrefix = [tableName];
 
-      // todo: can't paginate only over `[tableName, "*", "id"]`, limit assuming database is correct, error check if corrupt database with more or less keys, see https://github.com/denoland/deploy_feedback/issues/415
+      // todo: paginate only over `[tableName, "*", "id"]` if https://github.com/denoland/deploy_feedback/issues/415 is fixed, currently `limit` assumes correct keys and error checks if instead more or less
       // note: get one more element to see if has next
       // note: `reverse` to go backwards instead of forwards, then reverse array to end up with forward order
       const entries = db.list({ prefix: keysPrefix }, {
@@ -266,7 +267,13 @@ export function createRootReferencesResolver(
         // note: always non-empty string
         const cursor = entries.cursor;
 
-        rows.unshift({ id: rowId, cursor });
+        rows.unshift({ id: rowId, cursor, versionstamp });
+      }
+
+      if (!optional && rows.length == 0) {
+        throw new DatabaseCorruption(
+          `Expected table '${tableName}' to contain at least one row`,
+        );
       }
 
       // note: cursor of next item if it exists, otherwise empty string if no further items, never `undefined`!
@@ -274,11 +281,8 @@ export function createRootReferencesResolver(
 
       let edges = [];
 
-      // todo: what if no entries?
-
-      for (const { id, cursor } of rows) {
-        // todo: what to use as versionstamp for whole row? there is no one since can update each column independently, might update leaf or reference table...
-        const versionstamp = "foo";
+      for (const { id, cursor, versionstamp } of rows) {
+        // todo: use versionstamp of whole row instead of only `id` key, but no single one exists since each column has own, can be updated independently, esp. in referenced row of another table
 
         const row = {
           id,
@@ -291,8 +295,6 @@ export function createRootReferencesResolver(
           cursor,
         });
       }
-
-      // todo: handle optional, return null if optional, else throw?
 
       const pageInfo = {
         startCursor: edges.at(0)?.cursor,

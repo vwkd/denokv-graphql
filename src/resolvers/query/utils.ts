@@ -273,11 +273,10 @@ export function isLeaf(
 /**
  * Validate fields of connection
  *
- * - field 'edges' of non-null? list of object type
+ * - field 'edges' of non-null list of nullable or non-null object type
  * - field 'pageInfo' of non-null object type with name 'PageInfo'
  * @param type connection
  */
-// todo: more fields like `totalCount`, `totalPageCount`?
 export function validateConnection(type: GraphQLObjectType) {
   const name = type.name;
   const fields = type.getFields();
@@ -307,16 +306,27 @@ export function validateConnection(type: GraphQLObjectType) {
   if (
     !(edges &&
       isNonNullType(edges.type) &&
-      isListType(edges.type.ofType) &&
-      isObjectType(edges.type.ofType.ofType) &&
-      edges.type.ofType.ofType.name.endsWith("Edge"))
+      isListType(edges.type.ofType))
   ) {
     throw new InvalidSchema(
-      `Connection '${name}' must have field 'edges' with non-null list object type whose name ends in 'Edge'`,
+      `Connection '${name}' must have field 'edges' with non-null list type`,
     );
   }
 
-  const edge = edges.type.ofType.ofType;
+  let edge = edges.type.ofType.ofType;
+
+  if (isNonNullType(edge)) {
+    edge = edge.ofType;
+  }
+
+  if (
+    !(isObjectType(edge) &&
+      edge.name.endsWith("Edge"))
+  ) {
+    throw new InvalidSchema(
+      `Connection '${name}' must have field 'edges' with non-null list type of object type whose name ends in 'Edge'`,
+    );
+  }
 
   validateEdge(edge);
 }
@@ -354,7 +364,6 @@ export function validateEdge(type: GraphQLObjectType) {
 
   const node = fields["node"];
 
-  // todo: validate is 'BookResult'
   if (
     !(node &&
       isNonNullType(node.type) &&

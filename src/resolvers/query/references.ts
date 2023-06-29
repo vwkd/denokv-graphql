@@ -25,7 +25,6 @@ import {
  * @param tableName table name
  * @param resolvers resolvers
  */
-// todo: allow non-null edge `[BookEdge!]!` in addition to nullable and handle accordingly if optional or not
 export function createReferencesResolver(
   db: Deno.Kv,
   type: GraphQLObjectType,
@@ -34,7 +33,6 @@ export function createReferencesResolver(
   tableName: string,
   resolvers: IResolvers,
 ): void {
-  // todo: replace with `validateConnection` with table type instead of result type of table type in 'node'
   validateConnection(type);
 
   // note: asserted in `validateConnection`
@@ -155,8 +153,6 @@ export function createReferencesResolver(
         hasNextPage: !!startCursorNext,
       };
 
-      // todo: what if empty?
-
       const edges = referencesIdArr.map((reference) => {
         return {
           node: {
@@ -251,8 +247,6 @@ export function createReferencesResolver(
         // note: currently mistakenly set to `true` if passes bogus cursor that passes validation in `db.list`
         hasNextPage: !!before,
       };
-
-      // todo: what if empty?
 
       const edges = referencesIdArr.map((reference) => {
         return {

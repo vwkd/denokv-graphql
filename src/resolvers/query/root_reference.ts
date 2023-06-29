@@ -60,21 +60,17 @@ export function createRootReferenceResolver(
 
     // row doesn't exist
     // note: duplicated `get` once more in leaf resolver for field 'id', but needs for nested queries too, also validates that value is equal to rowId
-    {
-      const idKey = [tableName, rowId, "id"];
+    const idKey = [tableName, rowId, "id"];
 
-      const { key, value, versionstamp } = await db.get(idKey);
+    const { key, value, versionstamp } = await db.get(idKey);
 
-      context.checks.push({ key, versionstamp });
+    context.checks.push({ key, versionstamp });
 
-      if (value === null) {
-        return null;
-      }
+    if (value === null) {
+      return null;
     }
 
-    // todo: what to use as versionstamp for whole row? there is no one since can update each column independently, might update leaf or reference table...
-    const versionstamp = "foo";
-
+    // todo: use versionstamp of whole row instead of only `id` key, but no single one exists since each column has own, can be updated independently, esp. in referenced row of another table
     return { id: rowId, value: node, versionstamp };
   };
 
