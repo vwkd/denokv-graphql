@@ -248,6 +248,29 @@ export function isReferences(
 }
 
 /**
+ * Test if is reference
+ *
+ * - nullable or non-null object type
+ * @param type type
+ * @returns
+ */
+export function isReference(
+  type: GraphQLOutputType,
+): boolean {
+  let innerType = type;
+
+  if (isNonNullType(innerType)) {
+    innerType = innerType.ofType;
+  }
+
+  if (isObjectType(innerType)) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * Test if is leaf
  *
  * - non-null or nullable leaf type
