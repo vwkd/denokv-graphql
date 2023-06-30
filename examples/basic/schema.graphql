@@ -1,0 +1,66 @@
+type Query {
+  bookById(id: ID!): BookResult
+  books(first: Int, after: ID, last: Int, before: ID): BookConnection!
+}
+
+type Mutation {
+  createTransaction(data: CreateInput!): Result
+  deleteTransaction(data: DeleteInput!): Result
+}
+
+input CreateInput {
+  createBook: [BookInput!]! @insert(table: "Book")
+  createAuthor: [AuthorInput!]! @insert(table: "Author")
+}
+
+input DeleteInput {
+  deleteBook: [Identifier!]! @delete(table: "Book")
+  deleteAuthor: [Identifier!]! @delete(table: "Author")
+}
+
+type BookResult {
+  id: ID!
+  versionstamp: String!
+  value: Book!
+}
+
+type BookConnection {
+  edges: [BookEdge]!
+  pageInfo: PageInfo!
+}
+
+type BookEdge {
+  node: BookResult!
+  cursor: ID!
+}
+
+type Book {
+  id: ID!,
+  title: String!,
+  author: Author!,
+}
+
+type Author {
+  id: ID!,
+  name: String!,
+}
+
+input BookInput {
+  id: ID!,
+  title: String!,
+  author: ID!,
+}
+
+input AuthorInput {
+  id: ID!,
+  name: String!,
+}
+
+type Result {
+  versionstamp: String!
+}
+
+input Identifier {
+  id: ID!,
+  versionstamp: String!
+}

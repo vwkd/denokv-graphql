@@ -1,0 +1,58 @@
+query readBook($bookId: ID!) {
+  bookById(id: $bookId) {
+    id,
+    versionstamp,
+    value {
+      id,  
+      title,
+      author {
+        id,
+        name,
+      }
+    }
+  }
+}
+
+query readBooks($first: Int!, $after: ID) {
+  books(first: $first, after: $after) {
+    edges {
+      node {
+        id,
+        versionstamp,
+        value {
+          id,
+          title,
+          author {
+            id,
+            name,
+          }
+        }
+      }
+      cursor
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+mutation writeBook($authorId: ID!, $bookId: ID!) {
+  createTransaction(data: {
+    createAuthor: [{ id: $authorId, name: "Victoria Nightshade" }],
+    createBook: [{ id: $bookId, title: "Shadows of Eternity", author: $authorId }],
+  }) {
+    versionstamp
+  }
+}
+
+mutation deleteBook($authorId: ID!, $bookId: ID!, $versionstamp: String!) {
+  deleteTransaction(data: {
+    deleteAuthor: [{ id: $authorId, versionstamp: $versionstamp }],
+    deleteBook: [{ id: $bookId, versionstamp: $versionstamp }],
+  }) {
+    versionstamp
+  }
+}
