@@ -2,6 +2,138 @@ import { assertThrows } from "../../../deps.ts";
 import { buildSchema } from "../../../src/main.ts";
 import { InvalidSchema } from "../../../src/utils.ts";
 
+Deno.test("object list", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: [Foo],
+    }
+
+    type Foo {
+      id: ID!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Column 'title' of table 'Book' must be leaf or object type",
+  );
+
+  db.close();
+});
+
+Deno.test("object non-null list", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: [Foo]!,
+    }
+
+    type Foo {
+      id: ID!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Column 'title' of table 'Book' must be leaf or object type",
+  );
+
+  db.close();
+});
+
+Deno.test("non-null object list", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: [Foo!],
+    }
+
+    type Foo {
+      id: ID!
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Column 'title' of table 'Book' must be leaf or object type",
+  );
+
+  db.close();
+});
+
+Deno.test("non-null object non-null list", async () => {
+  const schemaSource = `
+    type Query {
+      bookById(id: ID!): BookResult
+    }
+
+    type BookResult {
+      id: ID!
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: [Foo!]!,
+    }
+
+    type Foo {
+      bar: String
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  assertThrows(
+    () => buildSchema(db, schemaSource),
+    InvalidSchema,
+    "Column 'title' of table 'Book' must be leaf or object type",
+  );
+
+  db.close();
+});
+
 Deno.test("scalar list", async () => {
   const schemaSource = `
     type Query {
@@ -25,7 +157,7 @@ Deno.test("scalar list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type '[String]'",
+    "Column 'title' of table 'Book' must be leaf or object type",
   );
 
   db.close();
@@ -54,7 +186,7 @@ Deno.test("scalar non-null list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type '[String]!'",
+    "Column 'title' of table 'Book' must be leaf or object type",
   );
 
   db.close();
@@ -83,7 +215,7 @@ Deno.test("non-null scalar list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type '[String!]'",
+    "Column 'title' of table 'Book' must be leaf or object type",
   );
 
   db.close();
@@ -112,7 +244,7 @@ Deno.test("non-null scalar non-null list", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type '[String!]!'",
+    "Column 'title' of table 'Book' must be leaf or object type",
   );
 
   db.close();
@@ -145,7 +277,7 @@ Deno.test("interface", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type 'Foo'",
+    "Column 'title' of table 'Book' must be leaf or object type",
   );
 
   db.close();
@@ -178,7 +310,7 @@ Deno.test("non-null interface", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type 'Foo!'",
+    "Column 'title' of table 'Book' must be leaf or object type",
   );
 
   db.close();
@@ -217,7 +349,7 @@ Deno.test("union", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type 'Foo'",
+    "Column 'title' of table 'Book' must be leaf or object type",
   );
 
   db.close();
@@ -256,7 +388,7 @@ Deno.test("non-null union", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Column 'title' of table 'Book' has unexpected type 'Foo!'",
+    "Column 'title' of table 'Book' must be leaf or object type",
   );
 
   db.close();

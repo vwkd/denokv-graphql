@@ -49,7 +49,7 @@ Deno.test("bad id", async () => {
     errors: [{
       message:
         "Expected table 'Book' row '1' column 'id' to be equal to row id",
-      locations: [{ line: 3, column: 7 }],
+      locations: [{ line: 7, column: 11 }],
       path: ["bookById"],
     }],
   };
