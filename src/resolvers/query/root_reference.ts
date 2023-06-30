@@ -71,7 +71,7 @@ export function createRootReferenceResolver(
     }
 
     // todo: use versionstamp of whole row instead of only `id` key, but no single one exists since each column has own, can be updated independently, esp. in referenced row of another table
-    return { id: rowId, value: node, versionstamp };
+    return { value: node, versionstamp };
   };
 
   resolvers[rootName][name] = resolver;

@@ -13,7 +13,6 @@ Deno.test("insufficient columns", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -58,7 +57,6 @@ Deno.test("excess columns", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -105,7 +103,6 @@ Deno.test("missing column", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -151,7 +148,6 @@ Deno.test("column type nullable", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -197,7 +193,6 @@ Deno.test("column type list", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -243,7 +238,6 @@ Deno.test("column type other", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }

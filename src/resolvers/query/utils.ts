@@ -19,7 +19,6 @@ import { isIdField } from "../utils.ts";
  * Validate query return value
  *
  * - nullable object type
- * - field 'id' of non-null 'ID' type
  * - field 'versionstamp' of non-null 'String' type
  * - field `value` of non-null object type
  * @param type return value
@@ -38,21 +37,10 @@ export function validateQueryReturn(
   const fields = value.getFields();
 
   if (
-    !(Object.keys(fields).length == 3)
+    !(Object.keys(fields).length == 2)
   ) {
     throw new InvalidSchema(
-      `Query '${queryName}' return type must have three fields`,
-    );
-  }
-
-  if (
-    !(fields["id"] &&
-      isNonNullType(fields["id"].type) &&
-      isScalarType(fields["id"].type.ofType) &&
-      fields["id"].type.ofType.name == "ID")
-  ) {
-    throw new InvalidSchema(
-      `Query '${queryName}' return type must have field 'id' with non-null 'ID' type`,
+      `Query '${queryName}' return type must have two fields`,
     );
   }
 
@@ -406,7 +394,6 @@ export function validateEdge(type: GraphQLObjectType) {
  * Validate fields of result in query
  *
  * - nullable object type
- * - field 'id' of non-null 'ID' type
  * - field 'versionstamp' of non-null 'String' type
  * - field `value` of non-null object type
  * @param type result
@@ -418,23 +405,10 @@ export function validateQueryResult(
   const fields = type.getFields();
 
   if (
-    !(Object.keys(fields).length == 3)
+    !(Object.keys(fields).length == 2)
   ) {
     throw new InvalidSchema(
-      `Result '${name}' must have three fields`,
-    );
-  }
-
-  const id = fields["id"];
-
-  if (
-    !(id &&
-      isNonNullType(id.type) &&
-      isScalarType(id.type.ofType) &&
-      id.type.ofType.name == "ID")
-  ) {
-    throw new InvalidSchema(
-      `Result '${name}' must have field 'id' with non-null 'ID' type`,
+      `Result '${name}' must have two fields`,
     );
   }
 

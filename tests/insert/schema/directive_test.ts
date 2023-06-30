@@ -13,7 +13,6 @@ Deno.test("none", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }

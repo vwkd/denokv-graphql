@@ -14,7 +14,6 @@ Deno.test("other type", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -60,7 +59,6 @@ Deno.test("no table", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -106,7 +104,6 @@ Deno.test("no object type", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }

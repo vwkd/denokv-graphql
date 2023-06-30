@@ -8,7 +8,6 @@ Deno.test("minimal working example", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -22,7 +21,6 @@ Deno.test("minimal working example", async () => {
   const source = `
     query {
       bookById(id: "1") {
-        id,
         versionstamp
         value {
           id,
@@ -45,7 +43,6 @@ Deno.test("minimal working example", async () => {
   const exp = {
     data: {
       bookById: {
-        id: "1",
         versionstamp: "00000000000000010000",
         value: {
           id: "1",
@@ -67,7 +64,6 @@ Deno.test("null row", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -81,7 +77,6 @@ Deno.test("null row", async () => {
   const source = `
     query {
       bookById(id: "999") {
-        id,
         versionstamp
         value {
           id,

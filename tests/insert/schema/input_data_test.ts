@@ -13,7 +13,6 @@ Deno.test("nullable", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -59,7 +58,6 @@ Deno.test("non-null", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -105,7 +103,6 @@ Deno.test("nullable list non-null", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -151,7 +148,6 @@ Deno.test("non-null list nullable", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -197,7 +193,6 @@ Deno.test("nullable other", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -238,7 +233,6 @@ Deno.test("non-null other", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -279,7 +273,6 @@ Deno.test("nullable list non-null other", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -320,7 +313,6 @@ Deno.test("non-null list nullable other", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }

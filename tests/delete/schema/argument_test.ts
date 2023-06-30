@@ -13,7 +13,6 @@ Deno.test("nullable", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -59,7 +58,6 @@ Deno.test("none", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -105,7 +103,6 @@ Deno.test("other", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -151,7 +148,6 @@ Deno.test("extra", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }

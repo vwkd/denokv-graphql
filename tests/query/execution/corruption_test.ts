@@ -8,7 +8,6 @@ Deno.test("null column", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -22,7 +21,6 @@ Deno.test("null column", async () => {
   const source = `
     query {
       bookById(id: "1") {
-        id,
         versionstamp
         value {
           id,
@@ -47,7 +45,7 @@ Deno.test("null column", async () => {
     },
     errors: [{
       message: "Expected table 'Book' row '1' column 'title' to be non-empty",
-      locations: [{ line: 8, column: 11 }],
+      locations: [{ line: 7, column: 11 }],
       path: ["bookById", "value", "title"],
     }],
   };

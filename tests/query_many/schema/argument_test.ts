@@ -19,7 +19,6 @@ Deno.test("none", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -58,7 +57,6 @@ Deno.test("missing 3", async () => {
   }
 
   type BookResult {
-    id: ID!
     versionstamp: String!
     value: Book!
   }
@@ -97,7 +95,6 @@ Deno.test("missing 2", async () => {
   }
 
   type BookResult {
-    id: ID!
     versionstamp: String!
     value: Book!
   }
@@ -136,7 +133,6 @@ Deno.test("missing 1", async () => {
   }
 
   type BookResult {
-    id: ID!
     versionstamp: String!
     value: Book!
   }
@@ -175,7 +171,6 @@ Deno.test("extra", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -214,7 +209,6 @@ Deno.test("missing 'first'", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -253,7 +247,6 @@ Deno.test("missing 'after'", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -292,7 +285,6 @@ Deno.test("missing 'last'", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -331,7 +323,6 @@ Deno.test("missing 'before'", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -370,7 +361,6 @@ Deno.test("other 'first'", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -409,7 +399,6 @@ Deno.test("other 'after'", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -448,7 +437,6 @@ Deno.test("other 'last'", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -487,7 +475,6 @@ Deno.test("other 'before'", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -526,7 +513,6 @@ Deno.test("non-null 'first'", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -565,7 +551,6 @@ Deno.test("non-null 'after'", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -604,7 +589,6 @@ Deno.test("non-null 'last'", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -643,7 +627,6 @@ Deno.test("non-null 'before'", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }

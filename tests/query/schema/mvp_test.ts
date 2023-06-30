@@ -8,7 +8,6 @@ Deno.test("minimal working example", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }

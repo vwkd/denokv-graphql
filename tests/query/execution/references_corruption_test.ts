@@ -8,7 +8,6 @@ Deno.test("bad id", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -38,7 +37,6 @@ Deno.test("bad id", async () => {
   const source = `
     query {
       bookById(id: "1") {
-        id,
         versionstamp,
         value {
           id,
@@ -82,7 +80,6 @@ Deno.test("bad id", async () => {
   const exp = {
     data: {
       bookById: {
-        id: "1",
         versionstamp: "00000000000000010000",
         value: {
           id: "1",
@@ -101,7 +98,7 @@ Deno.test("bad id", async () => {
     },
     errors: [{
       message: "Expected table 'Author' to have row with id '998'",
-      locations: [{ line: 12, column: 17 }],
+      locations: [{ line: 11, column: 17 }],
       path: ["bookById", "value"],
     }],
   };
@@ -118,7 +115,6 @@ Deno.test("bad id in reference", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -148,7 +144,6 @@ Deno.test("bad id in reference", async () => {
   const source = `
     query {
       bookById(id: "1") {
-        id,
         versionstamp,
         value {
           id,
@@ -192,7 +187,6 @@ Deno.test("bad id in reference", async () => {
   const exp = {
     data: {
       bookById: {
-        id: "1",
         versionstamp: "00000000000000010000",
         value: {
           id: "1",
@@ -212,7 +206,7 @@ Deno.test("bad id in reference", async () => {
     errors: [{
       message:
         "Expected table 'Author' row '11' column 'id' to be equal to row id",
-      locations: [{ line: 12, column: 17 }],
+      locations: [{ line: 11, column: 17 }],
       path: ["bookById", "value"],
     }],
   };
@@ -229,7 +223,6 @@ Deno.test("empty list", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -259,7 +252,6 @@ Deno.test("empty list", async () => {
   const source = `
     query {
       bookById(id: "1") {
-        id,
         versionstamp,
         value {
           id,
@@ -301,7 +293,7 @@ Deno.test("empty list", async () => {
     errors: [{
       message:
         "Expected table 'Book' row '1' column 'authors' to contain at least one key",
-      locations: [{ line: 9, column: 11 }],
+      locations: [{ line: 8, column: 11 }],
       path: ["bookById", "value"],
     }],
   };
@@ -318,7 +310,6 @@ Deno.test("bad reference id", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -348,7 +339,6 @@ Deno.test("bad reference id", async () => {
   const source = `
     query {
       bookById(id: "1") {
-        id,
         versionstamp,
         value {
           id,
@@ -390,7 +380,6 @@ Deno.test("bad reference id", async () => {
   const exp = {
     data: {
       bookById: {
-        id: "1",
         versionstamp: "00000000000000010000",
         value: {
           id: "1",
@@ -409,7 +398,7 @@ Deno.test("bad reference id", async () => {
     },
     errors: [{
       message: "Expected table 'Author' to have row with id '999'",
-      locations: [{ line: 12, column: 17 }],
+      locations: [{ line: 11, column: 17 }],
       path: ["bookById", "value"],
     }],
   };

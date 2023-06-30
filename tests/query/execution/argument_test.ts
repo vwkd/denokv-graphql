@@ -8,7 +8,6 @@ Deno.test("bad id", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -22,7 +21,6 @@ Deno.test("bad id", async () => {
   const source = `
     query {
       bookById(id: "1") {
-        id,
         versionstamp,
         value {
           id,
@@ -49,7 +47,7 @@ Deno.test("bad id", async () => {
     errors: [{
       message:
         "Expected table 'Book' row '1' column 'id' to be equal to row id",
-      locations: [{ line: 7, column: 11 }],
+      locations: [{ line: 6, column: 11 }],
       path: ["bookById"],
     }],
   };

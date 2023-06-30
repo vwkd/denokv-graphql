@@ -288,7 +288,7 @@ export function createRootReferencesResolver(
           id,
         };
 
-        const node = { id, value: row, versionstamp };
+        const node = { value: row, versionstamp };
 
         edges.push({
           node,

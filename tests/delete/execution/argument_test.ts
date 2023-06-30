@@ -12,7 +12,6 @@ Deno.test("null row", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }

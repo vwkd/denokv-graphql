@@ -13,7 +13,6 @@ Deno.test("naked vs naked", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -66,7 +65,6 @@ Deno.test("naked vs non-null", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }

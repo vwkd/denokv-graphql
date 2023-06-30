@@ -12,7 +12,6 @@ Deno.test("bad versionstamp", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }

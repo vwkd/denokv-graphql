@@ -12,7 +12,6 @@ Deno.test("existing id", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }

@@ -33,7 +33,7 @@ Deno.test("missing fields", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Result 'BookResult' must have three fields",
+    "Result 'BookResult' must have two fields",
   );
 
   db.close();
@@ -56,7 +56,6 @@ Deno.test("extra fields", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
       XXX: String
@@ -73,46 +72,7 @@ Deno.test("extra fields", async () => {
   assertThrows(
     () => buildSchema(db, schemaSource),
     InvalidSchema,
-    "Result 'BookResult' must have three fields",
-  );
-
-  db.close();
-});
-
-Deno.test("missing 'id'", async () => {
-  const schemaSource = `
-    type Query {
-      books(first: Int, after: ID, last: Int, before: ID): BookConnection!
-    }
-
-    type BookConnection {
-      edges: [BookEdge]!
-      pageInfo: PageInfo!
-    }
-
-    type BookEdge {
-      node: BookResult!
-      cursor: ID!
-    }
-
-    type BookResult {
-      XXX: ID!
-      versionstamp: String!
-      value: Book!
-    }
-
-    type Book {
-      id: ID!,
-      title: String,
-    }
-  `;
-
-  const db = await Deno.openKv(":memory:");
-
-  assertThrows(
-    () => buildSchema(db, schemaSource),
-    InvalidSchema,
-    "Result 'BookResult' must have field 'id' with non-null 'ID' type",
+    "Result 'BookResult' must have two fields",
   );
 
   db.close();
@@ -135,7 +95,6 @@ Deno.test("missing 'versionstamp'", async () => {
     }
 
     type BookResult {
-      id: ID!
       XXX: String!
       value: Book!
     }
@@ -174,7 +133,6 @@ Deno.test("missing 'value'", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       XXX: Book!
     }

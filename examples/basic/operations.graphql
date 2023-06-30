@@ -1,6 +1,5 @@
 query readBook($bookId: ID!) {
   bookById(id: $bookId) {
-    id,
     versionstamp,
     value {
       id,  
@@ -17,7 +16,6 @@ query readBooks($first: Int!, $after: ID) {
   books(first: $first, after: $after) {
     edges {
       node {
-        id,
         versionstamp,
         value {
           id,

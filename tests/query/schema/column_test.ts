@@ -9,7 +9,6 @@ Deno.test("object list", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -42,7 +41,6 @@ Deno.test("object non-null list", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -75,7 +73,6 @@ Deno.test("non-null object list", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -108,7 +105,6 @@ Deno.test("non-null object non-null list", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -141,7 +137,6 @@ Deno.test("scalar list", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -170,7 +165,6 @@ Deno.test("scalar non-null list", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -199,7 +193,6 @@ Deno.test("non-null scalar list", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -228,7 +221,6 @@ Deno.test("non-null scalar non-null list", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -257,7 +249,6 @@ Deno.test("interface", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -290,7 +281,6 @@ Deno.test("non-null interface", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -323,7 +313,6 @@ Deno.test("union", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
@@ -362,7 +351,6 @@ Deno.test("non-null union", async () => {
     }
 
     type BookResult {
-      id: ID!
       versionstamp: String!
       value: Book!
     }
