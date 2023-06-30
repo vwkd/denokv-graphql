@@ -26,6 +26,7 @@ The library exposes a single `buildSchema` function that takes a GraphQL IDL sch
 ```graphql
 type Query {
   bookById(id: ID!): BookResult
+  books(first: Int, after: ID, last: Int, before: ID): BookConnection!
 }
 
 type Mutation {
@@ -43,6 +44,22 @@ input DeleteInput {
   deleteAuthor: [Identifier!]! @delete(table: "Author")
 }
 
+type BookResult {
+  id: ID!
+  versionstamp: String!
+  value: Book!
+}
+
+type BookConnection {
+  edges: [BookEdge]!
+  pageInfo: PageInfo!
+}
+
+type BookEdge {
+  node: BookResult!
+  cursor: ID!
+}
+
 type Book {
   id: ID!,
   title: String!,
@@ -52,12 +69,6 @@ type Book {
 type Author {
   id: ID!,
   name: String!,
-}
-
-type BookResult {
-  id: ID!
-  versionstamp: String!
-  value: Book!
 }
 
 input BookInput {
@@ -84,15 +95,6 @@ input Identifier {
 ### Define operations in GraphQL query language
 
 ```graphql
-mutation writeBook($authorId: ID!, $bookId: ID!) {
-  createTransaction(data: {
-    createAuthor: [{ id: $authorId, name: "Victoria Nightshade" }],
-    createBook: [{ id: $bookId, title: "Shadows of Eternity", author: $authorId }],
-  }) {
-    versionstamp
-  }
-}
-
 query readBook($bookId: ID!) {
   bookById(id: $bookId) {
     id,
@@ -105,6 +107,41 @@ query readBook($bookId: ID!) {
         name,
       }
     }
+  }
+}
+
+query readBooks($first: Int!, $after: ID) {
+  books(first: $first, after: $after) {
+    edges {
+      node {
+        id,
+        versionstamp,
+        value {
+          id,
+          title,
+          author {
+            id,
+            name,
+          }
+        }
+      }
+      cursor
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+mutation writeBook($authorId: ID!, $bookId: ID!) {
+  createTransaction(data: {
+    createAuthor: [{ id: $authorId, name: "Victoria Nightshade" }],
+    createBook: [{ id: $bookId, title: "Shadows of Eternity", author: $authorId }],
+  }) {
+    versionstamp
   }
 }
 
@@ -150,6 +187,14 @@ const resultRead = await graphql({
   contextValue: {},
   variableValues: { bookId },
   operationName: "readBook",
+});
+
+const resultReads = await graphql({
+  schema,
+  source,
+  contextValue: {},
+  variableValues: { first: 20 },
+  operationName: "readBooks",
 });
 
 const resultDelete = await graphql({
