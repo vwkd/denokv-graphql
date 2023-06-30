@@ -44,11 +44,9 @@ Deno.test("bad id", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-      author: "999",
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
+    .set(["Book", "1", "author", "999"], undefined)
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -68,8 +66,8 @@ Deno.test("bad id", async () => {
       },
     },
     errors: [{
-      message: "Expected referenced table 'Author' to have row with id '999'",
-      locations: [{ line: 9, column: 11 }],
+      message: "Expected table 'Author' to have row with id '999'",
+      locations: [{ line: 10, column: 13 }],
       path: ["bookById", "value"],
     }],
   };
@@ -122,11 +120,9 @@ Deno.test("other reference", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-      author: "11",
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
+    .set(["Book", "1", "author", "11"], undefined)
     .set(["Author", "11"], "XXX")
     .commit();
 
@@ -147,8 +143,8 @@ Deno.test("other reference", async () => {
       },
     },
     errors: [{
-      message: "Expected referenced table 'Author' row '11' to be an object",
-      locations: [{ line: 9, column: 11 }],
+      message: "Expected table 'Author' to have row with id '11'",
+      locations: [{ line: 10, column: 13 }],
       path: ["bookById", "value"],
     }],
   };
@@ -201,15 +197,11 @@ Deno.test("bad id in reference", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-      author: "11",
-    })
-    .set(["Author", "11"], {
-      id: "999",
-      name: "Victoria Nightshade",
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
+    .set(["Book", "1", "author", "11"], undefined)
+    .set(["Author", "11", "id"], "999")
+    .set(["Author", "11", "name"], "Victoria Nightshade")
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -230,8 +222,8 @@ Deno.test("bad id in reference", async () => {
     },
     errors: [{
       message:
-        "Expected referenced table 'Author' row '11' column 'id' to be equal to row id",
-      locations: [{ line: 9, column: 11 }],
+        "Expected table 'Author' row '11' column 'id' to be equal to row id",
+      locations: [{ line: 10, column: 13 }],
       path: ["bookById", "value"],
     }],
   };
@@ -284,10 +276,8 @@ Deno.test("non null", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -299,7 +289,7 @@ Deno.test("non null", async () => {
       bookById: null,
     },
     errors: [{
-      message: "Expected column 'author' to contain id",
+      message: "Expected table 'Book' row '1' column 'author' to have one key",
       locations: [{ line: 9, column: 11 }],
       path: ["bookById", "value"],
     }],

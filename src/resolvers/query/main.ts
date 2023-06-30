@@ -1,64 +1,69 @@
 import { isNonNullType } from "../../../deps.ts";
-import type {
-  GraphQLObjectType,
-  IMiddleware,
-  IResolvers,
-} from "../../../deps.ts";
-import { validateColumn, validateTable } from "./utils.ts";
-import { createResolverListObjectScalar } from "./list_object_scalar.ts";
+import type { GraphQLObjectType, IResolvers } from "../../../deps.ts";
+import { isReferences, validateColumn, validateTable } from "./utils.ts";
+import { createReferencesResolver } from "./references.ts";
+import { createLeafOrReferenceResolver } from "./leaf_or_reference.ts";
 
 /**
  * Create resolvers for a table
  *
- * - walk recursively to next queriable table
- * - note: mutates resolvers and middleware object
+ * - walks recursively to child tables to attach resolvers
+ * - note: allows schema to have orphan types not in tree since never reaches
+ * - note: mutates resolvers
  * @param db Deno KV database
  * @param table table object
  * @param resolvers resolvers
- * @param middleware middleware
  */
-export function createQueryResolver(
+export function createResolver(
   db: Deno.Kv,
   table: GraphQLObjectType,
   resolvers: IResolvers,
-  middleware: IMiddleware,
 ): void {
   const tableName = table.name;
 
-  resolvers[tableName] = {};
+  // prevent infinite recursion for cyclical references
+  if (resolvers[tableName]) {
+    return;
+  }
 
-  middleware[tableName] = {};
+  resolvers[tableName] = {};
 
   const columns = Object.values(table.getFields());
 
   validateTable(columns, tableName);
 
   for (const column of columns) {
-    const columnName = column.name;
+    const name = column.name;
     const type = column.type;
 
-    validateColumn(type, tableName, columnName);
+    validateColumn(type, tableName, name);
 
-    if (isNonNullType(type)) {
+    if (isReferences(type)) {
       const innerType = type.ofType;
-      createResolverListObjectScalar(
+      createReferencesResolver(
         db,
         innerType,
+        column.args,
+        name,
         tableName,
-        columnName,
         resolvers,
-        middleware,
-        false,
       );
     } else {
-      createResolverListObjectScalar(
+      let innerType = type;
+      let optional = true;
+
+      if (isNonNullType(innerType)) {
+        innerType = innerType.ofType;
+        optional = false;
+      }
+
+      createLeafOrReferenceResolver(
         db,
-        type,
+        innerType,
+        name,
         tableName,
-        columnName,
         resolvers,
-        middleware,
-        true,
+        optional,
       );
     }
   }

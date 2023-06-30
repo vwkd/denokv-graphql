@@ -12,12 +12,14 @@ import {
   validateMutationTable,
 } from "./utils.ts";
 import { validateTable } from "../query/utils.ts";
+import { ColumnType, columnTypes } from "./utils.ts";
 
 const directiveNames = ["insert", "delete"];
 
 /**
  * Create resolver for transaction
  *
+ * - note: doesn't walk recursively child tables to attach resolvers since resolver returns result
  * - note: mutates resolvers object
  * @param db Deno KV database
  * @param schema schema
@@ -36,6 +38,7 @@ export function createResolverTransaction(
 
   const insertMutationTableNames: Record<string, string> = {};
   const deleteMutationTableNames: Record<string, string> = {};
+  const tableColumnTypes: Record<string, Record<string, ColumnType>> = {};
 
   for (const [mutationName, mutation] of Object.entries(mutations)) {
     const astNode = mutation.astNode!;
@@ -62,6 +65,9 @@ export function createResolverTransaction(
     const columnsMap = table.getFields();
     const columns = Object.values(columnsMap);
     validateTable(columns, tableName);
+
+    // note: might overwrite multiple times, but identical
+    tableColumnTypes[tableName] = columnTypes(columnsMap);
 
     const type = mutation.type;
 
@@ -97,13 +103,16 @@ export function createResolverTransaction(
         const id = data.id;
 
         if (tableNameInsert) {
-          const key = [tableNameInsert, id];
-          const versionstamp = null;
+          for (const columnName of Object.keys(data)) {
+            const key = [tableNameInsert, id, columnName];
+            const versionstamp = null;
 
-          op = op
-            .check({ key, versionstamp });
+            op = op
+              .check({ key, versionstamp });
+          }
         } else if (tableNameDelete) {
-          const key = [tableNameDelete, id];
+          // todo: use versionstamp of whole row instead of only `id` key and check here, but no single one exists since each column has own, can be updated independently, esp. in referenced row of another table
+          const key = [tableNameDelete, id, "id"];
           const versionstamp = data.versionstamp;
 
           op = op
@@ -117,15 +126,42 @@ export function createResolverTransaction(
         const id = data.id;
 
         if (tableNameInsert) {
-          const key = [tableNameInsert, id];
+          for (const [columnName, value] of Object.entries(data)) {
+            const columnType = tableColumnTypes[tableNameInsert][columnName];
 
-          op = op
-            .set(key, data);
+            if (columnType == "references") {
+              // array of ids
+              for (const referenceId of value) {
+                const key = [tableNameInsert, id, columnName, referenceId];
+
+                op = op
+                  .set(key, undefined);
+              }
+            } else if (columnType == "reference") {
+              // single id
+              const key = [tableNameInsert, id, columnName, value];
+
+              op = op
+                .set(key, undefined);
+            } else if (columnType == "leaf") {
+              // other value
+              const key = [tableNameInsert, id, columnName];
+
+              op = op
+                .set(key, value);
+            } else {
+              throw new Error(`should be unreachable`);
+            }
+          }
         } else if (tableNameDelete) {
-          const key = [tableNameDelete, id];
+          for (
+            const columnName of Object.keys(tableColumnTypes[tableNameDelete])
+          ) {
+            const key = [tableNameDelete, id, columnName];
 
-          op = op
-            .delete(key);
+            op = op
+              .delete(key);
+          }
         } else {
           throw new Error(`should be unreachable`);
         }

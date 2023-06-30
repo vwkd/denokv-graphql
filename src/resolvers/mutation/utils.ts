@@ -18,6 +18,7 @@ import type {
 } from "../../../deps.ts";
 import { InvalidSchema } from "../../utils.ts";
 import { isSameWrapping, isType } from "../utils.ts";
+import { isLeaf, isReference, isReferences } from "../query/utils.ts";
 
 /**
  * Validate mutation directive
@@ -275,4 +276,37 @@ export function validateDeleteMutationReturn(
       `Mutation '${mutationName}' input table '${inputTableName}' must have field 'versionstamp' with non-null 'String' type`,
     );
   }
+}
+
+export type ColumnType = "leaf" | "reference" | "references";
+
+/**
+ * Get types of columns
+ *
+ * - note: assumes valid table
+ * @param columnsMap columns map
+ */
+export function columnTypes(
+  columnsMap: GraphQLFieldMap<any, any>,
+): Record<string, ColumnType> {
+  const map = Object.fromEntries(
+    Object.entries(columnsMap).map(([columnName, column]) => {
+      let columnType;
+      const type = column.type;
+
+      if (isReferences(type)) {
+        columnType = "references";
+      } else if (isReference(type)) {
+        columnType = "reference";
+      } else if (isLeaf(type)) {
+        columnType = "leaf";
+      } else {
+        throw new Error(`should be unreachable`);
+      }
+
+      return [columnName, columnType];
+    }),
+  );
+
+  return map;
 }

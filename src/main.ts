@@ -1,6 +1,5 @@
 import {
   addResolversToSchema,
-  applyMiddleware,
   assertValidSchema,
   buildASTSchema,
   parse,
@@ -26,6 +25,13 @@ export function buildSchema(
     directive @delete(
       table: String!
     ) on INPUT_FIELD_DEFINITION
+
+    type PageInfo {
+      startCursor: ID
+      endCursor: ID
+      hasPreviousPage: Boolean!
+      hasNextPage: Boolean!
+    }
   `;
 
   const schemaAst = parse(source + source_extension);
@@ -34,11 +40,9 @@ export function buildSchema(
 
   assertValidSchema(schema);
 
-  const { resolvers, middleware } = generateResolvers(db, schema);
+  const resolvers = generateResolvers(db, schema);
 
   const schemaNew = addResolversToSchema({ schema, resolvers });
 
-  const schemaNewNew = applyMiddleware(schemaNew, middleware);
-
-  return schemaNewNew;
+  return schemaNew;
 }

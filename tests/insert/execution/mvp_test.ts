@@ -62,14 +62,22 @@ Deno.test("minimal working example", async () => {
 
   assertEquals(res, exp);
 
-  const key = ["Book", "1"];
-  const resDb = await db.get(key);
+  const keyId = ["Book", "1", "id"];
+  const keyTitle = ["Book", "1", "title"];
+  const resDb = await db.getMany([keyId, keyTitle]);
 
-  const expDb = {
-    key,
-    value: { id: "1", title: "Shadows of Eternity" },
-    versionstamp: "00000000000000010000",
-  };
+  const expDb = [
+    {
+      key: keyId,
+      value: "1",
+      versionstamp: "00000000000000010000",
+    },
+    {
+      key: keyTitle,
+      value: "Shadows of Eternity",
+      versionstamp: "00000000000000010000",
+    },
+  ];
 
   db.close();
 

@@ -47,12 +47,11 @@ Deno.test("minimal working example", async () => {
   `;
 
   const db = await Deno.openKv(":memory:");
-  const key = ["Book", "1"];
+  const keyId = ["Book", "1", "id"];
+  const keyTitle = ["Book", "1", "title"];
   await db.atomic()
-    .set(key, {
-      id: "1",
-      title: "Shadows of Eternity",
-    })
+    .set(keyId, "1")
+    .set(keyTitle, "Shadows of Eternity")
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -69,13 +68,20 @@ Deno.test("minimal working example", async () => {
 
   assertEquals(res, exp);
 
-  const resDb = await db.get(key);
+  const resDb = await db.getMany([keyId, keyTitle]);
 
-  const expDb = {
-    key,
-    value: null,
-    versionstamp: null,
-  };
+  const expDb = [
+    {
+      key: keyId,
+      value: null,
+      versionstamp: null,
+    },
+    {
+      key: keyTitle,
+      value: null,
+      versionstamp: null,
+    },
+  ];
 
   db.close();
 
