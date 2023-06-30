@@ -43,7 +43,7 @@ Deno.test("minimal working example", async () => {
         value {
           id,
           title,
-          authors(last: 1) {
+          authors(first: 2) {
             edges {
               node {
                 id,
@@ -65,19 +65,14 @@ Deno.test("minimal working example", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-      authors: ["11", "12"],
-    })
-    .set(["Author", "11"], {
-      id: "11",
-      name: "Victoria Nightshade",
-    })
-    .set(["Author", "12"], {
-      id: "12",
-      name: "Sebastian Duskwood",
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
+    .set(["Book", "1", "authors", "11"], undefined)
+    .set(["Book", "1", "authors", "12"], undefined)
+    .set(["Author", "11", "id"], "11")
+    .set(["Author", "11", "name"], "Victoria Nightshade")
+    .set(["Author", "12", "id"], "12")
+    .set(["Author", "12", "name"], "Sebastian Duskwood")
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -99,19 +94,19 @@ Deno.test("minimal working example", async () => {
                   id: "11",
                   name: "Victoria Nightshade",
                 },
-                cursor: "11",
+                cursor: "AjExAA==",
               },
               {
                 node: {
                   id: "12",
                   name: "Sebastian Duskwood",
                 },
-                cursor: "12",
+                cursor: "AjEyAA==",
               },
             ],
             pageInfo: {
-              startCursor: "11",
-              endCursor: "12",
+              startCursor: "AjExAA==",
+              endCursor: "AjEyAA==",
               hasNextPage: false,
               hasPreviousPage: false,
             },

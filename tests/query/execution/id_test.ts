@@ -34,10 +34,8 @@ Deno.test("bad id", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "999",
-      title: "Shadows of Eternity",
-    })
+    .set(["Book", "1", "id"], "999")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
     .commit();
 
   const schema = buildSchema(db, schemaSource);

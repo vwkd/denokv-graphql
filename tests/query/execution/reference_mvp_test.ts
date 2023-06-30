@@ -44,15 +44,11 @@ Deno.test("minimal working example", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-      author: "11",
-    })
-    .set(["Author", "11"], {
-      id: "11",
-      name: "Victoria Nightshade",
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
+    .set(["Book", "1", "author", "11"], undefined)
+    .set(["Author", "11", "id"], "11")
+    .set(["Author", "11", "name"], "Victoria Nightshade")
     .commit();
 
   const schema = buildSchema(db, schemaSource);

@@ -44,19 +44,14 @@ Deno.test("bad id", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-      authors: ["998", "12"],
-    })
-    .set(["Author", "11"], {
-      id: "11",
-      name: "Victoria Nightshade",
-    })
-    .set(["Author", "12"], {
-      id: "12",
-      name: "Sebastian Duskwood",
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
+    .set(["Book", "1", "authors", "998"], undefined)
+    .set(["Book", "1", "authors", "12"], undefined)
+    .set(["Author", "11", "id"], "11")
+    .set(["Author", "11", "name"], "Victoria Nightshade")
+    .set(["Author", "12", "id"], "12")
+    .set(["Author", "12", "name"], "Sebastian Duskwood")
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -130,16 +125,13 @@ Deno.test("other reference", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-      authors: ["11", "12"],
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
+    .set(["Book", "1", "authors", "11"], undefined)
+    .set(["Book", "1", "authors", "12"], undefined)
     .set(["Author", "11"], "XXX")
-    .set(["Author", "12"], {
-      id: "12",
-      name: "Sebastian Duskwood",
-    })
+    .set(["Author", "12", "id"], "12")
+    .set(["Author", "12", "name"], "Sebastian Duskwood")
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -213,19 +205,14 @@ Deno.test("bad id in reference", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-      authors: ["11", "12"],
-    })
-    .set(["Author", "11"], {
-      id: "999",
-      name: "Victoria Nightshade",
-    })
-    .set(["Author", "12"], {
-      id: "12",
-      name: "Sebastian Duskwood",
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
+    .set(["Book", "1", "authors", "11"], undefined)
+    .set(["Book", "1", "authors", "12"], undefined)
+    .set(["Author", "11", "id"], "999")
+    .set(["Author", "11", "name"], "Victoria Nightshade")
+    .set(["Author", "12", "id"], "12")
+    .set(["Author", "12", "name"], "Sebastian Duskwood")
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -300,10 +287,8 @@ Deno.test("non null list", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -370,11 +355,10 @@ Deno.test("bad reference id", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-      authors: ["11", 999],
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
+    .set(["Book", "1", "authors", "11"], undefined)
+    .set(["Book", "1", "authors", "999"], undefined)
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -449,11 +433,9 @@ Deno.test("non null item", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-      authors: [],
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
+    // todo: how to represent `[]`
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -528,11 +510,9 @@ Deno.test("non null list and item", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-      authors: [],
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
+    // todo: how to represent `[]`
     .commit();
 
   const schema = buildSchema(db, schemaSource);

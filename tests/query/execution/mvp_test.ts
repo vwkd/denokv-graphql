@@ -34,10 +34,8 @@ Deno.test("minimal working example", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -95,10 +93,8 @@ Deno.test("null row", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
     .commit();
 
   const schema = buildSchema(db, schemaSource);

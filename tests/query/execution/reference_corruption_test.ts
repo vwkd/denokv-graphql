@@ -44,11 +44,9 @@ Deno.test("bad id", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-      author: "999",
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
+    .set(["Book", "1", "author", "999"], undefined)
     .commit();
 
   const schema = buildSchema(db, schemaSource);
@@ -122,11 +120,9 @@ Deno.test("other reference", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-      title: "Shadows of Eternity",
-      author: "11",
-    })
+    .set(["Book", "1", "id"], "1")
+    .set(["Book", "1", "title"], "Shadows of Eternity")
+    .set(["Book", "1", "author", "11"], undefined)
     .set(["Author", "11"], "XXX")
     .commit();
 

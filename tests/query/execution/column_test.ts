@@ -34,9 +34,7 @@ Deno.test("null column", async () => {
 
   const db = await Deno.openKv(":memory:");
   await db.atomic()
-    .set(["Book", "1"], {
-      id: "1",
-    })
+    .set(["Book", "1", "id"], "1")
     .commit();
 
   const schema = buildSchema(db, schemaSource);
