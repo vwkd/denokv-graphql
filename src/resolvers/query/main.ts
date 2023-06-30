@@ -21,6 +21,11 @@ export function createResolver(
 ): void {
   const tableName = table.name;
 
+  // prevent infinite recursion for cyclical references
+  if (resolvers[tableName]) {
+    return;
+  }
+
   resolvers[tableName] = {};
 
   const columns = Object.values(table.getFields());
