@@ -105,6 +105,7 @@ type Author {
 
 - a query for a single row of a table is a field of a nullable result of the table type with an argument 'id' of non-null `ID` type
 - a result is an object type with a field 'versionstamp' of non-null `String` type and a field 'value' of non-null table type
+- note: result is null if row with id doesn't exist!
 
 ```graphql
 type Query {
@@ -153,6 +154,7 @@ type Book {
 
 - a transaction is a field of a nullable result type with an argument 'data' of non-null transaction input type
 - a result is an object type with a field 'versionstamp' of non-null `String` type
+- note: result is null if in insert rows already exist, or in delete the versionstamps don't match!
 - a transaction input is an input object type with fields of non-null list of non-null row input type and a directive 'insert' or 'delete' with a `table` argument of the table name string
 
 ```graphql
