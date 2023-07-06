@@ -222,6 +222,9 @@ input Identifier {
 
 - a value column of a row is stored with the individual key of the table name, row id, and column name
 - a reference column of a row is stored with the individual key of the table name, row id, column name, and row id of referenced table
+- issue that row has potentially different versionstamp for each column, returns versionstamp of 'id' column as versionstamp for whole row, versionstamp of 'id' column must always be newest of any of row's columns
+- beware: must make sure that any update mutation to row's columns also resets 'id' column to new versionstamp!
+- beware: if database gets corrupted can't guarantee 'id' column has newest versionstamp, can't guarantee consistency!
 
 
 

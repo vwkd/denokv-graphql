@@ -165,8 +165,6 @@ export function createRootReferencesResolver(
       let edges = [];
 
       for (const { id, cursor, versionstamp } of rows) {
-        // todo: use versionstamp of whole row instead of only `id` key, but no single one exists since each column has own, can be updated independently, esp. in referenced row of another table
-
         const row = {
           id,
         };
@@ -282,8 +280,6 @@ export function createRootReferencesResolver(
       let edges = [];
 
       for (const { id, cursor, versionstamp } of rows) {
-        // todo: use versionstamp of whole row instead of only `id` key, but no single one exists since each column has own, can be updated independently, esp. in referenced row of another table
-
         const row = {
           id,
         };

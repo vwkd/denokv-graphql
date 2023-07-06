@@ -111,7 +111,6 @@ export function createResolverTransaction(
               .check({ key, versionstamp });
           }
         } else if (tableNameDelete) {
-          // todo: use versionstamp of whole row instead of only `id` key and check here, but no single one exists since each column has own, can be updated independently, esp. in referenced row of another table
           const key = [tableNameDelete, id, "id"];
           const versionstamp = data.versionstamp;
 
