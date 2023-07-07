@@ -53,6 +53,8 @@ export function createRootReferenceResolver(
     const rowId = args.id;
 
     context.checks = [];
+    context.versionstamps = {};
+    context.versionstamps[tableName] = {};
 
     const node = {
       id: rowId,
@@ -65,6 +67,7 @@ export function createRootReferenceResolver(
     const { key, value, versionstamp } = await db.get(idKey);
 
     context.checks.push({ key, versionstamp });
+    context.versionstamps[tableName][rowId] = versionstamp;
 
     if (value === null) {
       return null;

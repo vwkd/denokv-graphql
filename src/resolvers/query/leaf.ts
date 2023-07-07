@@ -38,6 +38,7 @@ export function createLeafResolver(
     const key = [tableName, id, name];
 
     const checks = context.checks;
+    const rowVersionstamp = context.versionstamps[tableName][id];
 
     const { value, versionstamp } = await db.get(key);
 
@@ -57,6 +58,12 @@ export function createLeafResolver(
     if (name == "id" && value !== id) {
       throw new DatabaseCorruption(
         `Expected table '${tableName}' row '${id}' column 'id' to be equal to row id`,
+      );
+    }
+
+    if (versionstamp > rowVersionstamp) {
+      throw new DatabaseCorruption(
+        `Expected table '${tableName}' row '${id}' column '${name}' versionstamp to be less than or equal to row versionstamp`,
       );
     }
 

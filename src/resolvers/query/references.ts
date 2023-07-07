@@ -76,6 +76,11 @@ export function createReferencesResolver(
     const referenceKeysPrefix = [tableName, rowId, name];
 
     const checks = context.checks;
+    const rowVersionstamp = context.versionstamps[tableName][rowId];
+
+    if (!context.versionstamps[referencedTableName]) {
+      context.versionstamps[referencedTableName] = {};
+    }
 
     if (first) {
       // note: get one more element to see if has next
@@ -113,7 +118,14 @@ export function createReferencesResolver(
           );
         }
 
+        if (versionstamp > rowVersionstamp) {
+          throw new DatabaseCorruption(
+            `Expected table '${tableName}' row '${rowId}' column '${name}' versionstamp to be less than or equal to row versionstamp`,
+          );
+        }
+
         checks.push({ key, versionstamp });
+        context.versionstamps[referencedTableName][idReference] = versionstamp;
 
         // note: always non-empty string
         const cursor = referenceEntries.cursor;

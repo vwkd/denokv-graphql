@@ -77,6 +77,8 @@ export function createRootReferencesResolver(
     validateReferencesArgumentInputs(first, after, last, before);
 
     context.checks = [];
+    context.versionstamps = {};
+    context.versionstamps[tableName] = {};
 
     if (first) {
       const keysPrefix = [tableName];
@@ -144,6 +146,7 @@ export function createRootReferencesResolver(
         }
 
         context.checks.push({ key, versionstamp });
+        context.versionstamps[rowId] = versionstamp;
 
         // note: always non-empty string
         const cursor = entries.cursor;
@@ -264,6 +267,7 @@ export function createRootReferencesResolver(
         }
 
         context.checks.push({ key, versionstamp });
+        context.versionstamps[tableName][rowId] = versionstamp;
 
         // note: always non-empty string
         const cursor = entries.cursor;

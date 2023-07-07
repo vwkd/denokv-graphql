@@ -26,6 +26,8 @@ export function createReferenceResolver(
   resolvers: IResolvers,
   optional: boolean,
 ): void {
+  const referencedTableName = type.name;
+
   const columns = Object.values(type.getFields());
   validateTable(columns, tableName);
 
@@ -43,6 +45,11 @@ export function createReferenceResolver(
     const referenceKey = [tableName, rowId, name];
 
     const checks = context.checks;
+    const rowVersionstamp = context.versionstamps[tableName][rowId];
+
+    if (!context.versionstamps[referencedTableName]) {
+      context.versionstamps[referencedTableName] = {};
+    }
 
     // expects 1 entry, but tries to get 2 (or 0) for error checking
     const referenceEntry = db.list({ prefix: referenceKey }, { limit: 2 });
@@ -76,8 +83,15 @@ export function createReferenceResolver(
         );
       }
 
+      if (versionstamp > rowVersionstamp) {
+        throw new DatabaseCorruption(
+          `Expected table '${tableName}' row '${rowId}' column '${name}' versionstamp to be less than or equal to row versionstamp`,
+        );
+      }
+
       // note: potentially pushes check for one bad item, but doesn't matter since will throw below
       checks.push({ key, versionstamp });
+      context.versionstamps[referencedTableName][idReference] = versionstamp;
 
       referenceIdArr.push(idReference);
     }
