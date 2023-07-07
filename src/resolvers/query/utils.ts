@@ -454,9 +454,9 @@ export function validateReferencesArgumentInputs(
   last?: number,
   before?: string,
 ) {
-  if (first && !last && !before) {
+  if (first !== undefined && last == undefined && before == undefined) {
     // ok, noop
-  } else if (last && !first && !after) {
+  } else if (last !== undefined && first == undefined && after == undefined) {
     // ok, noop
   } else {
     throw new InvalidInput(

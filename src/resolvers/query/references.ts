@@ -82,7 +82,7 @@ export function createReferencesResolver(
       context.versionstamps[referencedTableName] = {};
     }
 
-    if (first) {
+    if (first !== undefined) {
       // note: get one more element to see if has next
       const referenceEntries = db.list({ prefix: referenceKeysPrefix }, {
         limit: first + 1,
@@ -154,8 +154,6 @@ export function createReferencesResolver(
         referencesIdArr = referencesIdArr.slice(0, -1);
       }
 
-      // todo: what if now empty? only element was extra element...? also below
-
       // note: cursor of next item if it exists, otherwise empty string if no further items, never `undefined`!
       const startCursorNext = referenceEntries.cursor;
 
@@ -182,7 +180,7 @@ export function createReferencesResolver(
       };
 
       return connection;
-    } else if (last) {
+    } else if (last !== undefined) {
       // note: get one more element to see if has next
       // note: `reverse` to go backwards instead of forwards, then reverse array to end up with forward order
       const referenceEntries = db.list({ prefix: referenceKeysPrefix }, {

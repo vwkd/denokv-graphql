@@ -80,7 +80,7 @@ export function createRootReferencesResolver(
     context.versionstamps = {};
     context.versionstamps[tableName] = {};
 
-    if (first) {
+    if (first !== undefined) {
       const keysPrefix = [tableName];
 
       // todo: paginate only over `[tableName, "*", "id"]` using `limit` if https://github.com/denoland/deploy_feedback/issues/415 is fixed
@@ -154,20 +154,18 @@ export function createRootReferencesResolver(
         rows.push({ id: rowId, cursor, versionstamp });
       }
 
+      if (!optional && rows.length == 0) {
+        throw new DatabaseCorruption(
+          `Expected table '${tableName}' to contain at least one row`,
+        );
+      }
+
       let hasNextPage = false;
 
       // remove extra element if it exists
       if (rows.length == first + 1) {
         rows = rows.slice(0, -1);
         hasNextPage = true;
-      }
-
-      // todo: what if now empty? only element was extra element...?
-
-      if (!optional && rows.length == 0) {
-        throw new DatabaseCorruption(
-          `Expected table '${tableName}' to contain at least one row`,
-        );
       }
 
       let edges = [];
@@ -199,7 +197,7 @@ export function createRootReferencesResolver(
       };
 
       return connection;
-    } else if (last) {
+    } else if (last !== undefined) {
       const keysPrefix = [tableName];
 
       // todo: paginate only over `[tableName, "*", "id"]` using `limit` if https://github.com/denoland/deploy_feedback/issues/415 is fixed
@@ -275,20 +273,18 @@ export function createRootReferencesResolver(
         rows.unshift({ id: rowId, cursor, versionstamp });
       }
 
+      if (!optional && rows.length == 0) {
+        throw new DatabaseCorruption(
+          `Expected table '${tableName}' to contain at least one row`,
+        );
+      }
+
       let hasPreviousPage = false;
 
       // remove extra element if it exists
       if (rows.length == last + 1) {
         rows = rows.slice(1);
         hasPreviousPage = true;
-      }
-
-      // todo: what if now empty? only element was extra element...?
-
-      if (!optional && rows.length == 0) {
-        throw new DatabaseCorruption(
-          `Expected table '${tableName}' to contain at least one row`,
-        );
       }
 
       let edges = [];
