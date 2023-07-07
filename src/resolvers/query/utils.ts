@@ -441,8 +441,8 @@ export function validateQueryResult(
 /**
  * Validate references argument inputs
  *
- * - either argument 'first' and optionally 'after'
- * - or argument 'last' and optionally 'before'
+ * - either non-negative 'first' and optionally 'after'
+ * - or non-negative 'last' and optionally 'before'
  * @param first argument 'first'
  * @param after argument 'after'
  * @param last argument 'last'
@@ -456,8 +456,18 @@ export function validateReferencesArgumentInputs(
 ) {
   if (first !== undefined && last == undefined && before == undefined) {
     // ok, noop
+    if (first < 0) {
+      throw new InvalidInput(
+        `Expected 'first' to be non-negative integer`,
+      );
+    }
   } else if (last !== undefined && first == undefined && after == undefined) {
     // ok, noop
+    if (last < 0) {
+      throw new InvalidInput(
+        `Expected 'last' to be non-negative integer`,
+      );
+    }
   } else {
     throw new InvalidInput(
       `Expected either 'first' with optional 'after' or 'last' with optional 'before'`,
