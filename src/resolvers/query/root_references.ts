@@ -81,11 +81,8 @@ export function createRootReferencesResolver(
     if (first) {
       const keysPrefix = [tableName];
 
-      // todo: paginate only over `[tableName, "*", "id"]` if https://github.com/denoland/deploy_feedback/issues/415 is fixed, currently `limit` assumes correct keys and error checks if instead more or less
-      // note: get one more element to see if has next
+      // todo: paginate only over `[tableName, "*", "id"]` using `limit` if https://github.com/denoland/deploy_feedback/issues/415 is fixed
       const entries = db.list({ prefix: keysPrefix }, {
-        // note: since paginates over column keyspace
-        limit: (first * columnNumber) + 1,
         cursor: after,
       });
 
@@ -98,8 +95,8 @@ export function createRootReferencesResolver(
           );
         }
 
-        const rowId = key.at(1);
-        const columnName = key.at(2);
+        const rowId = key.at(1)!;
+        const columnName = key.at(2)!;
 
         if (typeof rowId != "string") {
           throw new DatabaseCorruption(
@@ -113,13 +110,13 @@ export function createRootReferencesResolver(
           );
         }
 
-        if (columnName && typeof columnName != "string") {
+        if (typeof columnName != "string") {
           throw new DatabaseCorruption(
             `Expected table '${tableName}' row '${rowId}' to have column key of string`,
           );
         }
 
-        if (columnName && columnName.length == 0) {
+        if (columnName.length == 0) {
           throw new DatabaseCorruption(
             `Expected table '${tableName}' row '${rowId}' to have column key of non-empty string`,
           );
@@ -141,7 +138,8 @@ export function createRootReferencesResolver(
           );
         }
 
-        if (rows.length >= first) {
+        // note: get one more element to see if has next
+        if (rows.length >= first + 1) {
           break;
         }
 
@@ -153,14 +151,21 @@ export function createRootReferencesResolver(
         rows.push({ id: rowId, cursor, versionstamp });
       }
 
+      let hasNextPage = false;
+
+      // remove extra element if it exists
+      if (rows.length == first + 1) {
+        rows = rows.slice(0, -1);
+        hasNextPage = true;
+      }
+
+      // todo: what if now empty? only element was extra element...?
+
       if (!optional && rows.length == 0) {
         throw new DatabaseCorruption(
           `Expected table '${tableName}' to contain at least one row`,
         );
       }
-
-      // note: cursor of next item if it exists, otherwise empty string if no further items, never `undefined`!
-      const startCursorNext = entries.cursor;
 
       let edges = [];
 
@@ -180,7 +185,7 @@ export function createRootReferencesResolver(
       const pageInfo = {
         startCursor: edges.at(0)?.cursor,
         endCursor: edges.at(-1)?.cursor,
-        hasNextPage: !!startCursorNext,
+        hasNextPage,
         // note: currently mistakenly set to `true` if passes bogus cursor that passes validation in `db.list`
         hasPreviousPage: !!after,
       };
@@ -194,12 +199,9 @@ export function createRootReferencesResolver(
     } else if (last) {
       const keysPrefix = [tableName];
 
-      // todo: paginate only over `[tableName, "*", "id"]` if https://github.com/denoland/deploy_feedback/issues/415 is fixed, currently `limit` assumes correct keys and error checks if instead more or less
-      // note: get one more element to see if has next
+      // todo: paginate only over `[tableName, "*", "id"]` using `limit` if https://github.com/denoland/deploy_feedback/issues/415 is fixed
       // note: `reverse` to go backwards instead of forwards, then reverse array to end up with forward order
       const entries = db.list({ prefix: keysPrefix }, {
-        // note: since paginates over column keyspace
-        limit: (last * columnNumber) + 1,
         cursor: before,
         reverse: true,
       });
@@ -213,8 +215,8 @@ export function createRootReferencesResolver(
           );
         }
 
-        const rowId = key.at(1);
-        const columnName = key.at(2);
+        const rowId = key.at(1)!;
+        const columnName = key.at(2)!;
 
         if (typeof rowId != "string") {
           throw new DatabaseCorruption(
@@ -228,13 +230,13 @@ export function createRootReferencesResolver(
           );
         }
 
-        if (columnName && typeof columnName != "string") {
+        if (typeof columnName != "string") {
           throw new DatabaseCorruption(
             `Expected table '${tableName}' row '${rowId}' to have column key of string`,
           );
         }
 
-        if (columnName && columnName.length == 0) {
+        if (columnName.length == 0) {
           throw new DatabaseCorruption(
             `Expected table '${tableName}' row '${rowId}' to have column key of non-empty string`,
           );
@@ -256,7 +258,8 @@ export function createRootReferencesResolver(
           );
         }
 
-        if (rows.length >= last) {
+        // note: get one more element to see if has next
+        if (rows.length >= last + 1) {
           break;
         }
 
@@ -268,14 +271,21 @@ export function createRootReferencesResolver(
         rows.unshift({ id: rowId, cursor, versionstamp });
       }
 
+      let hasPreviousPage = false;
+
+      // remove extra element if it exists
+      if (rows.length == last + 1) {
+        rows = rows.slice(1);
+        hasPreviousPage = true;
+      }
+
+      // todo: what if now empty? only element was extra element...?
+
       if (!optional && rows.length == 0) {
         throw new DatabaseCorruption(
           `Expected table '${tableName}' to contain at least one row`,
         );
       }
-
-      // note: cursor of next item if it exists, otherwise empty string if no further items, never `undefined`!
-      const endCursorNext = entries.cursor;
 
       let edges = [];
 
@@ -297,7 +307,7 @@ export function createRootReferencesResolver(
         endCursor: edges.at(-1)?.cursor,
         // note: currently mistakenly set to `true` if passes bogus cursor that passes validation in `db.list`
         hasNextPage: !!before,
-        hasPreviousPage: !!endCursorNext,
+        hasPreviousPage,
       };
 
       const connection = {
