@@ -302,3 +302,453 @@ Deno.test("fewer", async () => {
 
   assertEquals(res, exp);
 });
+
+Deno.test("exact empty", async () => {
+  const schemaSource = `
+    type Query {
+      books(first: Int, after: ID, last: Int, before: ID): BookConnection!
+    }
+
+    type BookConnection {
+      edges: [BookEdge]!
+      pageInfo: PageInfo!
+    }
+
+    type BookEdge {
+      node: BookResult!
+      cursor: ID!
+    }
+
+    type BookResult {
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+  `;
+
+  const source = `
+    query {
+      books(last: 2, before: "AjMAAmlkAA==") {
+        edges {
+          node {
+            versionstamp
+            value {
+              id
+              title
+            }
+          }
+          cursor
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source, contextValue: {} });
+
+  const exp = {
+    data: {
+      books: {
+        edges: [],
+        pageInfo: {
+          startCursor: null,
+          endCursor: null,
+          hasNextPage: true,
+          hasPreviousPage: false,
+        },
+      },
+    },
+  };
+
+  db.close();
+
+  assertEquals(res, exp);
+});
+
+Deno.test("more empty", async () => {
+  const schemaSource = `
+    type Query {
+      books(first: Int, after: ID, last: Int, before: ID): BookConnection!
+    }
+
+    type BookConnection {
+      edges: [BookEdge]!
+      pageInfo: PageInfo!
+    }
+
+    type BookEdge {
+      node: BookResult!
+      cursor: ID!
+    }
+
+    type BookResult {
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+  `;
+
+  const source = `
+    query {
+      books(last: 3, before: "AjMAAmlkAA==") {
+        edges {
+          node {
+            versionstamp
+            value {
+              id
+              title
+            }
+          }
+          cursor
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source, contextValue: {} });
+
+  const exp = {
+    data: {
+      books: {
+        edges: [],
+        pageInfo: {
+          startCursor: null,
+          endCursor: null,
+          hasNextPage: true,
+          hasPreviousPage: false,
+        },
+      },
+    },
+  };
+
+  db.close();
+
+  assertEquals(res, exp);
+});
+
+Deno.test("fewer empty", async () => {
+  const schemaSource = `
+    type Query {
+      books(first: Int, after: ID, last: Int, before: ID): BookConnection!
+    }
+
+    type BookConnection {
+      edges: [BookEdge]!
+      pageInfo: PageInfo!
+    }
+
+    type BookEdge {
+      node: BookResult!
+      cursor: ID!
+    }
+
+    type BookResult {
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+  `;
+
+  const source = `
+    query {
+      books(last: 1, before: "AjMAAmlkAA==") {
+        edges {
+          node {
+            versionstamp
+            value {
+              id
+              title
+            }
+          }
+          cursor
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source, contextValue: {} });
+
+  const exp = {
+    data: {
+      books: {
+        edges: [],
+        pageInfo: {
+          startCursor: null,
+          endCursor: null,
+          hasNextPage: true,
+          hasPreviousPage: false,
+        },
+      },
+    },
+  };
+
+  db.close();
+
+  assertEquals(res, exp);
+});
+
+Deno.test("exact bad cursor", async () => {
+  const schemaSource = `
+    type Query {
+      books(first: Int, after: ID, last: Int, before: ID): BookConnection!
+    }
+
+    type BookConnection {
+      edges: [BookEdge]!
+      pageInfo: PageInfo!
+    }
+
+    type BookEdge {
+      node: BookResult!
+      cursor: ID!
+    }
+
+    type BookResult {
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+  `;
+
+  const source = `
+    query {
+      books(last: 2, before: "Zm9v") {
+        edges {
+          node {
+            versionstamp
+            value {
+              id
+              title
+            }
+          }
+          cursor
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source, contextValue: {} });
+
+  const exp = {
+    data: {
+      books: {
+        edges: [],
+        pageInfo: {
+          startCursor: null,
+          endCursor: null,
+          hasNextPage: true,
+          hasPreviousPage: false,
+        },
+      },
+    },
+  };
+
+  db.close();
+
+  assertEquals(res, exp);
+});
+
+Deno.test("more bad cursor", async () => {
+  const schemaSource = `
+    type Query {
+      books(first: Int, after: ID, last: Int, before: ID): BookConnection!
+    }
+
+    type BookConnection {
+      edges: [BookEdge]!
+      pageInfo: PageInfo!
+    }
+
+    type BookEdge {
+      node: BookResult!
+      cursor: ID!
+    }
+
+    type BookResult {
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+  `;
+
+  const source = `
+    query {
+      books(last: 3, before: "Zm9v") {
+        edges {
+          node {
+            versionstamp
+            value {
+              id
+              title
+            }
+          }
+          cursor
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source, contextValue: {} });
+
+  const exp = {
+    data: {
+      books: {
+        edges: [],
+        pageInfo: {
+          startCursor: null,
+          endCursor: null,
+          hasNextPage: true,
+          hasPreviousPage: false,
+        },
+      },
+    },
+  };
+
+  db.close();
+
+  assertEquals(res, exp);
+});
+
+Deno.test("fewer bad cursor", async () => {
+  const schemaSource = `
+    type Query {
+      books(first: Int, after: ID, last: Int, before: ID): BookConnection!
+    }
+
+    type BookConnection {
+      edges: [BookEdge]!
+      pageInfo: PageInfo!
+    }
+
+    type BookEdge {
+      node: BookResult!
+      cursor: ID!
+    }
+
+    type BookResult {
+      versionstamp: String!
+      value: Book!
+    }
+
+    type Book {
+      id: ID!,
+      title: String,
+    }
+  `;
+
+  const source = `
+    query {
+      books(last: 1, before: "Zm9v") {
+        edges {
+          node {
+            versionstamp
+            value {
+              id
+              title
+            }
+          }
+          cursor
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
+        }
+      }
+    }
+  `;
+
+  const db = await Deno.openKv(":memory:");
+
+  const schema = buildSchema(db, schemaSource);
+
+  const res = await graphql({ schema, source, contextValue: {} });
+
+  const exp = {
+    data: {
+      books: {
+        edges: [],
+        pageInfo: {
+          startCursor: null,
+          endCursor: null,
+          hasNextPage: true,
+          hasPreviousPage: false,
+        },
+      },
+    },
+  };
+
+  db.close();
+
+  assertEquals(res, exp);
+});
