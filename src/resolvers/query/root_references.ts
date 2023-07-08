@@ -106,6 +106,7 @@ export function createRootReferencesResolver(
           );
         }
 
+        // note: never true when valid 'after' is provided, since empty row id string would be ordered before 'after' string hence never read, instead throws in leaf resolver `Expected table '...' row '...' column '...' to be non-empty`
         if (rowId.length == 0) {
           throw new DatabaseCorruption(
             `Expected table '${tableName}' to have row key of non-empty string`,
