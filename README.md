@@ -4,31 +4,7 @@ GraphQL bindings for Deno KV
 
 
 
-## Introduction
-
-The library exposes a single `buildSchema` function that takes a GraphQL IDL schema string and a Deno KV database and returns an executable GraphQL schema. It expects a relational schema with tables and rows and sets up the resolvers for read, write and delete operations to the Deno KV database.
-
-
-
-## Features
-
-- relational storage schema
-  - the row id is a string, e.g. incrementing integer, UUID, etc.
-  - can reference rows of another table, query resolves the references recursively and assembles result object
-  - pagination over results and references, lexicographic order of row id strings
-- atomic consistency
-  - a query checks that there are no concurrent mutations
-  - a mutation is a transactions that can mutate multiple tables
-- strict input and output validation
-  - invalid schema input throws an `InvalidSchema` error
-  - invalid query input throws an `InvalidInput` error
-  - invalid database output throws a `DatabaseCorruption` error
-
-
-
 ## Getting started
-
-Create a schema given your Deno KV database and schema source document.
 
 ```js
 import { buildSchema } from "https://raw.githubusercontent.com/vwkd/graphql-denokv/main/src/main.ts";
@@ -40,7 +16,28 @@ Check out the [examples](./examples).
 
 
 
+## Features
+
+- relational schema
+- atomic consistency
+- strict input and output validation
+
+
+
 ## Concepts
+
+- tables and rows, a column can reference rows of another table
+- the row id is a string, provided by user, e.g. incrementing integer, UUID, etc.
+- a query assembles result object(s), resolves references recursively, checks that there are no concurrent mutations
+- a many query paginates over results and references in lexicographic order of row id strings, implements Relay pagination spec
+- a mutation is a transaction, can mutate multiple tables with atomic consistency
+- invalid schema input throws an `InvalidSchema` error
+- invalid query input throws an `InvalidInput` error
+- invalid database output throws a `DatabaseCorruption` error
+
+
+
+## Schema
 
 - note: if a type isn't explicitly mentioned as "non-null" or "nullable", it can be either non-null or nullable
 - note: the mutation directives and the `PageInfo` type are built-in
@@ -220,6 +217,7 @@ input Identifier {
 
 ## Internals
 
+- sets up resolvers for read, write and delete operations to the Deno KV database
 - a value column of a row is stored with the individual key of the table name, row id, and column name
 - a reference column of a row is stored with the individual key of the table name, row id, column name, and row id of referenced table
 - issue that row has potentially different versionstamp for each column, returns versionstamp of 'id' column as versionstamp for whole row, versionstamp of 'id' column must always be newest of any of row's columns

@@ -8,10 +8,10 @@ import type { GraphQLSchema, Source } from "../deps.ts";
 import { generateResolvers } from "./resolvers/main.ts";
 
 /**
- * Build a GraphQLSchema for Deno KV
+ * Build an executable GraphQL schema for Deno KV
  * @param db Deno KV database
- * @param source schema source document
- * @returns an executable schema for Deno KV
+ * @param source GraphQL IDL schema source document
+ * @returns an executable GraphQL schema
  */
 export function buildSchema(
   db: Deno.Kv,
