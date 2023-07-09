@@ -229,4 +229,4 @@ input Identifier {
 
 ### Why GraphQL?
 
-GraphQL is an ergonomic interface for reading and writing data. GraphQL provides built-in support for querying nested data, sub-selections, aliasing, etc. and all with a strict schema that enables input validation, detailed error messages, introspection, etc. GraphQL is usually used as API on a remote server but why shouldn't it be used locally for a database? It won't do as a high-performance customizable enterprise database, but for small application the better ergonomics might be well worth the price.
+GraphQL is an ergonomic interface for selecting nested data with additional features like aliases, input validation, detailed error messages, introspection, and more thanks to a strict schema. GraphQL may be more popularly known as API of a remote server, but nothing prevents it from being used as local interface of a database. As additional layer between user and database it decreases performance, but it adds meaningfully better ergonomics which might be worth the price.
