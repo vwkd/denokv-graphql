@@ -13,11 +13,11 @@
  *
  * @module
  */
- 
- export { buildSchema } from "./src/main.ts";
- export {
-  DatabaseCorruption,
-  InvalidSchema,
-  InvalidInput,
+
+export { buildSchema } from "./src/main.ts";
+export {
   ConcurrentChange,
+  DatabaseCorruption,
+  InvalidInput,
+  InvalidSchema,
 } from "./src/utils.ts";
