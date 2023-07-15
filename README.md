@@ -7,7 +7,7 @@ GraphQL bindings for Deno KV
 ## Getting started
 
 ```js
-import { buildSchema } from "https://raw.githubusercontent.com/vwkd/graphql-denokv/main/src/main.ts";
+import { buildSchema } from "https://deno.land/x/denokv_graphql/src/main.ts";
 
 const schema = buildSchema(db, schemaSource);
 ```
