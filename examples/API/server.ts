@@ -5,7 +5,7 @@
  */
 import { serve } from "https://deno.land/std@0.192.0/http/server.ts";
 import { graphql } from "npm:graphql@16.6.0";
-import { buildSchema } from "https://deno.land/x/denokv_graphql/mod.ts";
+import { buildSchema } from "https://deno.land/x/denokv_graphql@$MODULE_VERSION/mod.ts";
 
 const schemaSource = await Deno.readTextFile("./examples/basic/schema.graphql");
 
