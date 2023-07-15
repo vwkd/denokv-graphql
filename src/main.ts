@@ -12,7 +12,6 @@ import { generateResolvers } from "./resolvers/main.ts";
  * @param db Deno KV database
  * @param source GraphQL IDL schema source document
  * @returns an executable GraphQL schema
- * @module
  */
 export function buildSchema(
   db: Deno.Kv,

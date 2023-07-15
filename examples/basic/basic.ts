@@ -4,7 +4,7 @@
  * Run with `deno run --unstable --allow-read examples/basic/basic.ts`
  */
 import { graphql } from "npm:graphql@16.6.0";
-import { buildSchema } from "https://deno.land/x/denokv_graphql/src/main.ts";
+import { buildSchema } from "https://deno.land/x/denokv_graphql/mod.ts";
 
 const schemaSource = await Deno.readTextFile("./examples/basic/schema.graphql");
 const source = await Deno.readTextFile("./examples/basic/operations.graphql");
